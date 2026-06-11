@@ -35,6 +35,12 @@ function tone(ac: AudioContext, { from, to, start, duration, peak }: ToneOpts): 
   osc.stop(start + duration + 0.05);
 }
 
+/** Diagnostic: where the audio engine currently stands. */
+export function getAudioEngineState(): 'uninitialized' | 'unavailable' | AudioContextState {
+  if (typeof window === 'undefined' || !('AudioContext' in window)) return 'unavailable';
+  return ctx ? ctx.state : 'uninitialized';
+}
+
 /**
  * Creates/resumes the AudioContext. Must be called from inside a user
  * gesture (click/keydown) — browsers refuse audio started elsewhere.

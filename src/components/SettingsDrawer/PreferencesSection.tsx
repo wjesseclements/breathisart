@@ -1,4 +1,5 @@
-import { playCue } from '../../engine/audio';
+import { useState } from 'react';
+import { getAudioEngineState, playCue, unlockAudio } from '../../engine/audio';
 import { useSettings } from '../../store/useSettings';
 
 const chip =
@@ -45,6 +46,22 @@ export function PreferencesSection() {
   const s = useSettings();
   const lengthIsPreset = s.sessionLengthMin === null || [3, 5, 10].includes(s.sessionLengthMin);
   const hapticsSupported = 'vibrate' in navigator;
+
+  // Diagnostic test tone: unlock + play inside this click's gesture, then
+  // report the engine state so "no sound" can be told apart from "blocked".
+  const [audioStatus, setAudioStatus] = useState<string | null>(null);
+  const playTestTone = () => {
+    unlockAudio();
+    playCue('inhale', Math.max(0.5, useSettings.getState().volume));
+    window.setTimeout(() => {
+      const state = getAudioEngineState();
+      setAudioStatus(
+        state === 'running'
+          ? 'Audio engine is running. If you heard nothing, check device volume — on iPhone, the ring/silent switch mutes web audio.'
+          : `Audio engine state: ${state}. The browser is blocking sound.`,
+      );
+    }, 250);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -104,6 +121,10 @@ export function PreferencesSection() {
             className="w-36 accent-breath-teal"
           />
         </label>
+        <button type="button" onClick={playTestTone} className={`${chip} ${chipOff} self-start`}>
+          Play test tone
+        </button>
+        {audioStatus && <p className="text-xs text-slate-500">{audioStatus}</p>}
       </section>
 
       <section className="flex flex-col gap-3">
