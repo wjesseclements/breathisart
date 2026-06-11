@@ -90,7 +90,7 @@ Goal: the rest of the drawer.
 - [x] Session length: open-ended (default) or timed 3/5/10/custom with soft completion chime
 - [x] Visual options: countdown numbers on/off, theme dark/light/system, reduced-motion override
 - [x] All settings persisted in the Zustand store
-- [ ] Verify: audible cue check, timed 3-min session chimes and ends, theme switch sticks across reload *(Jesse: check on next deploy)*
+- [x] Verify: audible cue check, timed 3-min session chimes and ends, theme switch sticks across reload
 
 ## Slice 9 — Shareable pattern URLs
 Goal: `/?p=in4-h7-out8` loads a pattern with no backend.
@@ -99,7 +99,7 @@ Goal: `/?p=in4-h7-out8` loads a pattern with no backend.
 - [x] On load with `?p=`: validate, run it, offer "save this pattern"
 - [x] "Share" affordance on custom patterns copies the URL
 - [x] Tests: encode/decode round-trips for every built-in and edge cases (decimals, invalid input rejected)
-- [ ] Verify: paste a hand-written URL, confirm the pacer runs it *(Jesse: check on next deploy)*
+- [x] Verify: paste a hand-written URL, confirm the pacer runs it
 
 ## Slice 10 — Research page
 Goal: `/research` ships the PRD §6 content **exactly** — including the null-result coherent-breathing trial and the safety/disclaimer block. No strengthened claims, no uncited benefits, no treatment language.
