@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Background } from '../components/Background';
 import { Pacer } from '../components/Pacer/Pacer';
 import { useBreathSession } from '../components/Pacer/useBreathSession';
@@ -14,10 +14,12 @@ import { CustomPatternsSection } from '../components/SettingsDrawer/CustomPatter
 import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
 import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
+import { SharedPatternBanner } from '../components/SharedPatternBanner';
 import { pillButton } from '../components/ui';
 import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
-import { BUILT_IN_PATTERNS, resolvePattern } from '../engine/patterns';
+import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
+import { decodePhases } from '../engine/shareUrl';
 import { useSettings } from '../store/useSettings';
 
 const HUD_HIDE_DELAY_MS = 4000;
@@ -27,7 +29,47 @@ type DrawerView = null | { kind: 'menu' } | { kind: 'builder'; pattern: BreathPa
 export default function Home() {
   const selectedId = useSettings((s) => s.selectedPatternId);
   const customPatterns = useSettings((s) => s.customPatterns);
-  const pattern = resolvePattern(selectedId, customPatterns) ?? BUILT_IN_PATTERNS[0];
+  const saveCustomPattern = useSettings((s) => s.saveCustomPattern);
+  const selectPattern = useSettings((s) => s.selectPattern);
+
+  // Shared pattern URLs (PRD §7): ?p=in4-h7-out8&n=Name. A valid shared
+  // pattern takes over the pacer until saved or dismissed.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sharedParam = searchParams.get('p');
+  const sharedName = searchParams.get('n');
+  const sharedPattern = useMemo<BreathPattern | null>(() => {
+    if (sharedParam === null) return null;
+    const phases = decodePhases(sharedParam);
+    if (!phases) return null;
+    return {
+      id: '__shared__',
+      name: sharedName?.trim() || 'Shared pattern',
+      tagline: describePhases(phases),
+      phases,
+      builtIn: false,
+    };
+  }, [sharedParam, sharedName]);
+  const sharedInvalid = sharedParam !== null && sharedPattern === null;
+
+  const clearShared = useCallback(() => setSearchParams({}, { replace: true }), [setSearchParams]);
+  const saveShared = useCallback(() => {
+    if (!sharedPattern) return;
+    const saved = { ...sharedPattern, id: `custom-${crypto.randomUUID()}` };
+    saveCustomPattern(saved);
+    selectPattern(saved.id);
+    clearShared();
+  }, [sharedPattern, saveCustomPattern, selectPattern, clearShared]);
+
+  // Picking a different pattern while a shared one is active dismisses it.
+  const prevSelectedRef = useRef(selectedId);
+  useEffect(() => {
+    if (prevSelectedRef.current === selectedId) return;
+    prevSelectedRef.current = selectedId;
+    if (sharedParam !== null) clearShared();
+  }, [selectedId, sharedParam, clearShared]);
+
+  const pattern =
+    sharedPattern ?? resolvePattern(selectedId, customPatterns) ?? BUILT_IN_PATTERNS[0];
   const session = useBreathSession(pattern);
   const { status, elapsedSeconds, cycles, start, pause, stop } = session;
   const idle = status === 'idle';
@@ -153,6 +195,13 @@ export default function Home() {
           idle ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
+        {(sharedPattern !== null || sharedInvalid) && (
+          <SharedPatternBanner
+            pattern={sharedPattern}
+            onSave={saveShared}
+            onDismiss={clearShared}
+          />
+        )}
         <PatternPicker
           enabled={idle && !drawerOpen}
           onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}

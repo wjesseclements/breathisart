@@ -95,11 +95,11 @@ Goal: the rest of the drawer.
 ## Slice 9 — Shareable pattern URLs
 Goal: `/?p=in4-h7-out8` loads a pattern with no backend.
 
-- [ ] Encode/decode for the query format (supports decimals and repeated kinds, e.g. `in3-in1.5-out6`)
-- [ ] On load with `?p=`: validate, run it, offer "save this pattern"
-- [ ] "Share" affordance on custom patterns copies the URL
-- [ ] Tests: encode/decode round-trips for every built-in and edge cases (decimals, invalid input rejected)
-- [ ] Verify: paste a hand-written URL, confirm the pacer runs it
+- [x] Encode/decode for the query format (supports decimals and repeated kinds, e.g. `in3-in1.5-out6`)
+- [x] On load with `?p=`: validate, run it, offer "save this pattern"
+- [x] "Share" affordance on custom patterns copies the URL
+- [x] Tests: encode/decode round-trips for every built-in and edge cases (decimals, invalid input rejected)
+- [ ] Verify: paste a hand-written URL, confirm the pacer runs it *(Jesse: check on next deploy)*
 
 ## Slice 10 — Research page
 Goal: `/research` ships the PRD §6 content **exactly** — including the null-result coherent-breathing trial and the safety/disclaimer block. No strengthened claims, no uncited benefits, no treatment language.
