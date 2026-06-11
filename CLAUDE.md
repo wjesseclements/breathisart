@@ -46,6 +46,11 @@ Run `npm run lint && npm run test && npm run build` before declaring any task co
 - Pattern URL encoding/decoding round-trips.
 - Run tests after every engine change, not just at the end.
 
+## Git workflow
+- Commit after each completed slice or meaningful sub-step, message form: "Slice N: what changed".
+- Never commit with failing lint/tests.
+- Never push unless explicitly asked.
+
 ## Workflow
 - Work in small vertical slices (see PLAN.md if present). One feature per branch/commit set; descriptive commit messages.
 - When a task is ambiguous, ask before building — especially anything touching the pacer's look and feel.
