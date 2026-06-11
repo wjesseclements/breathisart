@@ -75,12 +75,12 @@ Goal: the hero earns its name. Touches only `transform`/`opacity`.
 ## Slice 7 — Custom pattern builder
 Goal: users define, save, edit, and delete their own patterns.
 
-- [ ] Settings drawer shell (low-contrast "···"/hamburger, slide-in via Framer Motion)
-- [ ] Builder: add/remove/reorder phases, kind + seconds (steppers + direct input), name, save
-- [ ] Live mini-preview of the orb running the draft pattern
-- [ ] Validation reuses engine rules from slice 2 (shared, tested code path)
-- [ ] Saved patterns persist (localStorage), appear in picker with edit/delete
-- [ ] Verify: build a 3-phase custom pattern, run it, edit it, delete it, reload between steps
+- [x] Settings drawer shell (low-contrast "···"/hamburger, slide-in via Framer Motion)
+- [x] Builder: add/remove/reorder phases, kind + seconds (steppers + direct input), name, save
+- [x] Live mini-preview of the orb running the draft pattern
+- [x] Validation reuses engine rules from slice 2 (shared, tested code path)
+- [x] Saved patterns persist (localStorage), appear in picker with edit/delete
+- [ ] Verify: build a 3-phase custom pattern, run it, edit it, delete it, reload between steps *(Jesse: check on next deploy)*
 
 ## Slice 8 — Settings: audio, haptics, session length, visual options
 Goal: the rest of the drawer.

@@ -9,18 +9,27 @@ import { PatternPicker } from '../components/PatternPicker/PatternPicker';
 import { SessionHUD } from '../components/SessionHUD/SessionHUD';
 import { SessionSummary } from '../components/SessionHUD/SessionSummary';
 import { formatSummary } from '../components/SessionHUD/sessionFormat';
+import { CustomPatternsSection } from '../components/SettingsDrawer/CustomPatternsSection';
+import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
+import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
 import { pillButton } from '../components/ui';
-import { BUILT_IN_PATTERNS, findPatternById } from '../engine/patterns';
+import type { BreathPattern } from '../engine/patterns';
+import { BUILT_IN_PATTERNS, resolvePattern } from '../engine/patterns';
 import { useSettings } from '../store/useSettings';
 
 const HUD_HIDE_DELAY_MS = 4000;
 
+type DrawerView = null | { kind: 'menu' } | { kind: 'builder'; pattern: BreathPattern | null };
+
 export default function Home() {
   const selectedId = useSettings((s) => s.selectedPatternId);
-  const pattern = findPatternById(selectedId) ?? BUILT_IN_PATTERNS[0];
+  const customPatterns = useSettings((s) => s.customPatterns);
+  const pattern = resolvePattern(selectedId, customPatterns) ?? BUILT_IN_PATTERNS[0];
   const session = useBreathSession(pattern);
   const { status, elapsedSeconds, cycles, start, pause, stop } = session;
   const idle = status === 'idle';
+
+  const [drawer, setDrawer] = useState<DrawerView>(null);
 
   // A new session clears any lingering summary (render-phase adjustment).
   const [summary, setSummary] = useState<string | null>(null);
@@ -46,16 +55,18 @@ export default function Home() {
     stop();
   }, [elapsedSeconds, cycles, stop]);
 
-  // Esc ends the session; on the summary it acts as "Done".
+  // Esc: close the drawer first; otherwise end the session / dismiss summary.
+  const drawerOpen = drawer !== null;
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (!idle) endSession();
+      if (drawerOpen) setDrawer(null);
+      else if (!idle) endSession();
       else setSummary(null);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [idle, endSession]);
+  }, [drawerOpen, idle, endSession]);
 
   // While running, the HUD fades out after a few seconds; tapping
   // anywhere brings it back. Pausing always shows it.
@@ -80,6 +91,18 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 py-10">
       <Background />
+
+      <button
+        type="button"
+        onClick={() => setDrawer({ kind: 'menu' })}
+        aria-label="Open settings"
+        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-slate-600 transition-[opacity,visibility,color] duration-500 hover:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal ${
+          idle ? 'visible opacity-100' : 'invisible opacity-0'
+        }`}
+      >
+        ···
+      </button>
+
       <Pacer pattern={pattern} session={session} />
 
       <div className="flex h-14 items-center justify-center">
@@ -110,7 +133,10 @@ export default function Home() {
           idle ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
-        <PatternPicker enabled={idle} />
+        <PatternPicker
+          enabled={idle && !drawerOpen}
+          onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}
+        />
         <FirstTimeTip />
         <Link
           to="/research"
@@ -119,6 +145,33 @@ export default function Home() {
           The science of slow breathing
         </Link>
       </div>
+
+      <SettingsDrawer
+        open={drawerOpen}
+        onClose={() => setDrawer(null)}
+        title={
+          drawer?.kind === 'builder'
+            ? drawer.pattern
+              ? 'Edit pattern'
+              : 'New pattern'
+            : 'Settings'
+        }
+      >
+        {drawer?.kind === 'menu' && (
+          <CustomPatternsSection
+            onNew={() => setDrawer({ kind: 'builder', pattern: null })}
+            onEdit={(p) => setDrawer({ kind: 'builder', pattern: p })}
+          />
+        )}
+        {drawer?.kind === 'builder' && (
+          <PatternBuilder
+            key={drawer.pattern?.id ?? 'new'}
+            initial={drawer.pattern}
+            onBack={() => setDrawer({ kind: 'menu' })}
+            onDone={() => setDrawer(null)}
+          />
+        )}
+      </SettingsDrawer>
     </main>
   );
 }

@@ -4,7 +4,9 @@ import {
   BUILT_IN_PATTERNS,
   MAX_PHASE_SECONDS,
   MIN_PHASE_SECONDS,
+  describePhases,
   findPatternById,
+  resolvePattern,
   validatePhases,
 } from './patterns';
 
@@ -30,6 +32,20 @@ describe('built-in patterns', () => {
   it('finds patterns by id and returns undefined for unknown ids', () => {
     expect(findPatternById('sigh')?.name).toBe('Physiological Sigh');
     expect(findPatternById('deleted-custom-pattern')).toBeUndefined();
+  });
+
+  it('resolvePattern searches built-ins first, then extras', () => {
+    const custom = { ...BUILT_IN_PATTERNS[0], id: 'custom-1', name: 'Mine', builtIn: false };
+    expect(resolvePattern('custom-1', [custom])?.name).toBe('Mine');
+    expect(resolvePattern('box', [custom])?.builtIn).toBe(true);
+    expect(resolvePattern('nope', [custom])).toBeUndefined();
+  });
+
+  it('describePhases summarizes phases compactly', () => {
+    const box = BUILT_IN_PATTERNS.find((p) => p.id === 'box')!;
+    const sigh = BUILT_IN_PATTERNS.find((p) => p.id === 'sigh')!;
+    expect(describePhases(box.phases)).toBe('in 4 · hold 4 · out 4 · hold 4');
+    expect(describePhases(sigh.phases)).toBe('in 3 · in 1.5 · out 6');
   });
 
   it('coherent breathing uses decimal seconds', () => {

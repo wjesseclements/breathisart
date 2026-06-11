@@ -89,7 +89,8 @@ export function Pacer({ pattern, session }: PacerProps) {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code !== 'Space') return;
       const target = e.target as HTMLElement | null;
-      if (target?.closest('button, a, input, select, textarea, [role="button"]')) return;
+      if (target?.closest('button, a, input, select, textarea, [role="button"], [role="dialog"]'))
+        return;
       e.preventDefault();
       toggle();
     };

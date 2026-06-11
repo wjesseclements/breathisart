@@ -23,6 +23,21 @@ export function findPatternById(id: string): BreathPattern | undefined {
   return BUILT_IN_PATTERNS.find((p) => p.id === id);
 }
 
+/** Looks up a pattern among built-ins plus extras (e.g. saved customs). */
+export function resolvePattern(
+  id: string,
+  extras: readonly BreathPattern[],
+): BreathPattern | undefined {
+  return findPatternById(id) ?? extras.find((p) => p.id === id);
+}
+
+const KIND_SHORT: Record<PhaseKind, string> = { inhale: 'in', hold: 'hold', exhale: 'out' };
+
+/** Compact phase summary, e.g. "in 4 · hold 7 · out 8" — used as the tagline for custom patterns. */
+export function describePhases(phases: readonly Phase[]): string {
+  return phases.map((p) => `${KIND_SHORT[p.kind]} ${p.seconds}`).join(' · ');
+}
+
 export const MIN_PHASE_SECONDS = 0.5;
 export const MAX_PHASE_SECONDS = 60;
 
