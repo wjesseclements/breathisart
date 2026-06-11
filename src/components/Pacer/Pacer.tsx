@@ -2,14 +2,18 @@ import { useCallback, useEffect, useRef } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
 import { breathLevel, phaseWord } from './pacerMath';
 import { PhaseWord } from './PhaseWord';
-import { useBreathSession } from './useBreathSession';
+import type { BreathSession } from './useBreathSession';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
 const MIN_SCALE = 0.62;
 const MAX_SCALE = 1;
 
-export function Pacer({ pattern }: { pattern: BreathPattern }) {
-  const session = useBreathSession(pattern);
+interface PacerProps {
+  pattern: BreathPattern;
+  session: BreathSession;
+}
+
+export function Pacer({ pattern, session }: PacerProps) {
   const reducedMotion = usePrefersReducedMotion();
   const orbRef = useRef<HTMLDivElement>(null);
   const accentRef = useRef<HTMLDivElement>(null);
@@ -92,14 +96,6 @@ export function Pacer({ pattern }: { pattern: BreathPattern }) {
       </button>
 
       <PhaseWord text={session.status === 'idle' ? pattern.name : phaseWord(session.phase)} />
-
-      <button
-        type="button"
-        onClick={session.toggle}
-        className="rounded-full border border-night-mist px-8 py-2 text-sm tracking-wide text-slate-300 transition-colors hover:border-breath-teal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-breath-teal"
-      >
-        {controlLabel}
-      </button>
 
       <div aria-live="polite" className="sr-only">
         {announcement}

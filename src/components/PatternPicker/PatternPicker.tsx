@@ -5,12 +5,14 @@ import { useSettings } from '../../store/useSettings';
 const chipBase =
   'shrink-0 rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-breath-teal';
 
-export function PatternPicker() {
+export function PatternPicker({ enabled = true }: { enabled?: boolean }) {
   const selectedId = useSettings((s) => s.selectedPatternId);
   const selectPattern = useSettings((s) => s.selectPattern);
 
-  // Left/right arrows cycle patterns from anywhere on the page.
+  // Left/right arrows cycle patterns from anywhere on the page —
+  // but not mid-session, where a switch would reset the engine.
   useEffect(() => {
+    if (!enabled) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       const target = e.target as HTMLElement | null;
@@ -23,7 +25,7 @@ export function PatternPicker() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedId, selectPattern]);
+  }, [enabled, selectedId, selectPattern]);
 
   return (
     <div

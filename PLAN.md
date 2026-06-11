@@ -53,13 +53,13 @@ Goal: choose any built-in pattern; choice survives reload.
 ## Slice 5 — Session lifecycle (HUD, wake lock, summary)
 Goal: a complete session start-to-finish.
 
-- [ ] SessionHUD: elapsed time, cycle count, pause, end (chips fade during session; tap reveals hidden controls)
-- [ ] End-session summary ("6 min · 32 cycles") with "Again" / "Done"
-- [ ] Keyboard: esc = end session
-- [ ] Screen Wake Lock during active session, with feature detection
-- [ ] `visibilitychange` → auto-pause (v1 behavior per PRD §3)
-- [ ] Tests: engine exposes elapsed/cycles correctly through a full simulated session
-- [ ] Verify: run a 1-min session end to end; background the tab and confirm auto-pause
+- [x] SessionHUD: elapsed time, cycle count, pause, end (chips fade during session; tap reveals hidden controls)
+- [x] End-session summary ("6 min · 32 cycles") with "Again" / "Done"
+- [x] Keyboard: esc = end session
+- [x] Screen Wake Lock during active session, with feature detection
+- [x] `visibilitychange` → auto-pause (v1 behavior per PRD §3)
+- [x] Tests: engine exposes elapsed/cycles correctly through a full simulated session
+- [ ] Verify: run a 1-min session end to end; background the tab and confirm auto-pause *(Jesse: check on next deploy; wake lock needs a phone)*
 
 ## Slice 6 — Pacer visual polish
 Goal: the hero earns its name. Touches only `transform`/`opacity`.

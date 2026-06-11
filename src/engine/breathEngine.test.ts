@@ -142,6 +142,21 @@ describe('long-session accuracy', () => {
   });
 });
 
+describe('full session accounting', () => {
+  it('reports elapsed and cycles through start → pause → resume → end', () => {
+    const engine = createBreathEngine(box);
+    engine.start(0);
+    engine.tick(30_000);
+    engine.pause(45_000); // 45s of active breathing
+    engine.tick(60_000); // ignored while paused
+    engine.resume(100_000);
+    engine.tick(115_000); // +15s -> 60s total
+    const end = engine.stop();
+    expect(end.elapsed).toBeCloseTo(60, 10);
+    expect(end.cycles).toBe(3); // 60s / 16s cycle = 3 complete + 0.75
+  });
+});
+
 describe('stop and restart', () => {
   it('stop returns to idle but keeps session totals for the summary', () => {
     const engine = createBreathEngine(box);

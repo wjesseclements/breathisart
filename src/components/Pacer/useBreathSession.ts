@@ -10,6 +10,8 @@ interface DiscreteState {
   phaseIndex: number;
   phase: Phase;
   cycles: number;
+  /** Whole seconds of active breathing — updates once per second, not per frame. */
+  elapsedSeconds: number;
 }
 
 export interface BreathSession extends DiscreteState {
@@ -28,13 +30,15 @@ const toDiscrete = (snap: EngineSnapshot): DiscreteState => ({
   phaseIndex: snap.phaseIndex,
   phase: snap.phase,
   cycles: snap.cycles,
+  elapsedSeconds: Math.floor(snap.elapsed),
 });
 
 const sameDiscrete = (prev: DiscreteState, snap: EngineSnapshot): boolean =>
   prev.status === snap.status &&
   prev.phaseIndex === snap.phaseIndex &&
   prev.phase === snap.phase &&
-  prev.cycles === snap.cycles;
+  prev.cycles === snap.cycles &&
+  prev.elapsedSeconds === Math.floor(snap.elapsed);
 
 /**
  * Bridges the breath engine to React. Owns the app's single rAF loop;
