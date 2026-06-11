@@ -104,12 +104,12 @@ Goal: `/?p=in4-h7-out8` loads a pattern with no backend.
 ## Slice 10 — Research page
 Goal: `/research` ships the PRD §6 content **exactly** — including the null-result coherent-breathing trial and the safety/disclaimer block. No strengthened claims, no uncited benefits, no treatment language.
 
-- [ ] Headline evidence cards (Fincham 2023 meta-analysis, Balban 2023 RCT, Fincham 2023 placebo-controlled null result) — claim → what the study did → what it found → citation link
-- [ ] Mechanism section ("Why slowing the breath does anything at all")
-- [ ] Per-technique notes (box, 4-7-8, coherent, sigh) with PRD's stated caveats
-- [ ] Safety & disclaimer block incl. 988 link
-- [ ] Readable layout (~65ch), floating back-to-breathing button
-- [ ] Verify: side-by-side diff of page claims against PRD §6
+- [x] Headline evidence cards (Fincham 2023 meta-analysis, Balban 2023 RCT, Fincham 2023 placebo-controlled null result) — claim → what the study did → what it found → citation link
+- [x] Mechanism section ("Why slowing the breath does anything at all")
+- [x] Per-technique notes (box, 4-7-8, coherent, sigh) with PRD's stated caveats
+- [x] Safety & disclaimer block incl. 988 link
+- [x] Readable layout (~65ch), floating back-to-breathing button
+- [x] Verify: side-by-side diff of page claims against PRD §6 (claims, effect sizes, participant counts, caveats, URLs all match; nothing strengthened)
 
 ## Slice 11 — Accessibility audit
 Goal: audit only — keyboard controls, ARIA, and `aria-live` were built in slices 3–5; this slice verifies and closes gaps, adding nothing new by design.
