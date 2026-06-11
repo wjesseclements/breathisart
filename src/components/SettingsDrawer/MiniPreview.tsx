@@ -16,7 +16,7 @@ export function MiniPreview({ phases }: { phases: Phase[] }) {
 
   if (!pattern) {
     return (
-      <div className="flex h-16 items-center text-xs text-slate-500">
+      <div className="flex h-16 items-center text-xs text-slate-500 dark:text-slate-400">
         Preview appears when the pattern is valid.
       </div>
     );

@@ -111,7 +111,7 @@ export function Pacer({ pattern, session }: PacerProps) {
         type="button"
         onClick={session.toggle}
         aria-label={orbLabel}
-        className="relative h-56 w-56 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-breath-teal sm:h-64 sm:w-64"
+        className="relative h-56 w-56 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal sm:h-64 sm:w-64"
       >
         {/* Idle ambient float wraps everything; CSS-animated, idle only. */}
         <div

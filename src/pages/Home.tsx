@@ -152,17 +152,22 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 py-10">
+      <h1 className="sr-only">Stillpoint — a breath pacer</h1>
       <Background />
 
       <button
         type="button"
         onClick={() => setDrawer({ kind: 'menu' })}
         aria-label="Open settings"
-        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-slate-600 transition-[opacity,visibility,color] duration-500 hover:text-slate-800 dark:hover:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal ${
+        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-slate-500 transition-[opacity,visibility,color] duration-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal ${
           idle ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
-        ···
+        <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+          <circle cx="5" cy="12" r="1.8" />
+          <circle cx="12" cy="12" r="1.8" />
+          <circle cx="19" cy="12" r="1.8" />
+        </svg>
       </button>
 
       <Pacer pattern={pattern} session={session} />
@@ -209,7 +214,7 @@ export default function Home() {
         <FirstTimeTip />
         <Link
           to="/research"
-          className="text-sm text-slate-500 underline-offset-4 transition-colors hover:text-breath-teal hover:underline"
+          className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal text-sm text-slate-600 underline-offset-4 transition-colors hover:text-teal-700 dark:text-slate-400 dark:hover:text-breath-teal hover:underline"
         >
           The science of slow breathing
         </Link>

@@ -3,16 +3,16 @@ import { getAudioEngineState, playCue, unlockAudio } from '../../engine/audio';
 import { useSettings } from '../../store/useSettings';
 
 const chip =
-  'rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-breath-teal';
+  'rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal';
 const chipOn =
-  'border-breath-teal bg-slate-200 dark:bg-night-mist text-slate-700 dark:text-whisper';
+  'border-teal-600 dark:border-breath-teal bg-slate-200 dark:bg-night-mist text-slate-700 dark:text-whisper';
 const chipOff =
   'border-slate-300 dark:border-night-mist text-slate-600 dark:text-slate-400 hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-200';
 
-const heading = 'text-sm uppercase tracking-widest text-slate-500';
+const heading = 'text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400';
 const toggleLabel =
   'flex items-center justify-between gap-3 text-sm text-slate-700 dark:text-slate-300';
-const checkbox = 'h-4 w-4 accent-breath-teal';
+const checkbox = 'h-4 w-4 accent-teal-600';
 
 function OptionChips<T extends string | number | null>({
   label,
@@ -90,7 +90,7 @@ export function PreferencesSection() {
               onChange={(e) =>
                 s.setSessionLength(Math.min(180, Math.max(1, Number(e.target.value) || 1)))
               }
-              className="w-20 rounded-md border border-slate-300 dark:border-night-mist bg-white dark:bg-night px-2 py-1 text-center text-sm tabular-nums text-slate-800 dark:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal"
+              className="w-20 rounded-md border border-slate-400 dark:border-night-mist bg-white dark:bg-night px-2 py-1 text-center text-sm tabular-nums text-slate-800 dark:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal"
             />
           </label>
         )}
@@ -118,13 +118,13 @@ export function PreferencesSection() {
             onChange={(e) => s.setVolume(Number(e.target.value))}
             onPointerUp={() => playCue('inhale', useSettings.getState().volume)}
             aria-label="Cue volume"
-            className="w-36 accent-breath-teal"
+            className="w-36 accent-teal-600"
           />
         </label>
         <button type="button" onClick={playTestTone} className={`${chip} ${chipOff} self-start`}>
           Play test tone
         </button>
-        {audioStatus && <p className="text-xs text-slate-500">{audioStatus}</p>}
+        {audioStatus && <p className="text-xs text-slate-500 dark:text-slate-400">{audioStatus}</p>}
       </section>
 
       <section className="flex flex-col gap-3">

@@ -1,7 +1,7 @@
 import type { BreathPattern } from '../engine/patterns';
 
 const smallButton =
-  'shrink-0 rounded-full border border-slate-300 dark:border-night-mist px-4 py-1 text-xs text-slate-600 dark:text-slate-400 transition-colors hover:border-breath-teal hover:text-slate-900 dark:hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal';
+  'shrink-0 rounded-full border border-slate-300 dark:border-night-mist px-4 py-1 text-xs text-slate-600 dark:text-slate-400 transition-colors hover:border-teal-600 dark:hover:border-breath-teal hover:text-slate-900 dark:hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal';
 
 interface SharedPatternBannerProps {
   /** Decoded shared pattern, or null when the link was invalid. */
@@ -23,7 +23,7 @@ export function SharedPatternBanner({ pattern, onSave, onDismiss }: SharedPatter
             <p className="truncate">
               Shared pattern: <span className="font-medium">{pattern.name}</span>
             </p>
-            <p className="truncate text-xs text-slate-500">{pattern.tagline}</p>
+            <p className="truncate text-xs text-slate-500 dark:text-slate-400">{pattern.tagline}</p>
           </div>
           <button type="button" onClick={onSave} className={smallButton}>
             Save this pattern

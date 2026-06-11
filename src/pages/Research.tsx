@@ -20,18 +20,18 @@ function StudyCardView({ card }: { card: StudyCard }) {
     <article className="flex flex-col gap-3 rounded-2xl bg-white p-6 dark:bg-night-soft">
       <h3 className="text-base font-medium text-slate-800 dark:text-slate-200">{card.claim}</h3>
       <p className={muted}>
-        <span className="font-medium text-slate-500">What they did — </span>
+        <span className="font-medium text-slate-500 dark:text-slate-400">What they did — </span>
         {card.whatTheyDid}
       </p>
       <p className={muted}>
-        <span className="font-medium text-slate-500">What they found — </span>
+        <span className="font-medium text-slate-500 dark:text-slate-400">What they found — </span>
         {card.whatTheyFound}
       </p>
       <a
         href={card.citation.url}
         target="_blank"
         rel="noreferrer"
-        className="text-sm text-breath-teal underline-offset-4 hover:underline"
+        className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal text-sm text-teal-700 dark:text-breath-teal underline-offset-4 hover:underline"
       >
         {card.citation.label}
       </a>
@@ -111,7 +111,7 @@ export default function Research() {
               href={CRISIS_LINE.url}
               target="_blank"
               rel="noreferrer"
-              className="text-breath-teal underline-offset-4 hover:underline"
+              className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal text-teal-700 dark:text-breath-teal underline underline-offset-4"
             >
               {CRISIS_LINE.label}
             </a>

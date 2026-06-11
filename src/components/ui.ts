@@ -1,3 +1,3 @@
 /** Shared pill-button styling for session controls. */
 export const pillButton =
-  'rounded-full border border-slate-300 dark:border-night-mist px-6 py-2 text-sm tracking-wide text-slate-700 dark:text-slate-300 transition-colors hover:border-breath-teal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-breath-teal';
+  'rounded-full border border-slate-300 dark:border-night-mist px-6 py-2 text-sm tracking-wide text-slate-700 dark:text-slate-300 transition-colors hover:border-teal-600 dark:hover:border-breath-teal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal';

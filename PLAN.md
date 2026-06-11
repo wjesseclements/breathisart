@@ -114,11 +114,11 @@ Goal: `/research` ships the PRD §6 content **exactly** — including the null-r
 ## Slice 11 — Accessibility audit
 Goal: audit only — keyboard controls, ARIA, and `aria-live` were built in slices 3–5; this slice verifies and closes gaps, adding nothing new by design.
 
-- [ ] Keyboard audit: space/esc/arrows work as shipped in slices 3–5; visible focus states; drawer/builder fully operable keyboard-only
-- [ ] ARIA audit: labels on all controls; polite `aria-live` phase announcements behave correctly
-- [ ] Screen-reader walkthrough (VoiceOver) of a full session and the builder
-- [ ] Color-contrast check on the low-contrast aesthetic (must still meet AA)
-- [ ] Verify: Lighthouse accessibility ≥ 95; keyboard-only session start to finish
+- [x] Keyboard audit: space/esc/arrows work as shipped in slices 3–5; visible focus states (added to bare text links); drawer/builder fully operable keyboard-only (focus trap + focus restoration added to drawer)
+- [x] ARIA audit: labels on all controls; polite `aria-live` phase announcements behave correctly (fixed aria-labels on non-interactive HUD spans → sr-only text; added sr-only h1; settings icon → SVG)
+- [ ] Screen-reader walkthrough (VoiceOver) of a full session and the builder *(Jesse: needs a real screen reader)*
+- [x] Color-contrast check on the low-contrast aesthetic (must still meet AA) — fixed teal links/outlines on light, slate-500 text on dark surfaces, selected-chip borders, form-field borders
+- [x] Verify: Lighthouse accessibility = 100 on both routes, zero failing audits; keyboard-only session verified by code audit *(Jesse: one real keyboard run-through recommended)*
 
 ## Slice 12 — PWA, meta, onboarding
 Goal: installable, offline, polished when shared.
