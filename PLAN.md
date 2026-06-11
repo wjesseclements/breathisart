@@ -64,13 +64,13 @@ Goal: a complete session start-to-finish.
 ## Slice 6 — Pacer visual polish
 Goal: the hero earns its name. Touches only `transform`/`opacity`.
 
-- [ ] Per-phase progress ring (sweeps once per phase)
-- [ ] Layered halos: 2–3 blurred layers expanding at slightly different rates
-- [ ] Idle ambient float before session start
-- [ ] Optional countdown number (toggle wired in slice 8; default per PRD)
-- [ ] Subtle background gradient/grain; per-pattern accent hue
-- [ ] Reduced-motion variants for every new element (ring + text carry the pacing)
-- [ ] Verify: DevTools performance trace shows no layout thrash during phase transitions; reduced-motion check
+- [x] Per-phase progress ring (sweeps once per phase)
+- [x] Layered halos: 2–3 blurred layers expanding at slightly different rates
+- [x] Idle ambient float before session start
+- [x] Optional countdown number (toggle wired in slice 8; default on for now so the look can be judged)
+- [x] Subtle background gradient/grain; per-pattern accent hue
+- [x] Reduced-motion variants for every new element (ring + text carry the pacing)
+- [ ] Verify: DevTools performance trace shows no layout thrash during phase transitions; reduced-motion check *(Jesse: needs DevTools + eyes)*
 
 ## Slice 7 — Custom pattern builder
 Goal: users define, save, edit, and delete their own patterns.

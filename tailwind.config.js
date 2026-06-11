@@ -24,10 +24,20 @@ export default {
       keyframes: {
         'word-in': { from: { opacity: '0' }, to: { opacity: '1' } },
         'word-out': { from: { opacity: '1' }, to: { opacity: '0' } },
+        ambient: {
+          '0%, 100%': { transform: 'translate3d(0, 0, 0) scale(1)' },
+          '50%': { transform: 'translate3d(0, -6px, 0) scale(1.02)' },
+        },
+        'pulse-slow': {
+          '0%, 100%': { opacity: '0.04' },
+          '50%': { opacity: '0.09' },
+        },
       },
       animation: {
         'word-in': 'word-in 600ms ease-out forwards',
         'word-out': 'word-out 600ms ease-out forwards',
+        ambient: 'ambient 9s ease-in-out infinite',
+        'pulse-slow': 'pulse-slow 18s ease-in-out infinite',
       },
     },
   },

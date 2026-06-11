@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Background } from '../components/Background';
 import { Pacer } from '../components/Pacer/Pacer';
 import { useBreathSession } from '../components/Pacer/useBreathSession';
 import { useWakeLock } from '../components/Pacer/useWakeLock';
@@ -77,7 +78,8 @@ export default function Home() {
   }, [status]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-night px-6 py-10">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 py-10">
+      <Background />
       <Pacer pattern={pattern} session={session} />
 
       <div className="flex h-14 items-center justify-center">
