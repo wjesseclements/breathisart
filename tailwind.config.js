@@ -21,6 +21,14 @@ export default {
       fontFamily: {
         display: ['system-ui', 'sans-serif'],
       },
+      keyframes: {
+        'word-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        'word-out': { from: { opacity: '1' }, to: { opacity: '0' } },
+      },
+      animation: {
+        'word-in': 'word-in 600ms ease-out forwards',
+        'word-out': 'word-out 600ms ease-out forwards',
+      },
     },
   },
   plugins: [],

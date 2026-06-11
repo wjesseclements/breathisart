@@ -30,14 +30,14 @@ Goal: the one clock, fully unit-tested before any pixel moves. No React imports 
 ## Slice 3 — Minimal pacer (engine on screen)
 Goal: you can actually breathe along. Ugly is fine; correct is mandatory.
 
-- [ ] rAF subscription hook bridging engine → React (components never own timers)
-- [ ] Orb scales with sinusoidal easing `0.5 − 0.5·cos(πt)` on inhale/exhale, steady on hold — `transform`/`opacity` only
-- [ ] Phase word ("Breathe in" / "Hold" / "Breathe out", honoring phase `label` overrides) cross-fading
-- [ ] Polite `aria-live` region announces phase changes
-- [ ] Start by tapping the orb or a "Begin" button; pause/resume works
-- [ ] Keyboard: space = start/pause
-- [ ] `prefers-reduced-motion`: scaling replaced by opacity/color crossfade
-- [ ] Verify: run dev, breathe a few box-breathing cycles; toggle OS reduced-motion and confirm fallback
+- [x] rAF subscription hook bridging engine → React (components never own timers)
+- [x] Orb scales with sinusoidal easing `0.5 − 0.5·cos(πt)` on inhale/exhale, steady on hold — `transform`/`opacity` only
+- [x] Phase word ("Breathe in" / "Hold" / "Breathe out", honoring phase `label` overrides) cross-fading
+- [x] Polite `aria-live` region announces phase changes
+- [x] Start by tapping the orb or a "Begin" button; pause/resume works
+- [x] Keyboard: space = start/pause
+- [x] `prefers-reduced-motion`: scaling replaced by opacity/color crossfade
+- [ ] Verify: run dev, breathe a few box-breathing cycles; toggle OS reduced-motion and confirm fallback *(needs Jesse's eyes — feel of the pacer is the product)*
 
 ## Slice 4 — Pattern picker + persisted state
 Goal: choose any built-in pattern; choice survives reload.
