@@ -191,7 +191,7 @@ export default function Home() {
       </div>
 
       <div
-        className={`flex flex-col items-center gap-6 transition-[opacity,visibility] duration-500 ${
+        className={`flex w-full flex-col items-center gap-6 transition-[opacity,visibility] duration-500 ${
           idle ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >

@@ -44,7 +44,7 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
     <div
       role="group"
       aria-label="Breathing pattern"
-      className="flex max-w-full items-center gap-2 overflow-x-auto px-6 py-2"
+      className="flex w-full items-center gap-2 overflow-x-auto px-6 py-2 sm:justify-center"
     >
       {allPatterns.map((pattern) => {
         const selected = pattern.id === selectedId;

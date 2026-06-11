@@ -36,6 +36,16 @@ function tone(ac: AudioContext, { from, to, start, duration, peak }: ToneOpts): 
 }
 
 /**
+ * Creates/resumes the AudioContext. Must be called from inside a user
+ * gesture (click/keydown) — browsers refuse audio started elsewhere.
+ * Wired to the app's first pointerdown/keydown; no-op afterwards.
+ */
+export function unlockAudio(): void {
+  const ac = getContext();
+  if (ac && ac.state === 'suspended') void ac.resume();
+}
+
+/**
  * Synthesized cues (PRD §5): rising tone on inhale, falling on exhale,
  * soft tick on hold, two-note chime for timed-session completion.
  * No audio files. volume ∈ [0,1]; 0 is silent.
@@ -44,22 +54,32 @@ export function playCue(kind: CueKind, volume: number): void {
   if (volume <= 0) return;
   const ac = getContext();
   if (!ac) return;
-  if (ac.state === 'suspended') void ac.resume();
-  const now = ac.currentTime;
-  const peak = 0.25 * Math.min(1, volume);
-  switch (kind) {
-    case 'inhale':
-      tone(ac, { from: 240, to: 420, start: now, duration: 0.5, peak });
-      break;
-    case 'exhale':
-      tone(ac, { from: 420, to: 220, start: now, duration: 0.7, peak });
-      break;
-    case 'hold':
-      tone(ac, { from: 320, to: 320, start: now, duration: 0.12, peak: peak * 0.7 });
-      break;
-    case 'chime':
-      tone(ac, { from: 523.25, to: 523.25, start: now, duration: 1.1, peak: peak * 0.9 });
-      tone(ac, { from: 659.25, to: 659.25, start: now + 0.18, duration: 1.3, peak: peak * 0.7 });
-      break;
+
+  const schedule = () => {
+    const now = ac.currentTime;
+    const peak = 0.25 * Math.min(1, volume);
+    switch (kind) {
+      case 'inhale':
+        tone(ac, { from: 240, to: 420, start: now, duration: 0.5, peak });
+        break;
+      case 'exhale':
+        tone(ac, { from: 420, to: 220, start: now, duration: 0.7, peak });
+        break;
+      case 'hold':
+        tone(ac, { from: 320, to: 320, start: now, duration: 0.12, peak: peak * 0.7 });
+        break;
+      case 'chime':
+        tone(ac, { from: 523.25, to: 523.25, start: now, duration: 1.1, peak: peak * 0.9 });
+        tone(ac, { from: 659.25, to: 659.25, start: now + 0.18, duration: 1.3, peak: peak * 0.7 });
+        break;
+    }
+  };
+
+  // Scheduling against a suspended context's frozen clock produces
+  // silence — resume first, then schedule against the live clock.
+  if (ac.state === 'suspended') {
+    ac.resume().then(schedule, () => {});
+  } else {
+    schedule();
   }
 }
