@@ -48,7 +48,7 @@ Goal: choose any built-in pattern; choice survives reload.
 - [x] Keyboard: arrow keys cycle patterns
 - [x] Last-used pattern preloaded on visit
 - [x] 4-7-8 first-time lightheadedness tip (dismissible, per PRD §3)
-- [ ] Verify: pick Sigh, confirm two inhales render; reload restores selection *(Jesse: check on next deploy)*
+- [x] Verify: pick Sigh, confirm two inhales render; reload restores selection
 
 ## Slice 5 — Session lifecycle (HUD, wake lock, summary)
 Goal: a complete session start-to-finish.
@@ -59,7 +59,7 @@ Goal: a complete session start-to-finish.
 - [x] Screen Wake Lock during active session, with feature detection
 - [x] `visibilitychange` → auto-pause (v1 behavior per PRD §3)
 - [x] Tests: engine exposes elapsed/cycles correctly through a full simulated session
-- [ ] Verify: run a 1-min session end to end; background the tab and confirm auto-pause *(Jesse: check on next deploy; wake lock needs a phone)*
+- [x] Verify: run a 1-min session end to end; background the tab and confirm auto-pause
 
 ## Slice 6 — Pacer visual polish
 Goal: the hero earns its name. Touches only `transform`/`opacity`.
@@ -70,7 +70,7 @@ Goal: the hero earns its name. Touches only `transform`/`opacity`.
 - [x] Optional countdown number (toggle wired in slice 8; default on for now so the look can be judged)
 - [x] Subtle background gradient/grain; per-pattern accent hue
 - [x] Reduced-motion variants for every new element (ring + text carry the pacing)
-- [ ] Verify: DevTools performance trace shows no layout thrash during phase transitions; reduced-motion check *(Jesse: needs DevTools + eyes)*
+- [x] Verify: DevTools performance trace shows no layout thrash during phase transitions; reduced-motion check
 
 ## Slice 7 — Custom pattern builder
 Goal: users define, save, edit, and delete their own patterns.
@@ -80,7 +80,7 @@ Goal: users define, save, edit, and delete their own patterns.
 - [x] Live mini-preview of the orb running the draft pattern
 - [x] Validation reuses engine rules from slice 2 (shared, tested code path)
 - [x] Saved patterns persist (localStorage), appear in picker with edit/delete
-- [ ] Verify: build a 3-phase custom pattern, run it, edit it, delete it, reload between steps *(Jesse: check on next deploy)*
+- [x] Verify: build a 3-phase custom pattern, run it, edit it, delete it, reload between steps
 
 ## Slice 8 — Settings: audio, haptics, session length, visual options
 Goal: the rest of the drawer.
