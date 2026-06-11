@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Background } from '../components/Background';
 import { Pacer } from '../components/Pacer/Pacer';
 import { useBreathSession } from '../components/Pacer/useBreathSession';
+import { usePhaseCues } from '../components/Pacer/usePhaseCues';
 import { useWakeLock } from '../components/Pacer/useWakeLock';
 import { FirstTimeTip } from '../components/PatternPicker/FirstTimeTip';
 import { PatternPicker } from '../components/PatternPicker/PatternPicker';
@@ -11,8 +12,10 @@ import { SessionSummary } from '../components/SessionHUD/SessionSummary';
 import { formatSummary } from '../components/SessionHUD/sessionFormat';
 import { CustomPatternsSection } from '../components/SettingsDrawer/CustomPatternsSection';
 import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
+import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
 import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
 import { pillButton } from '../components/ui';
+import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import { BUILT_IN_PATTERNS, resolvePattern } from '../engine/patterns';
 import { useSettings } from '../store/useSettings';
@@ -40,6 +43,7 @@ export default function Home() {
   }
 
   useWakeLock(status === 'running');
+  usePhaseCues(session);
 
   // v1 behavior (PRD §3): backgrounding the tab auto-pauses the session.
   useEffect(() => {
@@ -54,6 +58,22 @@ export default function Home() {
     setSummary(formatSummary(elapsedSeconds, cycles));
     stop();
   }, [elapsedSeconds, cycles, stop]);
+
+  // Timed sessions (PRD §5): soft chime, then end with the summary.
+  // Checked in the frame pipeline so it fires the moment the limit is crossed.
+  const sessionLengthMin = useSettings((s) => s.sessionLengthMin);
+  const volume = useSettings((s) => s.volume);
+  const { onFrame } = session;
+  useEffect(() => {
+    if (sessionLengthMin === null) return;
+    const limitSeconds = sessionLengthMin * 60;
+    return onFrame((snap) => {
+      if (snap.status === 'running' && snap.elapsed >= limitSeconds) {
+        playCue('chime', volume);
+        endSession();
+      }
+    });
+  }, [onFrame, sessionLengthMin, volume, endSession]);
 
   // Esc: close the drawer first; otherwise end the session / dismiss summary.
   const drawerOpen = drawer !== null;
@@ -96,7 +116,7 @@ export default function Home() {
         type="button"
         onClick={() => setDrawer({ kind: 'menu' })}
         aria-label="Open settings"
-        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-slate-600 transition-[opacity,visibility,color] duration-500 hover:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal ${
+        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-slate-600 transition-[opacity,visibility,color] duration-500 hover:text-slate-800 dark:hover:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal ${
           idle ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
@@ -158,10 +178,13 @@ export default function Home() {
         }
       >
         {drawer?.kind === 'menu' && (
-          <CustomPatternsSection
-            onNew={() => setDrawer({ kind: 'builder', pattern: null })}
-            onEdit={(p) => setDrawer({ kind: 'builder', pattern: p })}
-          />
+          <div className="flex flex-col gap-8">
+            <PreferencesSection />
+            <CustomPatternsSection
+              onNew={() => setDrawer({ kind: 'builder', pattern: null })}
+              onEdit={(p) => setDrawer({ kind: 'builder', pattern: p })}
+            />
+          </div>
         )}
         {drawer?.kind === 'builder' && (
           <PatternBuilder

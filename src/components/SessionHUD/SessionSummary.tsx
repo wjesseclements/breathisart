@@ -10,7 +10,7 @@ interface SessionSummaryProps {
 export function SessionSummary({ text, onAgain, onDone }: SessionSummaryProps) {
   return (
     <div role="status" className="flex items-center gap-5">
-      <span className="text-sm text-slate-300">{text}</span>
+      <span className="text-sm text-slate-700 dark:text-slate-300">{text}</span>
       <button type="button" onClick={onAgain} className={pillButton}>
         Again
       </button>

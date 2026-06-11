@@ -85,12 +85,12 @@ Goal: users define, save, edit, and delete their own patterns.
 ## Slice 8 — Settings: audio, haptics, session length, visual options
 Goal: the rest of the drawer.
 
-- [ ] WebAudio cue synthesis in `engine/audio.ts` (rising tone on inhale, falling on exhale, soft tick on hold) — off by default, volume slider, no audio files
-- [ ] Haptics: `navigator.vibrate` pulse at phase changes (feature-detected)
-- [ ] Session length: open-ended (default) or timed 3/5/10/custom with soft completion chime
-- [ ] Visual options: countdown numbers on/off, theme dark/light/system, reduced-motion override
-- [ ] All settings persisted in the Zustand store
-- [ ] Verify: audible cue check, timed 3-min session chimes and ends, theme switch sticks across reload
+- [x] WebAudio cue synthesis in `engine/audio.ts` (rising tone on inhale, falling on exhale, soft tick on hold) — off by default, volume slider, no audio files
+- [x] Haptics: `navigator.vibrate` pulse at phase changes (feature-detected)
+- [x] Session length: open-ended (default) or timed 3/5/10/custom with soft completion chime
+- [x] Visual options: countdown numbers on/off, theme dark/light/system, reduced-motion override
+- [x] All settings persisted in the Zustand store
+- [ ] Verify: audible cue check, timed 3-min session chimes and ends, theme switch sticks across reload *(Jesse: check on next deploy)*
 
 ## Slice 9 — Shareable pattern URLs
 Goal: `/?p=in4-h7-out8` loads a pattern with no backend.

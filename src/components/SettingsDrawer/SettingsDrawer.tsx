@@ -1,5 +1,6 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import type { ReactNode } from 'react';
+import { usePrefersReducedMotion } from '../Pacer/usePrefersReducedMotion';
 
 interface SettingsDrawerProps {
   open: boolean;
@@ -10,8 +11,10 @@ interface SettingsDrawerProps {
 
 /** Slide-in settings panel. Framer Motion is UI chrome only — never breath timing. */
 export function SettingsDrawer({ open, title, onClose, children }: SettingsDrawerProps) {
+  // Honors the in-app motion override as well as the OS setting.
+  const reducedMotion = usePrefersReducedMotion();
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
       <AnimatePresence>
         {open && (
           <>
@@ -26,20 +29,22 @@ export function SettingsDrawer({ open, title, onClose, children }: SettingsDrawe
               role="dialog"
               aria-modal="true"
               aria-label={title}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-night-soft p-6"
+              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-white dark:bg-night-soft p-6"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="font-display text-lg font-light text-whisper">{title}</h2>
+                <h2 className="font-display text-lg font-light text-slate-700 dark:text-whisper">
+                  {title}
+                </h2>
                 <button
                   type="button"
                   autoFocus
                   onClick={onClose}
                   aria-label="Close settings"
-                  className="rounded-full px-3 py-1 text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal"
+                  className="rounded-full px-3 py-1 text-slate-600 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal"
                 >
                   ✕
                 </button>

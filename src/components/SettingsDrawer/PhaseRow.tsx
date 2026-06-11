@@ -2,9 +2,9 @@ import type { Phase, PhaseKind } from '../../engine/patterns';
 import { MAX_PHASE_SECONDS, MIN_PHASE_SECONDS } from '../../engine/patterns';
 
 const field =
-  'rounded-md border border-night-mist bg-night px-2 py-1 text-sm text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal';
+  'rounded-md border border-slate-300 dark:border-night-mist bg-white dark:bg-night px-2 py-1 text-sm text-slate-800 dark:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal';
 const iconButton =
-  'rounded-md border border-night-mist px-2 py-1 text-sm text-slate-400 transition-colors hover:border-breath-teal hover:text-slate-200 disabled:opacity-30 disabled:hover:border-night-mist focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal';
+  'rounded-md border border-slate-300 dark:border-night-mist px-2 py-1 text-sm text-slate-600 dark:text-slate-400 transition-colors hover:border-breath-teal hover:text-slate-900 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:border-slate-300 dark:disabled:hover:border-night-mist focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal';
 
 interface PhaseRowProps {
   phase: Phase;

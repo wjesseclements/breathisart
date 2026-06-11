@@ -64,19 +64,19 @@ export function PatternBuilder({ initial, onBack, onDone }: PatternBuilderProps)
       <button
         type="button"
         onClick={onBack}
-        className="self-start text-sm text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal"
+        className="self-start text-sm text-slate-600 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal"
       >
         ‹ All settings
       </button>
 
-      <label className="flex flex-col gap-1 text-sm text-slate-300">
+      <label className="flex flex-col gap-1 text-sm text-slate-700 dark:text-slate-300">
         Name
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Evening wind-down"
-          className="rounded-md border border-night-mist bg-night px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal"
+          className="rounded-md border border-slate-300 dark:border-night-mist bg-white dark:bg-night px-3 py-2 text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-breath-teal"
         />
       </label>
 

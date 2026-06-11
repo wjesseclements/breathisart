@@ -16,10 +16,16 @@ export function SessionHUD({ session, visible, onEnd }: SessionHUDProps) {
         visible ? 'visible opacity-100' : 'invisible opacity-0'
       }`}
     >
-      <span className="text-sm tabular-nums text-slate-400" aria-label="Elapsed time">
+      <span
+        className="text-sm tabular-nums text-slate-600 dark:text-slate-400"
+        aria-label="Elapsed time"
+      >
         {formatClock(session.elapsedSeconds)}
       </span>
-      <span className="text-sm tabular-nums text-slate-400" aria-label="Completed cycles">
+      <span
+        className="text-sm tabular-nums text-slate-600 dark:text-slate-400"
+        aria-label="Completed cycles"
+      >
         {session.cycles} {session.cycles === 1 ? 'cycle' : 'cycles'}
       </span>
       <button type="button" onClick={session.toggle} className={pillButton}>

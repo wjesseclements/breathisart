@@ -14,13 +14,13 @@ export function FirstTimeTip() {
   return (
     <div
       role="note"
-      className="flex max-w-md items-center gap-4 rounded-xl bg-night-soft px-5 py-3 text-sm text-slate-300"
+      className="flex max-w-md items-center gap-4 rounded-xl bg-white dark:bg-night-soft px-5 py-3 text-sm text-slate-700 dark:text-slate-300"
     >
       <p>Mild lightheadedness is common with 4-7-8 at first — start with 2–4 cycles.</p>
       <button
         type="button"
         onClick={dismiss}
-        className="shrink-0 rounded-full border border-night-mist px-3 py-1 text-xs text-slate-400 transition-colors hover:border-breath-teal hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-breath-teal"
+        className="shrink-0 rounded-full border border-slate-300 dark:border-night-mist px-3 py-1 text-xs text-slate-600 dark:text-slate-400 transition-colors hover:border-breath-teal hover:text-slate-900 dark:hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-breath-teal"
       >
         Got it
       </button>

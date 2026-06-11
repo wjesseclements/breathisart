@@ -5,8 +5,10 @@ import { useSettings } from '../../store/useSettings';
 
 const chipBase =
   'shrink-0 rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-breath-teal';
-const chipSelected = 'border-breath-teal bg-night-mist text-whisper';
-const chipIdle = 'border-night-mist text-slate-400 hover:border-slate-500 hover:text-slate-200';
+const chipSelected =
+  'border-breath-teal bg-slate-200 dark:bg-night-mist text-slate-700 dark:text-whisper';
+const chipIdle =
+  'border-slate-300 dark:border-night-mist text-slate-600 dark:text-slate-400 hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-200';
 
 interface PatternPickerProps {
   enabled?: boolean;

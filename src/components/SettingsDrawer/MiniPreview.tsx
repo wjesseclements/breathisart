@@ -60,7 +60,7 @@ function RunningPreview({ pattern }: { pattern: BreathPattern }) {
           className="absolute inset-0 rounded-full bg-gradient-to-br from-breath-teal to-breath-indigo will-change-transform"
         />
       </div>
-      <span className="text-xs text-slate-400">{phaseWord(session.phase)}</span>
+      <span className="text-xs text-slate-600 dark:text-slate-400">{phaseWord(session.phase)}</span>
     </div>
   );
 }

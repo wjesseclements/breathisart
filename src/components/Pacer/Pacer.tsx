@@ -140,7 +140,7 @@ export function Pacer({ pattern, session }: PacerProps) {
             <span
               ref={countdownRef}
               aria-hidden="true"
-              className="absolute inset-0 flex items-center justify-center font-display text-2xl font-light tabular-nums text-white/30"
+              className="absolute inset-0 flex items-center justify-center font-display text-2xl font-light tabular-nums text-slate-500/50 dark:text-white/30"
             />
           )}
         </div>
