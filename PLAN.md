@@ -7,14 +7,14 @@ Vertical slices, in order. Each slice leaves the app runnable (`npm run dev`) an
 ## Slice 1 — Scaffold & toolchain
 Goal: an empty but fully wired app. Everything later builds on a green pipeline.
 
-- [ ] Vite + React 18 + TypeScript (strict) project scaffolded
-- [ ] Tailwind configured with initial design tokens (dark-first palette: deep navy/charcoal bg, teal→indigo accent) in `tailwind.config`
-- [ ] React Router with `/` (Home) and `/research` (Research) placeholder pages
-- [ ] Vitest wired with one trivial passing test; ESLint + Prettier configured
-- [ ] Target folder structure stubbed (`src/engine`, `src/components`, `src/pages`, `src/store`)
-- [ ] GitHub Actions CI workflow: lint + test + build on every push/PR
-- [ ] Vercel: repo connected, Vite preset, pushes to `main` deploy, PRs get preview URLs
-- [ ] Verify: `npm run dev` shows both routes; lint/test/build all pass with zero TS errors; CI green on the first push; placeholder app live on the Vercel URL
+- [x] Vite + React 18 + TypeScript (strict) project scaffolded
+- [x] Tailwind configured with initial design tokens (dark-first palette: deep navy/charcoal bg, teal→indigo accent) in `tailwind.config`
+- [x] React Router with `/` (Home) and `/research` (Research) placeholder pages
+- [x] Vitest wired with one trivial passing test; ESLint + Prettier configured
+- [x] Target folder structure stubbed (`src/engine`, `src/components`, `src/pages`, `src/store`)
+- [x] GitHub Actions CI workflow: lint + test + build on every push/PR
+- [ ] Vercel: repo connected, Vite preset, pushes to `main` deploy, PRs get preview URLs *(needs Jesse's Vercel account — import the GitHub repo at vercel.com/new, framework preset "Vite")*
+- [ ] Verify: `npm run dev` shows both routes ✓; lint/test/build all pass with zero TS errors ✓; CI green on the first push (pending push); placeholder app live on the Vercel URL (pending Vercel connect)
 
 ## Slice 2 — Breath engine (pure TS, no UI)
 Goal: the one clock, fully unit-tested before any pixel moves. No React imports in `src/engine/`.
