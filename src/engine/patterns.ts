@@ -15,6 +15,12 @@ export interface BreathPattern {
   phases: Phase[];
   cycleSuggestion?: string;
   builtIn: boolean;
+  /** Short name for the picker chips, e.g. "Box" for "Box Breathing". */
+  chipLabel?: string;
+}
+
+export function findPatternById(id: string): BreathPattern | undefined {
+  return BUILT_IN_PATTERNS.find((p) => p.id === id);
 }
 
 export const MIN_PHASE_SECONDS = 0.5;
@@ -42,6 +48,7 @@ export function validatePhases(phases: readonly Phase[]): string[] {
 export const BUILT_IN_PATTERNS: BreathPattern[] = [
   {
     id: 'box',
+    chipLabel: 'Box',
     name: 'Box Breathing',
     tagline: 'Equal sides — steady composure under pressure',
     phases: [
@@ -55,6 +62,7 @@ export const BUILT_IN_PATTERNS: BreathPattern[] = [
   },
   {
     id: '478',
+    chipLabel: '4-7-8',
     name: '4-7-8',
     tagline: 'Relaxing breath — long hold, longer exhale',
     phases: [
@@ -67,6 +75,7 @@ export const BUILT_IN_PATTERNS: BreathPattern[] = [
   },
   {
     id: 'coherent',
+    chipLabel: 'Coherent',
     name: 'Coherent Breathing',
     tagline: 'About 5.5 breaths per minute, no holds',
     phases: [
@@ -78,6 +87,7 @@ export const BUILT_IN_PATTERNS: BreathPattern[] = [
   },
   {
     id: 'calm',
+    chipLabel: 'Calm',
     name: 'Extended Exhale',
     tagline: 'Gentle starter — exhale a little longer than you inhale',
     phases: [
@@ -89,6 +99,7 @@ export const BUILT_IN_PATTERNS: BreathPattern[] = [
   },
   {
     id: 'sigh',
+    chipLabel: 'Sigh',
     name: 'Physiological Sigh',
     tagline: 'Two inhales through the nose, one long exhale',
     phases: [

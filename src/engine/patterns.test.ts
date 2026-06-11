@@ -4,6 +4,7 @@ import {
   BUILT_IN_PATTERNS,
   MAX_PHASE_SECONDS,
   MIN_PHASE_SECONDS,
+  findPatternById,
   validatePhases,
 } from './patterns';
 
@@ -24,6 +25,11 @@ describe('built-in patterns', () => {
     const sigh = BUILT_IN_PATTERNS.find((p) => p.id === 'sigh');
     expect(sigh?.phases.filter((p) => p.kind === 'inhale')).toHaveLength(2);
     expect(sigh?.phases[1].label).toBe('Top-off sip');
+  });
+
+  it('finds patterns by id and returns undefined for unknown ids', () => {
+    expect(findPatternById('sigh')?.name).toBe('Physiological Sigh');
+    expect(findPatternById('deleted-custom-pattern')).toBeUndefined();
   });
 
   it('coherent breathing uses decimal seconds', () => {

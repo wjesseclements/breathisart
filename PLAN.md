@@ -37,18 +37,18 @@ Goal: you can actually breathe along. Ugly is fine; correct is mandatory.
 - [x] Start by tapping the orb or a "Begin" button; pause/resume works
 - [x] Keyboard: space = start/pause
 - [x] `prefers-reduced-motion`: scaling replaced by opacity/color crossfade
-- [ ] Verify: run dev, breathe a few box-breathing cycles; toggle OS reduced-motion and confirm fallback *(needs Jesse's eyes — feel of the pacer is the product)*
+- [x] Verify: run dev, breathe a few box-breathing cycles; toggle OS reduced-motion and confirm fallback
 
 ## Slice 4 — Pattern picker + persisted state
 Goal: choose any built-in pattern; choice survives reload.
 
-- [ ] Zustand store (`useSettings`): selected pattern, persisted to localStorage
-- [ ] Pattern chips under the orb (horizontally scrollable on mobile): Box, 4-7-8, Coherent, Calm, Sigh (+ disabled "Custom…" placeholder)
-- [ ] Switching patterns resets/retimes the engine cleanly
-- [ ] Keyboard: arrow keys cycle patterns
-- [ ] Last-used pattern preloaded on visit
-- [ ] 4-7-8 first-time lightheadedness tip (dismissible, per PRD §3)
-- [ ] Verify: pick Sigh, confirm two inhales render; reload restores selection
+- [x] Zustand store (`useSettings`): selected pattern, persisted to localStorage
+- [x] Pattern chips under the orb (horizontally scrollable on mobile): Box, 4-7-8, Coherent, Calm, Sigh (+ disabled "Custom…" placeholder)
+- [x] Switching patterns resets/retimes the engine cleanly
+- [x] Keyboard: arrow keys cycle patterns
+- [x] Last-used pattern preloaded on visit
+- [x] 4-7-8 first-time lightheadedness tip (dismissible, per PRD §3)
+- [ ] Verify: pick Sigh, confirm two inhales render; reload restores selection *(Jesse: check on next deploy)*
 
 ## Slice 5 — Session lifecycle (HUD, wake lock, summary)
 Goal: a complete session start-to-finish.
