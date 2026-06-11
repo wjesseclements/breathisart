@@ -13,19 +13,19 @@ Goal: an empty but fully wired app. Everything later builds on a green pipeline.
 - [x] Vitest wired with one trivial passing test; ESLint + Prettier configured
 - [x] Target folder structure stubbed (`src/engine`, `src/components`, `src/pages`, `src/store`)
 - [x] GitHub Actions CI workflow: lint + test + build on every push/PR
-- [ ] Vercel: repo connected, Vite preset, pushes to `main` deploy, PRs get preview URLs *(needs Jesse's Vercel account — import the GitHub repo at vercel.com/new, framework preset "Vite")*
-- [ ] Verify: `npm run dev` shows both routes ✓; lint/test/build all pass with zero TS errors ✓; CI green on the first push (pending push); placeholder app live on the Vercel URL (pending Vercel connect)
+- [x] Vercel: repo connected, Vite preset, pushes to `main` deploy, PRs get preview URLs
+- [x] Verify: `npm run dev` shows both routes; lint/test/build all pass with zero TS errors; CI green on the first push; placeholder app live on the Vercel URL
 
 ## Slice 2 — Breath engine (pure TS, no UI)
 Goal: the one clock, fully unit-tested before any pixel moves. No React imports in `src/engine/`.
 
-- [ ] `Phase` / `BreathPattern` types per PRD §3 (ordered phase array — must represent the two-inhale physiological sigh)
-- [ ] `patterns.ts`: the five built-ins (Box, 4-7-8, Coherent 5.5/5.5, Extended Exhale 4/6, Physiological Sigh 3 / 1.5 "Top-off sip" / 6)
-- [ ] Pattern validation: reject phases ≤ 0s (min 0.5), cap 60s, require ≥1 phase, support decimals
-- [ ] Engine state machine: injectable clock (so tests don't need real rAF), `start/pause/resume/stop`, per-frame `tick(now)` → `{ phaseIndex, t, elapsed, cycles }`
-- [ ] Remainder carry across phase boundaries (no accumulated drift)
-- [ ] Tests: phase sequencing in order; pause/resume restores exact progress; zero drift over simulated 20 min; validation rejects/accepts correctly
-- [ ] Verify: `npm run test` green; engine file imports nothing from React
+- [x] `Phase` / `BreathPattern` types per PRD §3 (ordered phase array — must represent the two-inhale physiological sigh)
+- [x] `patterns.ts`: the five built-ins (Box, 4-7-8, Coherent 5.5/5.5, Extended Exhale 4/6, Physiological Sigh 3 / 1.5 "Top-off sip" / 6)
+- [x] Pattern validation: reject phases ≤ 0s (min 0.5), cap 60s, require ≥1 phase, support decimals
+- [x] Engine state machine: injectable clock (so tests don't need real rAF), `start/pause/resume/stop`, per-frame `tick(now)` → `{ phaseIndex, t, elapsed, cycles }`
+- [x] Remainder carry across phase boundaries (no accumulated drift)
+- [x] Tests: phase sequencing in order; pause/resume restores exact progress; zero drift over simulated 20 min; validation rejects/accepts correctly
+- [x] Verify: `npm run test` green; engine file imports nothing from React
 
 ## Slice 3 — Minimal pacer (engine on screen)
 Goal: you can actually breathe along. Ugly is fine; correct is mandatory.
