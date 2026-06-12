@@ -123,10 +123,10 @@ Goal: audit only — keyboard controls, ARIA, and `aria-live` were built in slic
 ## Slice 12 — PWA, meta, onboarding
 Goal: installable, offline, polished when shared.
 
-- [ ] vite-plugin-pwa: manifest, icons, offline caching of the full bundle
-- [ ] First-visit one-liner: "Follow the orb. In as it grows, out as it settles." (dismissible, never shown again)
-- [ ] Open Graph/meta tags + favicon set
-- [ ] Verify: install on a phone, airplane mode, full session offline
+- [x] vite-plugin-pwa: manifest, icons, offline caching of the full bundle
+- [x] First-visit one-liner: "Follow the orb. In as it grows, out as it settles." (dismissible, never shown again)
+- [x] Open Graph/meta tags + favicon set
+- [ ] Verify: install on a phone, airplane mode, full session offline *(Jesse: needs a phone)*
 
 ## Slice 13 — Final quality bar & custom domain
 Goal: PRD §8 acceptance criteria met on the production deploy (Vercel pipeline has been live since slice 1).

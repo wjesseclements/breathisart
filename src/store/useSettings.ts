@@ -20,8 +20,11 @@ interface SettingsState {
   theme: ThemePreference;
   /** 'reduced' forces reduced motion regardless of the OS setting. */
   motionPreference: MotionPreference;
+  /** First-visit "Follow the orb" line — shown once, never again. */
+  onboardingDismissed: boolean;
   selectPattern: (id: string) => void;
   dismissTip478: () => void;
+  dismissOnboarding: () => void;
   setShowCountdown: (show: boolean) => void;
   saveCustomPattern: (pattern: BreathPattern) => void;
   deleteCustomPattern: (id: string) => void;
@@ -46,8 +49,10 @@ export const useSettings = create<SettingsState>()(
       sessionLengthMin: null,
       theme: 'dark',
       motionPreference: 'system',
+      onboardingDismissed: false,
       selectPattern: (id) => set({ selectedPatternId: id }),
       dismissTip478: () => set({ tip478Dismissed: true }),
+      dismissOnboarding: () => set({ onboardingDismissed: true }),
       setShowCountdown: (show) => set({ showCountdown: show }),
       saveCustomPattern: (pattern) =>
         set((s) => ({

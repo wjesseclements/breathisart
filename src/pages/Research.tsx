@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Background } from '../components/Background';
 import { pillButton } from '../components/ui';
+import { usePageTitle } from '../components/usePageTitle';
 import type { StudyCard } from './researchContent';
 import {
   CRISIS_LINE,
@@ -40,6 +41,7 @@ function StudyCardView({ card }: { card: StudyCard }) {
 }
 
 export default function Research() {
+  usePageTitle('The science of slow breathing — Stillpoint');
   return (
     <main className="mx-auto flex min-h-screen max-w-prose flex-col gap-10 px-6 pb-28 pt-16">
       <Background />

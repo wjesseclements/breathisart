@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Background } from '../components/Background';
+import { OnboardingHint } from '../components/OnboardingHint';
 import { Pacer } from '../components/Pacer/Pacer';
 import { useBreathSession } from '../components/Pacer/useBreathSession';
 import { usePhaseCues } from '../components/Pacer/usePhaseCues';
@@ -20,6 +21,7 @@ import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
 import { decodePhases } from '../engine/shareUrl';
+import { usePageTitle } from '../components/usePageTitle';
 import { useSettings } from '../store/useSettings';
 
 const HUD_HIDE_DELAY_MS = 4000;
@@ -86,6 +88,13 @@ export default function Home() {
 
   useWakeLock(status === 'running');
   usePhaseCues(session);
+  usePageTitle('Stillpoint — a breath pacer');
+
+  // Starting the first session is the onboarding's natural end.
+  const dismissOnboarding = useSettings((s) => s.dismissOnboarding);
+  useEffect(() => {
+    if (status === 'running') dismissOnboarding();
+  }, [status, dismissOnboarding]);
 
   // v1 behavior (PRD §3): backgrounding the tab auto-pauses the session.
   useEffect(() => {
@@ -200,6 +209,7 @@ export default function Home() {
           idle ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
+        <OnboardingHint />
         {(sharedPattern !== null || sharedInvalid) && (
           <SharedPatternBanner
             pattern={sharedPattern}
