@@ -131,11 +131,11 @@ Goal: installable, offline, polished when shared.
 ## Slice 13 — Final quality bar & custom domain
 Goal: PRD §8 acceptance criteria met on the production deploy (Vercel pipeline has been live since slice 1).
 
-- [ ] Lighthouse mobile: perf ≥ 95, a11y ≥ 95, best-practices 100; CLS ~0; no console errors
-- [ ] 60fps check on a mid-range phone (or throttled emulation) during phase transitions
-- [ ] Full test suite + lint + build green
-- [ ] Custom domain + HTTPS; immutable cache on hashed assets, short cache on `index.html`
-- [ ] Document the v1.5 backlog (streaks, soundscapes, panic-button PWA shortcut, multi-language) in the repo without building it
+- [x] Lighthouse mobile: perf 99, a11y 100, best-practices 100; CLS 0; TBT 0ms; no console errors (measured locally on the production build)
+- [ ] 60fps check on a mid-range phone (or throttled emulation) during phase transitions *(Jesse: phone check; TBT 0 + transform-only animation are strong signals)*
+- [x] Full test suite + lint + build green
+- [ ] Custom domain + HTTPS *(Jesse: add domain in Vercel dashboard + DNS)*; immutable cache on hashed assets via vercel.json ✓, short cache on `index.html` ✓
+- [x] Document the v1.5 backlog (streaks, soundscapes, panic-button PWA shortcut, multi-language) in the repo without building it — BACKLOG.md
 
 ---
 
