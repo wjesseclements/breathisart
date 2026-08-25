@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
 import { breathLevel, followLevel, phaseLevelRanges, phaseWord } from './pacerMath';
@@ -10,6 +10,12 @@ import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
 const MIN_SCALE = 0.62;
 const MAX_SCALE = 1;
+/**
+ * Visuals anticipate each phase boundary by this much: the word crossfade
+ * starts early so it straddles the boundary, and the progress ring fades
+ * out into it (and back in after) so its dashoffset reset is invisible.
+ */
+const BOUNDARY_LEAD_S = 0.25;
 
 interface PacerProps {
   pattern: BreathPattern;
@@ -76,7 +82,14 @@ export function Pacer({ pattern, session }: PacerProps) {
         outer.style.opacity = String(0.1 + 0.14 * level);
       }
 
-      if (ringRef.current) ringRef.current.style.strokeDashoffset = String(100 * (1 - t));
+      const ring = ringRef.current;
+      if (ring) {
+        ring.style.strokeDashoffset = String(100 * (1 - t));
+        const secondsIn = phases[phaseIndex].seconds * t;
+        const secondsLeft = phases[phaseIndex].seconds * (1 - t);
+        const fade = Math.min(1, secondsIn / BOUNDARY_LEAD_S, secondsLeft / BOUNDARY_LEAD_S);
+        ring.style.opacity = String(0.7 * fade);
+      }
 
       const countdown = countdownRef.current;
       if (countdown) {
@@ -87,12 +100,29 @@ export function Pacer({ pattern, session }: PacerProps) {
     [phases, levelRanges, reducedMotion],
   );
 
+  // The displayed word runs slightly ahead of the engine: its crossfade
+  // starts BOUNDARY_LEAD_S before each boundary so the incoming word lands
+  // with the new phase instead of trailing it.
+  const [wordIndex, setWordIndex] = useState(session.phaseIndex);
+
   const { onFrame, status } = session;
+  // While frames aren't flowing (idle/paused/pattern change), track the
+  // engine's phase directly (render-phase adjustment, as in PhaseWord).
+  if (status !== 'running' && wordIndex !== session.phaseIndex) {
+    setWordIndex(session.phaseIndex);
+  }
+
   useEffect(() => {
     if (status === 'idle') drawFrame(0, 0);
     else drawFrame(lastFrameRef.current.phaseIndex, lastFrameRef.current.t);
-    return onFrame((snap) => drawFrame(snap.phaseIndex, snap.t));
-  }, [onFrame, status, drawFrame]);
+    return onFrame((snap) => {
+      drawFrame(snap.phaseIndex, snap.t);
+      const secondsLeft = phases[snap.phaseIndex].seconds * (1 - snap.t);
+      setWordIndex(
+        secondsLeft <= BOUNDARY_LEAD_S ? (snap.phaseIndex + 1) % phases.length : snap.phaseIndex,
+      );
+    });
+  }, [onFrame, status, drawFrame, phases]);
 
   // Space = start/pause. Skip when an interactive element has focus —
   // a focused button already handles space natively.
@@ -159,7 +189,7 @@ export function Pacer({ pattern, session }: PacerProps) {
         <ProgressRing circleRef={ringRef} visible={!idle} colorClass={accent.ring} />
       </button>
 
-      <PhaseWord text={idle ? pattern.name : phaseWord(session.phase)} />
+      <PhaseWord text={idle ? pattern.name : phaseWord(phases[wordIndex] ?? session.phase)} />
 
       <div aria-live="polite" className="sr-only">
         {announcement}
