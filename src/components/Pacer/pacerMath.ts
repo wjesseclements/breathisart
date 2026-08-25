@@ -73,6 +73,19 @@ export function breathLevel(ranges: readonly LevelRange[], phaseIndex: number, t
   return start + (end - start) * easeBreath(t);
 }
 
+/** Time constant of the pacer's level follower: ~280ms to settle (≈4τ). */
+export const LEVEL_FOLLOWER_TAU_S = 0.07;
+
+/**
+ * Moves a displayed level toward its target with frame-rate-independent
+ * exponential smoothing (a critically-damped follower): the same elapsed
+ * time covers the same distance no matter how many frames it spans, so the
+ * orb glides through breathLevel's velocity kinks instead of jerking.
+ */
+export function followLevel(current: number, target: number, dtSeconds: number): number {
+  return target + (current - target) * Math.exp(-dtSeconds / LEVEL_FOLLOWER_TAU_S);
+}
+
 const WORDS: Record<PhaseKind, string> = {
   inhale: 'Breathe in',
   hold: 'Hold',

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Phase } from '../../engine/patterns';
-import { breathLevel, easeBreath, phaseLevelRanges, phaseWord } from './pacerMath';
+import { breathLevel, easeBreath, followLevel, phaseLevelRanges, phaseWord } from './pacerMath';
 
 const inhale: Phase = { kind: 'inhale', seconds: 4 };
 const hold: Phase = { kind: 'hold', seconds: 4 };
@@ -96,6 +96,24 @@ describe('breathLevel', () => {
     expect(breathLevel(sigh, 1, 0)).toBeCloseTo(2 / 3, 10); // no jump at the boundary
     expect(breathLevel(sigh, 1, 0.5)).toBeCloseTo(2 / 3 + 1 / 6, 10); // eased midpoint
     expect(breathLevel(sigh, 1, 1)).toBeCloseTo(1, 10);
+  });
+});
+
+describe('followLevel', () => {
+  it('is frame-rate independent: many small steps equal one big step', () => {
+    let stepped = 0;
+    for (let i = 0; i < 28; i += 1) stepped = followLevel(stepped, 1, 0.01);
+    expect(stepped).toBeCloseTo(followLevel(0, 1, 0.28), 10);
+  });
+
+  it('settles within ~2% of the target after ~280ms', () => {
+    expect(followLevel(0, 1, 0.28)).toBeGreaterThan(0.98);
+    expect(followLevel(1, 0, 0.28)).toBeLessThan(0.02);
+  });
+
+  it('never overshoots and stays put at the target', () => {
+    expect(followLevel(0.4, 1, 10)).toBeCloseTo(1, 10);
+    expect(followLevel(1, 1, 0.016)).toBe(1);
   });
 });
 

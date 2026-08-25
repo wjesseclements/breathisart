@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
-import { breathLevel, phaseLevelRanges, phaseWord } from './pacerMath';
+import { breathLevel, followLevel, phaseLevelRanges, phaseWord } from './pacerMath';
 import { PATTERN_ACCENTS, DEFAULT_ACCENT } from './pacerTheme';
 import { PhaseWord } from './PhaseWord';
 import { ProgressRing } from './ProgressRing';
@@ -28,6 +28,7 @@ export function Pacer({ pattern, session }: PacerProps) {
   const ringRef = useRef<SVGCircleElement>(null);
   const countdownRef = useRef<HTMLSpanElement>(null);
   const lastFrameRef = useRef({ phaseIndex: 0, t: 0 });
+  const followerRef = useRef<{ level: number; atMs: number } | null>(null);
 
   // All per-frame updates touch only transform/opacity (plus the ring's
   // normalized strokeDashoffset), via refs — no React re-render at 60fps.
@@ -36,7 +37,17 @@ export function Pacer({ pattern, session }: PacerProps) {
   const drawFrame = useCallback(
     (phaseIndex: number, t: number) => {
       lastFrameRef.current = { phaseIndex, t };
-      const level = breathLevel(levelRanges, phaseIndex, t);
+      // The engine's level is a target; what we draw is a critically-damped
+      // follower, so scale glides through phase-boundary velocity kinks.
+      // Reduced motion bypasses the follower and tracks the target exactly.
+      const target = breathLevel(levelRanges, phaseIndex, t);
+      let level = target;
+      if (!reducedMotion) {
+        const nowMs = performance.now();
+        const prev = followerRef.current;
+        level = prev ? followLevel(prev.level, target, (nowMs - prev.atMs) / 1000) : target;
+        followerRef.current = { level, atMs: nowMs };
+      }
 
       const orb = orbRef.current;
       if (orb) {
