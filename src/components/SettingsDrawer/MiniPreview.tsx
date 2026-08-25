@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import type { BreathPattern, Phase } from '../../engine/patterns';
 import { validatePhases } from '../../engine/patterns';
-import { breathLevel, phaseWord } from '../Pacer/pacerMath';
+import { breathLevel, phaseLevelRanges, phaseWord } from '../Pacer/pacerMath';
 import { useBreathSession } from '../Pacer/useBreathSession';
 import { usePrefersReducedMotion } from '../Pacer/usePrefersReducedMotion';
 
@@ -35,10 +35,11 @@ function RunningPreview({ pattern }: { pattern: BreathPattern }) {
   }, [start]);
 
   const { phases } = pattern;
+  const levelRanges = useMemo(() => phaseLevelRanges(phases), [phases]);
   useEffect(
     () =>
       onFrame((snap) => {
-        const level = breathLevel(phases, snap.phaseIndex, snap.t);
+        const level = breathLevel(levelRanges, snap.phaseIndex, snap.t);
         const orb = orbRef.current;
         if (!orb) return;
         if (reducedMotion) {
@@ -49,7 +50,7 @@ function RunningPreview({ pattern }: { pattern: BreathPattern }) {
           orb.style.opacity = '1';
         }
       }),
-    [onFrame, phases, reducedMotion],
+    [onFrame, levelRanges, reducedMotion],
   );
 
   return (

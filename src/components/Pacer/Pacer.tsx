@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
-import { breathLevel, phaseWord } from './pacerMath';
+import { breathLevel, phaseLevelRanges, phaseWord } from './pacerMath';
 import { PATTERN_ACCENTS, DEFAULT_ACCENT } from './pacerTheme';
 import { PhaseWord } from './PhaseWord';
 import { ProgressRing } from './ProgressRing';
@@ -32,10 +32,11 @@ export function Pacer({ pattern, session }: PacerProps) {
   // All per-frame updates touch only transform/opacity (plus the ring's
   // normalized strokeDashoffset), via refs — no React re-render at 60fps.
   const { phases } = pattern;
+  const levelRanges = useMemo(() => phaseLevelRanges(phases), [phases]);
   const drawFrame = useCallback(
     (phaseIndex: number, t: number) => {
       lastFrameRef.current = { phaseIndex, t };
-      const level = breathLevel(phases, phaseIndex, t);
+      const level = breathLevel(levelRanges, phaseIndex, t);
 
       const orb = orbRef.current;
       if (orb) {
@@ -72,7 +73,7 @@ export function Pacer({ pattern, session }: PacerProps) {
         if (countdown.textContent !== remaining) countdown.textContent = remaining;
       }
     },
-    [phases, reducedMotion],
+    [phases, levelRanges, reducedMotion],
   );
 
   const { onFrame, status } = session;
