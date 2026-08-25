@@ -142,8 +142,8 @@ export default function Home() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [drawerOpen, idle, endSession]);
 
-  // While running, the HUD fades out after a few seconds; tapping
-  // anywhere brings it back. Pausing always shows it.
+  // While running, the HUD fades out after a few seconds; tapping anywhere
+  // or pressing any key brings it back. Pausing always shows it.
   const [hud, setHud] = useState({ status, hidden: false });
   if (hud.status !== status) setHud({ status, hidden: false });
   useEffect(() => {
@@ -156,9 +156,11 @@ export default function Home() {
       timer = window.setTimeout(hide, HUD_HIDE_DELAY_MS);
     };
     window.addEventListener('pointerdown', reveal);
+    window.addEventListener('keydown', reveal);
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener('pointerdown', reveal);
+      window.removeEventListener('keydown', reveal);
     };
   }, [status]);
 
