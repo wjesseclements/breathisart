@@ -111,7 +111,9 @@ export default function Home() {
   }, [elapsedSeconds, cycles, stop]);
 
   // Timed sessions (PRD §5): soft chime, then end with the summary.
-  // Checked in the frame pipeline so it fires the moment the limit is crossed.
+  // Checked in the frame pipeline so it fires the moment the limit is
+  // crossed; the summary uses the snapshot's elapsed/cycles, not the
+  // once-per-second elapsedSeconds state, which lags the true time.
   const sessionLengthMin = useSettings((s) => s.sessionLengthMin);
   const volume = useSettings((s) => s.volume);
   const { onFrame } = session;
@@ -121,10 +123,11 @@ export default function Home() {
     return onFrame((snap) => {
       if (snap.status === 'running' && snap.elapsed >= limitSeconds) {
         playCue('chime', volume);
-        endSession();
+        setSummary(formatSummary(snap.elapsed, snap.cycles));
+        stop();
       }
     });
-  }, [onFrame, sessionLengthMin, volume, endSession]);
+  }, [onFrame, sessionLengthMin, volume, stop]);
 
   // Esc: close the drawer first; otherwise end the session / dismiss summary.
   const drawerOpen = drawer !== null;
