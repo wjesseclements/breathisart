@@ -3,6 +3,13 @@ import type { BreathSession } from '../Pacer/useBreathSession';
 import { pillButton } from '../ui';
 import { formatClock, formatRemaining } from './sessionFormat';
 
+/**
+ * The full sentence, because it gets its own line rather than a slot beside
+ * two buttons. Measured: beside Resume and End at 318px the clock's slot is
+ * 56px wide, which wraps even "Paused while away" to three lines.
+ */
+export const AWAY_NOTE = 'Paused while you were away';
+
 interface SessionHUDProps {
   session: BreathSession;
   pattern: BreathPattern;
@@ -53,35 +60,60 @@ export function SessionHUD({
 
   return (
     <div className="grid grid-cols-1 grid-rows-1 place-items-center">
+      {/* The note takes a line of its own and the controls drop beneath it,
+          all inside the slot's existing 3.625rem: 13px note + 4px + 37px
+          buttons = 54px. So nothing on the screen moves -- the row simply
+          becomes a column for four and a half seconds. Putting the note
+          *beside* the buttons was the first attempt and does not survive a
+          narrow phone. */}
       <div
-        className={`[grid-area:1/1] flex items-center gap-5 transition-opacity duration-300 ${
-          showControls ? 'opacity-100 delay-300' : 'pointer-events-none opacity-0 delay-0'
-        }`}
+        className={`[grid-area:1/1] flex transition-opacity duration-300 ${
+          resumedFromAway ? 'flex-col items-center gap-1' : 'items-center gap-5'
+        } ${showControls ? 'opacity-100 delay-300' : 'pointer-events-none opacity-0 delay-0'}`}
       >
-        {/* Remaining, not elapsed, when the session is timed: elapsed is the
-            number you stare at when you want it to be over. */}
-        <span
-          className={`text-meta tabular-nums transition-colors ${finishing ? 'text-ink' : 'text-ink-muted'}`}
-        >
-          <span className="sr-only">
-            {limitSeconds === null ? 'Elapsed time ' : 'Time remaining '}
+        {/* On return from a backgrounded tab the note borrows this slot for a
+            few seconds. The clock is the least useful thing on screen at that
+            moment -- the orb is frozen and the question is why, not how long
+            is left -- and borrowing costs no layout, which a second line
+            would. It lived in the ambient line below until it turned out that
+            line is hidden whenever the session is paused, i.e. in exactly the
+            state the note describes: written, correct, never once seen.
+
+            `role="status"` here and not on the clock: the clock re-renders
+            every second and would announce every tick. */}
+        {resumedFromAway ? (
+          <span role="status" className="text-meta leading-none text-ink">
+            {AWAY_NOTE}
           </span>
-          {limitSeconds === null
-            ? formatClock(session.elapsedSeconds)
-            : formatRemaining(limitSeconds - session.elapsedSeconds)}
-        </span>
-        {/* During the settling beat the toggle SKIPS it, so say so. It used to
-            fall through to "Resume", which described nothing that was happening. */}
-        <button type="button" onClick={session.toggle} className={pillButton}>
-          {session.status === 'leading'
-            ? 'Skip'
-            : session.status === 'running'
-              ? 'Pause'
-              : 'Resume'}
-        </button>
-        <button type="button" onClick={onEnd} className={pillButton}>
-          End
-        </button>
+        ) : (
+          <span
+            className={`text-meta tabular-nums transition-colors ${finishing ? 'text-ink' : 'text-ink-muted'}`}
+          >
+            <span className="sr-only">
+              {limitSeconds === null ? 'Elapsed time ' : 'Time remaining '}
+            </span>
+            {limitSeconds === null
+              ? formatClock(session.elapsedSeconds)
+              : formatRemaining(limitSeconds - session.elapsedSeconds)}
+          </span>
+        )}
+        {/* Grouped so the column keeps them side by side. In the normal row
+            this nests one gap-5 flex inside another, which lays out exactly as
+            the three loose children did. */}
+        <div className="flex items-center gap-5">
+          {/* During the settling beat the toggle SKIPS it, so say so. It used to
+              fall through to "Resume", which described nothing that was happening. */}
+          <button type="button" onClick={session.toggle} className={pillButton}>
+            {session.status === 'leading'
+              ? 'Skip'
+              : session.status === 'running'
+                ? 'Pause'
+                : 'Resume'}
+          </button>
+          <button type="button" onClick={onEnd} className={pillButton}>
+            End
+          </button>
+        </div>
       </div>
 
       <p
@@ -96,11 +128,9 @@ export function SessionHUD({
       >
         {closing
           ? ''
-          : resumedFromAway
-            ? 'Paused while you were away'
-            : session.status === 'leading'
-              ? 'Settling'
-              : `${pattern.name} · cycle ${session.cycles + 1}`}
+          : session.status === 'leading'
+            ? 'Settling'
+            : `${pattern.name} · cycle ${session.cycles + 1}`}
       </p>
     </div>
   );

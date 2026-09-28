@@ -117,6 +117,18 @@ export default function Home() {
     if (status === 'running' || status === 'idle') setResumedFromAway(false);
   }
 
+  /**
+   * The note explains the freeze; once it has, the clock is more useful again.
+   * A plain UI timeout, not breath timing -- the one-clock rule governs phase
+   * sequencing, and nothing here touches the engine. Pressing Resume clears it
+   * sooner, via the status change above.
+   */
+  useEffect(() => {
+    if (!resumedFromAway) return;
+    const id = window.setTimeout(() => setResumedFromAway(false), 4500);
+    return () => window.clearTimeout(id);
+  }, [resumedFromAway]);
+
   // A pending app update reloads only once nothing is running, so a new
   // release never interrupts a breath.
   useEffect(() => {
