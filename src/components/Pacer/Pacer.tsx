@@ -183,7 +183,7 @@ export function Pacer({ pattern, session, roomLightRef, showTitle = true }: Pace
         disabled={closing}
         aria-label={orbLabel}
         data-status={status}
-        className={`relative h-[min(17rem,44svh)] w-[min(17rem,44svh)] rounded-full ${focusRingOffset8}`}
+        className={`relative h-[min(17rem,32svh)] w-[min(17rem,32svh)] rounded-full ${focusRingOffset8}`}
       >
         {/* Idle ambient float wraps everything; CSS-animated, idle only, and
             deliberately not phase-locked — it is decoration, never the clock. */}

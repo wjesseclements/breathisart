@@ -302,9 +302,15 @@ export default function Home() {
           </svg>
         </button>
 
-        {/* HERO -- centred in row 1. 36px inside the group, so three things read
-          as one group rather than five equal bands. */}
-        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-9 py-6 short:gap-4">
+        {/*
+        HERO -- centred in row 1.
+        Sized so it FITS rather than overflows. On an iPhone the small viewport
+        is ~641px; the footer reserves ~162px, leaving ~479px. At the previous
+        44svh orb with 36px gaps the hero wanted 560px, so `justify-center`
+        split the 81px overflow and pushed the orb up behind Safari's URL bar.
+        32svh plus tighter gaps below `sm` brings it to ~453px.
+      */}
+        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 py-4 sm:gap-9 sm:py-6 short:gap-3 short:py-2">
           <Pacer
             pattern={pattern}
             session={session}
