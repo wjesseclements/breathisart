@@ -12,15 +12,19 @@ export function OnboardingHint() {
   if (dismissed) return null;
 
   return (
-    <p role="note" className="flex items-center gap-3 text-sm text-ink-muted">
+    <p role="note" className="flex items-center gap-1 text-meta text-ink-muted">
       Follow the orb. In as it grows, out as it settles.
       <button
         type="button"
         onClick={dismiss}
         aria-label="Dismiss tip"
-        className={`rounded-full px-2 py-0.5 text-xs text-ink-faint transition-colors hover:text-ink-max ${focusRing}`}
+        className={`grid h-11 w-11 place-items-center rounded-full text-ink-faint transition-colors hover:text-ink-max ${focusRing}`}
       >
-        ✕
+        {/* Inline SVG with a 44px hit floor: the old text ✕ was a 20x26 target,
+            failing WCAG 2.5.8 outright, and rendered inconsistently. */}
+        <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3 w-3 fill-current">
+          <path d="M18.3 5.71 12 12.01l-6.3-6.3-1.4 1.41 6.29 6.3-6.29 6.3 1.4 1.41 6.3-6.3 6.3 6.3 1.4-1.41-6.29-6.3 6.29-6.3z" />
+        </svg>
       </button>
     </p>
   );

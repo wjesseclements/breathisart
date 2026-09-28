@@ -1,12 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
 import { BUILT_IN_PATTERNS } from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
 import { focusRingOffset2 } from '../ui';
 
-const chipBase = `shrink-0 rounded-full border px-4 py-1.5 text-sm transition-colors ${focusRingOffset2}`;
-const chipSelected = 'border-accent bg-surface-selected text-ink-display';
-const chipIdle = 'border-line text-ink-muted hover:border-line-strong hover:text-ink-max';
+/**
+ * Words, not pills (PLAN_V2 slice 19).
+ *
+ * Six outlined pills repeated under the hero out-ranked the hero by sheer
+ * repetition. These are quiet text targets with a 1px accent rule under the
+ * selection — still a 44px hit area, just not shouting.
+ *
+ * Proper radio semantics with a roving tabindex, so the group is one tab stop
+ * and the arrow keys move within it, which is what a screen-reader user
+ * expects from a radiogroup. `aria-describedby` carries the tagline, which
+ * used to be reachable only via `title=` — i.e. invisible on touch.
+ */
+const itemBase = `relative grid min-h-11 shrink-0 snap-start place-items-center rounded-md px-3 text-ui transition-colors ${focusRingOffset2}`;
+const itemSelected = 'text-ink-strong';
+const itemIdle = 'text-ink-muted hover:text-ink';
 
 interface PatternPickerProps {
   enabled?: boolean;
@@ -19,6 +31,7 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
   const selectPattern = useSettings((s) => s.selectPattern);
   const customPatterns = useSettings((s) => s.customPatterns);
   const allPatterns = [...BUILT_IN_PATTERNS, ...customPatterns];
+  const scrollerRef = useRef<HTMLDivElement>(null);
 
   // Left/right arrows cycle patterns from anywhere on the page —
   // but not mid-session, where a switch would reset the engine.
@@ -38,61 +51,86 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [enabled, selectedId, selectPattern, customPatterns]);
 
+  // Keep the selection in view when the arrows move it past the fold.
+  useEffect(() => {
+    scrollerRef.current
+      ?.querySelector('[data-selected="true"]')
+      ?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+  }, [selectedId]);
+
   return (
-    /*
-     * `justify-start` with an inner `mx-auto w-max`, NOT `sm:justify-center`.
-     * Centring a flex row that overflows puts its leading items at a negative
-     * offset, and `scrollLeft` cannot go negative — so the first chips became
-     * permanently unreachable once the row was wider than the viewport. The
-     * inner wrapper centres the row when it fits and left-aligns it when it
-     * does not. `max-w-full` keeps the overflow inside this scroller instead
-     * of widening the page, which was shoving the centred hero sideways.
-     */
-    <div
-      role="group"
-      aria-label="Breathing pattern"
-      className="w-full max-w-full snap-x overflow-x-auto px-6 py-2 [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]"
-    >
-      <div className="mx-auto flex w-max items-center gap-2">
-        {allPatterns.map((pattern) => {
-          const selected = pattern.id === selectedId;
-          const selectButton = (
-            <button
-              key={pattern.id}
-              type="button"
-              aria-pressed={selected}
-              title={pattern.tagline}
-              onClick={() => selectPattern(pattern.id)}
-              className={`${pattern.builtIn ? chipBase : `${chipBase} rounded-r-none`} ${selected ? chipSelected : chipIdle}`}
-            >
-              {pattern.chipLabel ?? pattern.name}
-            </button>
-          );
-          if (pattern.builtIn) return selectButton;
-          return (
-            <div key={pattern.id} className="flex shrink-0 items-stretch">
-              {selectButton}
-              <button
-                type="button"
-                onClick={() => onOpenBuilder(pattern)}
-                aria-label={`Edit ${pattern.name}`}
-                title={`Edit ${pattern.name}`}
-                className={`${chipBase} rounded-l-none border-l-0 px-2.5 ${selected ? chipSelected : chipIdle}`}
-              >
-                ✎
-              </button>
-            </div>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => onOpenBuilder(null)}
-          title="Build your own pattern"
-          className={`${chipBase} ${chipIdle} border-dashed`}
-        >
-          Custom…
-        </button>
+    <div className="flex w-full min-w-0 flex-col items-center gap-3">
+      {/*
+       * `justify-start` with an inner `mx-auto w-max`, NOT `sm:justify-center`.
+       * Centring a flex row that overflows puts its leading items at a negative
+       * offset, and `scrollLeft` cannot go negative — so the first patterns
+       * became permanently unreachable once the row was wider than the screen.
+       */}
+      <div
+        ref={scrollerRef}
+        role="radiogroup"
+        aria-label="Breathing pattern"
+        className="w-full max-w-full snap-x overflow-x-auto px-6 py-1 [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]"
+      >
+        <div className="mx-auto flex w-max items-center gap-1">
+          {allPatterns.map((pattern) => {
+            const selected = pattern.id === selectedId;
+            return (
+              <div key={pattern.id} className="flex shrink-0 items-center">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  aria-describedby={`tagline-${pattern.id}`}
+                  data-selected={selected}
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => selectPattern(pattern.id)}
+                  className={`${itemBase} ${selected ? itemSelected : itemIdle}`}
+                >
+                  {pattern.chipLabel ?? pattern.name}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-2 bottom-1 h-px transition-opacity ${
+                      selected ? 'bg-[rgb(var(--accent-core))] opacity-80' : 'opacity-0'
+                    }`}
+                  />
+                  <span id={`tagline-${pattern.id}`} className="sr-only">
+                    {pattern.tagline}
+                  </span>
+                </button>
+                {!pattern.builtIn && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenBuilder(pattern)}
+                    aria-label={`Edit ${pattern.name}`}
+                    className={`${itemBase} ${itemIdle} px-2`}
+                  >
+                    {/* Inline SVG, not U+270E: that glyph renders as a colour
+                        emoji pencil on several Android builds and sits
+                        off-centre against the surrounding sans. */}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      className="h-3.5 w-3.5 fill-current"
+                    >
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
+
+      {/* Outside the radiogroup: this is a mode switch, not a selection. */}
+      <button
+        type="button"
+        onClick={() => onOpenBuilder(null)}
+        className={`rounded-md px-3 py-1 text-meta text-ink-faint transition-colors hover:text-ink-muted ${focusRingOffset2}`}
+      >
+        + Build your own
+      </button>
     </div>
   );
 }

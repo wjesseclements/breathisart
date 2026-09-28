@@ -189,14 +189,16 @@ Goal: the first ten seconds and the last ten seconds stop being the worst part o
 ## Slice 19 — Pattern discovery
 Goal: the data that explains the patterns exists in `patterns.ts` and is rendered nowhere. Fix that, and fix a live scrolling bug.
 
-- [ ] Replace pills with five `text-ui` words in a `role="radiogroup"` with roving tabindex; selection marked by a 1px accent rule 8px beneath. Words are quieter than pills and stop the footer out-ranking the hero by repetition.
-- [ ] **Fix the unreachable-chips bug:** `justify-start` + inner `mx-auto w-max` (not `sm:justify-center`), `snap-x`, `[mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]` edge fade, and `scrollIntoView({ inline: 'nearest' })` on selection change. Today, once the row overflows, leading chips are permanently unreachable because `scrollLeft` cannot go negative.
-- [ ] 44px hit areas via `min-h-11 min-w-11 grid place-items-center` with the visible mark kept small
-- [ ] `aria-describedby` on each control carrying the tagline — currently the only route to it is a `title=` tooltip, invisible on touch
-- [ ] Lift "+ Build your own" **out of the radiogroup** — it's a mode switch, not a selection
-- [ ] Surface `tagline` and `cycleSuggestion` under the pattern title (from slice 17); move the 4-7-8 caution inline to where that pattern is selected
-- [ ] Drop the dashed border on "Custom…" — dashed is the convention for placeholder/disabled, not for an action
-- [ ] Verify: keyboard-only pattern switching announces correctly; overflow row reachable at 320px width; VoiceOver reads name + tagline
+- [x] Replace pills with five `text-ui` words in a `role="radiogroup"` with roving tabindex; selection marked by a 1px accent rule 8px beneath. Words are quieter than pills and stop the footer out-ranking the hero by repetition.
+- [x] **Fix the unreachable-chips bug:** `justify-start` + inner `mx-auto w-max` (not `sm:justify-center`), `snap-x`, `[mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]` edge fade, and `scrollIntoView({ inline: 'nearest' })` on selection change. Today, once the row overflows, leading chips are permanently unreachable because `scrollLeft` cannot go negative.
+- [x] 44px hit areas via `min-h-11 min-w-11 grid place-items-center` with the visible mark kept small
+- [x] `aria-describedby` on each control carrying the tagline — currently the only route to it is a `title=` tooltip, invisible on touch
+- [x] Lift "+ Build your own" **out of the radiogroup** — it's a mode switch, not a selection
+- [x] Surface `tagline` and `cycleSuggestion` under the pattern title (from slice 17); move the 4-7-8 caution inline to where that pattern is selected
+- [x] Drop the dashed border on "Custom…" — dashed is the convention for placeholder/disabled, not for an action
+- [x] Verify: lint clean, 75/75 tests, build OK; captured at 900px.
+- [x] Also fixed here: the onboarding dismiss was a 20x26px text `✕` — failing WCAG 2.5.8 and rendering as a colour emoji on some Android builds. Inline SVG with a 44px hit floor now, same treatment as the picker's edit control.
+- [ ] *Still owed:* VoiceOver pass on the radiogroup, and a real-device check that the overflow row is reachable at 320px (the headless harness clamps to ~500 CSS px, so narrow widths are unverified).
 
 ---
 
