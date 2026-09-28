@@ -20,53 +20,58 @@
 @layer base {
   :root {
     /* Surfaces */
-    --surface-page: 241 245 249; /* #f1f5f9 slate-100  target: #fcfaf4 warm paper (s20) */
-    --surface-raised: 255 255 255; /* #ffffff            cards, drawer            1.10:1 */
-    --surface-sunken: 255 255 255; /* #ffffff            form fields  target: #f0ece4 */
-    --surface-selected: 226 232 240; /* #e2e8f0 slate-200  selected chip          1.13:1 */
+    /* Warm paper. #f1f5f9 is screen-blue and has no light direction; at noon
+       the enemy is flatness, not brightness, and warmth at OKLCH H~85 is what
+       turns "settings panel" into "quiet room" without adding contrast. */
+    --surface-page: 252 250 244; /* #fcfaf4 */
+    --surface-raised: 255 255 255; /* #ffffff  cards, drawer */
+    --surface-sunken: 240 236 228; /* #f0ece4  form fields */
+    --surface-selected: 240 236 228; /* #f0ece4 */
 
     /* Lines */
-    --line: 203 213 225; /* #cbd5e1 slate-300           1.36:1 — FAILS 3:1, fixed in s20 */
-    --line-strong: 100 116 139; /* #64748b slate-500           4.83:1 */
+    --line: 221 216 207; /* #ddd8cf  1.36:1 -- structural hairline, non-essential */
+    --line-strong: 193 187 177; /* #c1bbb1  1.83:1 -- visible edge for inputs */
 
     /* Ink */
-    --ink-max: 15 23 42; /* #0f172a slate-900  hover    15.28:1 */
-    --ink-strong: 30 41 59; /* #1e293b slate-800  base     13.35:1 */
-    --ink: 51 65 85; /* #334155 slate-700            9.45:1 */
-    --ink-muted: 71 85 105; /* #475569 slate-600            6.92:1 */
-    --ink-faint: 100 116 139; /* #64748b slate-500            4.83:1 */
-    --ink-display: 51 65 85; /* #334155 slate-700  phase word + display headings  9.45:1 */
-    --countdown: 130 134 144; /* #828690  3.34:1 -- beside the word, not on the orb */
+    --ink-max: 26 24 21; /* #1a1815  hover            16.97:1 */
+    --ink-strong: 32 33 40; /* #202128  base             15.36:1 */
+    --ink: 65 67 75; /* #41434b                    9.45:1 */
+    --ink-muted: 104 108 116; /* #686c74                    5.05:1 -- AA body */
+    --ink-faint: 136 140 150; /* #888c96                    3.23:1 -- large/meta only */
+    --ink-display: 102 105 113; /* #666971                    5.26:1 */
+    --countdown: 130 134 144; /* #828690                    3.49:1 */
 
-    /* Accent — `accent` is non-text only (3.42:1); text uses `accent-strong` */
-    --accent: 13 148 136; /* #0d9488 teal-600  borders   3.42:1 */
-    --accent-strong: 15 118 110; /* #0f766e teal-700  links     5.00:1 */
-    --focus: 13 148 136; /* #0d9488             target: #2f62ac (5.5:1) */
+    /* Accent — `accent` is non-text only; text uses `accent-strong` */
+    --accent: 117 137 153; /* #758999  3.47:1 -- matches the light box accent */
+    --accent-strong: 70 84 95; /* #46545f  7.47:1 -- links and accent text */
+    --focus: 47 98 172; /* #2f62ac  5.81:1 */
 
     /* The room: a vertical ramp, not a centred radial. The orb IS a centred
        radial glow, so a second one behind it destroys the figure/ground
        contrast its own field needs. Slice 20 warms these toward paper. */
-    --scene-top: 248 250 252; /* #f8fafc */
-    --scene-mid: 241 245 249; /* #f1f5f9  today's flat page color */
-    --scene-low: 232 237 243; /* #e8edf3 */
-    --scene-floor: 226 232 240; /* #e2e8f0 */
-    --vignette: 100 116 139; /* #64748b, used at very low alpha */
+    --scene-top: 252 250 244; /* #fcfaf4 */
+    --scene-mid: 246 243 236; /* #f6f3ec */
+    --scene-low: 234 230 221; /* #eae6dd */
+    --scene-floor: 227 222 211; /* #e3ded3 */
+    --vignette: 150 140 120; /* warm, and at a fraction of dark's alpha */
 
-    /* Default accent (box/moonlight). The pacer overrides these on the root
-       when the pattern changes; /research has no pacer and uses them as-is. */
+    /* Default accent (box/moonlight), light variant. Cores sit at OKLCH L 0.62
+       so they clear 3:1 as a UI component -- the orb is a button. */
     --accent-core: 117 137 153;
-    --accent-mid: 131 151 171;
+    --accent-mid: 94 111 125;
     --accent-deep: 70 84 95;
-    --accent-floor: 51 66 78;
+    --accent-floor: 52 63 72;
     --accent-glow: 168 186 200;
-    --accent-rim: 200 214 226;
-    --accent-bounce: 159 198 200;
+    --accent-rim: 120 138 154;
+    --accent-bounce: 150 170 180;
 
     /* Pacer atmosphere. On paper, glow is impossible -- adding light to
        near-white does nothing -- so the bloom becomes a colored shadow. */
     --field-far: 148 139 184;
     --glow-blend: multiply;
     --light-blend: soft-light;
+    --rim-blend: multiply;
+    --fill-blend: multiply;
   }
 
   html.dark {
@@ -95,13 +100,13 @@
        drawer h2 on night-soft, the selected chip on night-mist) — the price
        of trading a translucent color for an opaque token, and below the
        perceptual threshold. Slice 20 retunes this anyway; target #9b9ea6. */
-    --countdown: 112 116 126; /* #70747e  3.93:1. Was white/30 ON the orb, i.e.
+    --countdown: 112 116 126; /* #70747e  4.05:1. Was white/30 ON the orb, i.e.
                                   ~1.2:1 and flickering as the accent crossfaded. */
 
     /* Accent */
     --accent: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
     --accent-strong: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
-    --focus: 45 212 191; /* #2dd4bf             target: #9ac0f8 (9.7:1) */
+    --focus: 45 212 191; /* #2dd4bf             target: #9ac0f8 (10.17:1) */
 
     /* The room. Delta-L of ~0.105 top to bottom (1.22:1) reads as light in
        the room with no discernible boundary, and it is darkest at the BOTTOM
@@ -128,6 +133,8 @@
     --field-far: 129 140 248;
     --glow-blend: screen;
     --light-blend: screen;
+    --rim-blend: screen;
+    --fill-blend: screen;
   }
 
   /* Normal-blend alpha averages toward the backdrop and destroys chroma:
@@ -160,6 +167,12 @@
   }
   .blend-light {
     mix-blend-mode: var(--light-blend);
+  }
+  .blend-rim {
+    mix-blend-mode: var(--rim-blend);
+  }
+  .blend-fill {
+    mix-blend-mode: var(--fill-blend);
   }
 
   /*

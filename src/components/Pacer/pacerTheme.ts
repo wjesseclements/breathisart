@@ -20,8 +20,7 @@
  * `glow` is deliberately lighter and lower-chroma than `core` because real
  * bloom desaturates toward white as it falls off.
  *
- * Dark values only. Light mode inverts the physics (glow cannot exist on
- * paper) and lands in slice 20.
+ * Light mode inverts the physics — see `LIGHT_ACCENTS`.
  */
 export interface AccentTokens {
   /** Brightest body stop, and the ring stroke: the identity carrier. */
@@ -37,6 +36,61 @@ export interface AccentTokens {
   /** Fill light opposite the key. */
   bounce: string;
 }
+
+/**
+ * Light-mode accents invert the physics. Glow is additive and cannot exist on
+ * paper — adding light to #fcfaf4 produces nothing — so the orb becomes a
+ * mid-tone mass (ink in water) and the bloom becomes a coloured *shadow* at
+ * `multiply`. Cores sit at OKLCH L 0.62 so they clear 3:1 as a UI component,
+ * which matters because the orb is a button.
+ */
+export const LIGHT_ACCENTS: Record<string, AccentTokens> = {
+  box: {
+    core: '#758999',
+    mid: '#5e6f7d',
+    deep: '#46545f',
+    floor: '#343f48',
+    glow: '#a8bac8',
+    rim: '#788a9a',
+    bounce: '#96aab4',
+  },
+  '478': {
+    core: '#927aad',
+    mid: '#76628c',
+    deep: '#5b4b6e',
+    floor: '#443853',
+    glow: '#c2adda',
+    rim: '#8f7aa6',
+    bounce: '#ab94bd',
+  },
+  coherent: {
+    core: '#6087c2',
+    mid: '#4d6d9f',
+    deep: '#3a537d',
+    floor: '#2c3f5e',
+    glow: '#96b9ed',
+    rim: '#6285b5',
+    bounce: '#8aa8cc',
+  },
+  calm: {
+    core: '#639470',
+    mid: '#4f775b',
+    deep: '#3c5c46',
+    floor: '#2d4535',
+    glow: '#99c4a4',
+    rim: '#659672',
+    bounce: '#8cb397',
+  },
+  sigh: {
+    core: '#b67258',
+    mid: '#955c46',
+    deep: '#764634',
+    floor: '#593527',
+    glow: '#e4a78f',
+    rim: '#b07458',
+    bounce: '#cb9679',
+  },
+};
 
 export const DEFAULT_ACCENT: AccentTokens = {
   core: '#acc1d1',
@@ -118,7 +172,9 @@ const VAR_NAMES: Array<[string, keyof AccentTokens]> = [
  * style recalc for every subscriber, which is why the rAF loop never touches
  * them: this runs only when the pattern changes.
  */
-export function applyAccent(a: AccentTokens): void {
+export function applyAccent(patternId: string, isDark: boolean): void {
+  const set = isDark ? PATTERN_ACCENTS : LIGHT_ACCENTS;
+  const a = set[patternId] ?? set.box ?? DEFAULT_ACCENT;
   const root = document.documentElement;
   for (const [name, key] of VAR_NAMES) root.style.setProperty(name, triplet(a[key]));
 }

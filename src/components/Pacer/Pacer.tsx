@@ -5,7 +5,8 @@ import type { BreathPattern } from '../../engine/patterns';
 import { focusRingOffset8 } from '../ui';
 import { phaseWord } from './pacerMath';
 import { OrbLayers } from './OrbLayers';
-import { DEFAULT_ACCENT, PATTERN_ACCENTS, applyAccent } from './pacerTheme';
+import { applyAccent } from './pacerTheme';
+import { useIsDarkTheme } from './useIsDarkTheme';
 import { PatternTitle } from './PatternTitle';
 import { PhaseWord } from './PhaseWord';
 import { ProgressRing } from './ProgressRing';
@@ -33,11 +34,11 @@ interface PacerProps {
  */
 export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
   const reducedMotion = usePrefersReducedMotion();
-  const accent = PATTERN_ACCENTS[pattern.id] ?? DEFAULT_ACCENT;
+  const isDark = useIsDarkTheme();
 
   useEffect(() => {
-    applyAccent(accent);
-  }, [accent]);
+    applyAccent(pattern.id, isDark);
+  }, [pattern.id, isDark]);
 
   const orb = useRef<HTMLDivElement>(null);
   const innerLight = useRef<HTMLDivElement>(null);

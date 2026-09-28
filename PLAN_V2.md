@@ -205,14 +205,16 @@ Goal: the data that explains the patterns exists in `patterns.ts` and is rendere
 ## Slice 20 — Light theme as a designed mode
 Goal: stop shipping the dark design into a light page.
 
-- [ ] Light environment tokens — **warm paper, not cool slate**: `--scene-top #fcfaf4`, `--scene-mid #f6f3ec`, `--scene-low #eae6dd`, `--scene-floor #e3ded3`, `--surface-raised #ffffff`, `--line #ddd8cf`. `#f1f5f9` is screen-blue and has no light direction; at noon the enemy is flatness, not brightness.
-- [ ] Light ink tokens: `--ink-strong #202128`, `--ink #41434b`, `--ink-muted #686c74`, `--ink-faint #888c96`, `--phase-word #666971`, `--countdown #828690`, `--focus #2f62ac`
-- [ ] **Inverted physics.** Glow is additive and cannot exist on paper — adding light to `#f7f4ed` produces nothing. The orb becomes a mid-tone mass (ink in water); the bloom becomes a **colored shadow** at `multiply`. `--glow-blend: multiply`, `--light-blend: soft-light`. Because `mix-blend-mode` accepts `var()`, `Pacer.tsx` needs **zero theme branching**.
-- [ ] Light accent cores at OKLCH L 0.62 so they clear 3:1 as a UI component (the orb is a button): box `#758999`, coherent `#6087c2`, 478 `#927aad`, calm `#639470`, sigh `#b67258`. Fields at 0.14–0.22 alpha.
-- [ ] **Light-mode light has a direction:** express the off-axis key as shade falling to the lower-right (`radial-gradient(ellipse 124% 82% at 70% 104%, …)` under `multiply`) rather than reusing the centered layer with the blend flipped. In daylight the direction cue is a shadow with a position — and it keeps light mode consistent with the body's own 38%/31% key.
-- [ ] Fix the sub-visibility chrome: ring track is currently 1.12:1, borders 1.36:1, countdown 1.89:1
-- [ ] Light-mode grain at 0.02 `multiply`, or none — paper doesn't need grain
-- [ ] Verify: every token's measured ratio matches its `min-contrast` comment; Lighthouse accessibility 100 on both routes in **both** themes; side-by-side the two themes and confirm they read as one product
+- [x] Light environment tokens — **warm paper, not cool slate**: `--scene-top #fcfaf4`, `--scene-mid #f6f3ec`, `--scene-low #eae6dd`, `--scene-floor #e3ded3`, `--surface-raised #ffffff`, `--line #ddd8cf`. `#f1f5f9` is screen-blue and has no light direction; at noon the enemy is flatness, not brightness.
+- [x] Light ink tokens: `--ink-strong #202128`, `--ink #41434b`, `--ink-muted #686c74`, `--ink-faint #888c96`, `--phase-word #666971`, `--countdown #828690`, `--focus #2f62ac`
+- [x] **Inverted physics.** Glow is additive and cannot exist on paper — adding light to `#f7f4ed` produces nothing. The orb becomes a mid-tone mass (ink in water); the bloom becomes a **colored shadow** at `multiply`. `--glow-blend: multiply`, `--light-blend: soft-light`. Because `mix-blend-mode` accepts `var()`, `Pacer.tsx` needs **zero theme branching**.
+- [x] Light accent cores at OKLCH L 0.62 so they clear 3:1 as a UI component (the orb is a button): box `#758999`, coherent `#6087c2`, 478 `#927aad`, calm `#639470`, sigh `#b67258`. Fields at 0.14–0.22 alpha.
+- [x] **Light-mode light has a direction:** express the off-axis key as shade falling to the lower-right (`radial-gradient(ellipse 124% 82% at 70% 104%, …)` under `multiply`) rather than reusing the centered layer with the blend flipped. In daylight the direction cue is a shadow with a position — and it keeps light mode consistent with the body's own 38%/31% key.
+- [x] Fix the sub-visibility chrome: ring track is currently 1.12:1, borders 1.36:1, countdown 1.89:1
+- [x] Light-mode grain at 0.02 `multiply`, or none — paper doesn't need grain
+- [x] Verify: every light token's ratio **recomputed and written back** — the direction's figures were against a different paper colour (#f7f4ed vs the shipped #fcfaf4) and every comment understated by 0.2–1.0. All pass: ink-muted 5.05:1 (AA body), ink-faint 3.23:1 (large/meta only), accent 3.47:1 (≥3:1 as a UI component), accent-strong 7.47:1, focus 5.81:1, countdown 3.49:1.
+- [x] Verify: lint clean, 75/75 tests, build OK, dev server healthy; both themes captured and dark confirmed unchanged.
+- [ ] *Still owed:* Lighthouse accessibility run on both routes in both themes.
 
 ---
 

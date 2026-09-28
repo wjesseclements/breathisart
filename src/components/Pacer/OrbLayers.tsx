@@ -103,7 +103,6 @@ const INNER_LIGHT: CSSProperties = {
 const BOUNCE: CSSProperties = {
   background:
     'radial-gradient(ellipse 60% 60% at 69% 81%, rgb(var(--accent-bounce) / 0.34) 0%, rgb(var(--accent-bounce) / 0.12) 30%, transparent 56%)',
-  mixBlendMode: 'screen',
 };
 
 /** The exhale channel: rises from below as the body empties. Release, not loss. */
@@ -159,7 +158,6 @@ const RIM: CSSProperties = {
     'radial-gradient(circle closest-side at 50% 50%, transparent 0 93.5%, rgb(var(--accent-rim) / 0.30) 96.4%, rgb(var(--accent-rim) / 0.52) 97.8%, rgb(var(--accent-rim) / 0.22) 99%, transparent 100%)',
   WebkitMaskImage: 'linear-gradient(145deg, #000 0%, rgba(0,0,0,0.35) 58%, rgba(0,0,0,0.12) 100%)',
   maskImage: 'linear-gradient(145deg, #000 0%, rgba(0,0,0,0.35) 58%, rgba(0,0,0,0.12) 100%)',
-  mixBlendMode: 'screen',
 };
 
 export function OrbLayers({
@@ -198,7 +196,7 @@ export function OrbLayers({
       <div ref={orb} aria-hidden className="absolute inset-0 rounded-full will-change-transform">
         <div className="absolute inset-0 isolate overflow-hidden rounded-full" style={BODY}>
           <div ref={innerLight} className="blend-light absolute inset-0" style={INNER_LIGHT} />
-          <div ref={bounce} className="absolute inset-0" style={BOUNCE} />
+          <div ref={bounce} className="blend-fill absolute inset-0" style={BOUNCE} />
           <div ref={depth} className="absolute inset-0" style={DEPTH} />
           <div ref={causticA} className="absolute -inset-[18%] will-change-transform">
             <div className="absolute inset-0" style={CAUSTIC_A} />
@@ -209,7 +207,7 @@ export function OrbLayers({
           <div className="absolute inset-0" style={GRAIN} />
           {reducedMotion && <div ref={waterline} className="absolute inset-0" style={WATERLINE} />}
         </div>
-        <div ref={rim} className="absolute -inset-px rounded-full" style={RIM} />
+        <div ref={rim} className="blend-rim absolute -inset-px rounded-full" style={RIM} />
       </div>
     </>
   );
