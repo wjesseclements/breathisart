@@ -26,6 +26,7 @@ import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/pat
 import { decodePhases } from '../engine/shareUrl';
 import { usePageTitle } from '../components/usePageTitle';
 import { useSettings } from '../store/useSettings';
+import { setSessionActive } from '../pwaUpdate';
 
 const HUD_HIDE_DELAY_MS = 4000;
 
@@ -117,6 +118,12 @@ export default function Home() {
     const id = window.setTimeout(() => start(), 50);
     return () => window.clearTimeout(id);
   }, [start]);
+
+  // A pending app update reloads only once nothing is running, so a new
+  // release never interrupts a breath.
+  useEffect(() => {
+    setSessionActive(status !== 'idle');
+  }, [status]);
 
   useWakeLock(status === 'running');
   usePhaseCues(session);
