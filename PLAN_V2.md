@@ -58,8 +58,20 @@ Goal: one place where color lives, so every later slice can be about design inst
 - [x] Sweep all 107 `dark:` sites across 18 files to the token utilities (hotspots: `Research.tsx` ×13, `PreferencesSection.tsx` ×7, `ui.ts`, `index.css`). Per-file, reviewable, no value changes.
 - [x] Extract the focus ring — a 130-character literal pasted into 12 files with three different offsets — into one `focusRing` export in `src/components/ui.ts`
 - [x] Convert `pacerTheme.ts` from literal Tailwind class strings to **data**: `PATTERN_ACCENTS: Record<string, { dark: AccentTokens; light: AccentTokens }>` of hex triples. `Pacer` sets the custom properties in a `style` object on the button; layers reference `rgb(var(--accent-core))` in static classes. The Tailwind-scanner problem that forced the literal strings disappears, and the rAF loop stays color-agnostic — it only ever writes numbers.
-- [x] Verify: lint/test/build green (53 tests). Drift audit done **analytically** rather than by screenshot (the desktop preview was unavailable): every changed class resolved to hex in both themes and compared, and every new utility confirmed to emit real CSS in the built bundle. One documented exception — `whisper` was semi-transparent, so flattening it shifts two raised-surface uses by ≤6/255 on one channel.
-- [ ] *Still owed:* an eyeball screenshot-diff of `/` and `/research` in both themes, next time the preview is up.
+- [x] Verify: lint clean, 53/53 tests, build OK.
+- [x] Verify: **measured** before/after pixel diff of `/` and `/research` in both themes, via headless Chrome against the production build (deterministic: `--virtual-time-budget` fixes the animation frame). Results:
+
+  | view | differing pixels | max channel delta |
+  |---|---|---|
+  | home, light | 0 / 1,080,000 (0.000%) | 0 |
+  | research, light | 0 / 1,080,000 (0.000%) | 0 |
+  | home, dark | 1,446 (0.134%) | 7 |
+  | research, dark | 2,525 (0.234%) | 2 |
+
+  Light mode is pixel-identical. The dark deltas are confined to antialiased text edges on
+  `text-ink-display`, and are the known `whisper` flattening (a translucent color traded for an
+  opaque token — see the note in `index.css`). Predicted ≤6/255 analytically, measured 7 on
+  antialiased edges. Below the perceptual threshold and retuned in slice 20.
 
 > Touches the tailwind token layer and `index.css` — ripples everywhere. Land it alone, commit it alone.
 
