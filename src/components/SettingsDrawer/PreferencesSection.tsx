@@ -1,17 +1,14 @@
 import { useState } from 'react';
 import { getAudioEngineState, playCue, unlockAudio } from '../../engine/audio';
 import { useSettings } from '../../store/useSettings';
+import { focusRing, focusRingOffset2 } from '../ui';
 
-const chip =
-  'rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal';
-const chipOn =
-  'border-teal-600 dark:border-breath-teal bg-slate-200 dark:bg-night-mist text-slate-700 dark:text-whisper';
-const chipOff =
-  'border-slate-300 dark:border-night-mist text-slate-600 dark:text-slate-400 hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-200';
+const chip = `rounded-full border px-3 py-1 text-xs transition-colors ${focusRingOffset2}`;
+const chipOn = 'border-accent bg-surface-selected text-ink-display';
+const chipOff = 'border-line text-ink-muted hover:border-line-strong hover:text-ink-max';
 
-const heading = 'text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400';
-const toggleLabel =
-  'flex items-center justify-between gap-3 text-sm text-slate-700 dark:text-slate-300';
+const heading = 'text-sm uppercase tracking-widest text-ink-faint';
+const toggleLabel = 'flex items-center justify-between gap-3 text-sm text-ink';
 const checkbox = 'h-4 w-4 accent-teal-600';
 
 function OptionChips<T extends string | number | null>({
@@ -90,7 +87,8 @@ export function PreferencesSection() {
               onChange={(e) =>
                 s.setSessionLength(Math.min(180, Math.max(1, Number(e.target.value) || 1)))
               }
-              className="w-20 rounded-md border border-slate-400 dark:border-night-mist bg-white dark:bg-night px-2 py-1 text-center text-sm tabular-nums text-slate-800 dark:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal"
+              // TODO(slice 20): light/dark pair has no exact token — slate-400 / night-mist
+              className={`w-20 rounded-md border border-slate-400 dark:border-night-mist bg-surface-sunken px-2 py-1 text-center text-sm tabular-nums text-ink-strong ${focusRing}`}
             />
           </label>
         )}
@@ -124,7 +122,7 @@ export function PreferencesSection() {
         <button type="button" onClick={playTestTone} className={`${chip} ${chipOff} self-start`}>
           Play test tone
         </button>
-        {audioStatus && <p className="text-xs text-slate-500 dark:text-slate-400">{audioStatus}</p>}
+        {audioStatus && <p className="text-xs text-ink-faint">{audioStatus}</p>}
       </section>
 
       <section className="flex flex-col gap-3">

@@ -2,11 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * Semantic color tokens (PLAN_V2 slice 14).
+ *
+ * Values are RAW CHANNEL TRIPLETS, consumed in tailwind.config.js as
+ * `rgb(var(--token) / <alpha-value>)`. The naive `var(--token)` form would
+ * silently break every Tailwind alpha modifier (`text-ink-muted/60`).
+ *
+ * These are today's exact colors — this slice is a structural refactor with
+ * no visual intent. The `target:` notes record where slices 15/16/20 will
+ * move them, once the layers that consume them exist.
+ *
+ * Contrast ratios are measured against that theme's --surface-page.
+ * Keep them accurate: this comment block is the thing that would have caught
+ * today's 1.05:1 light-mode countdown and 1.36:1 borders.
+ */
 @layer base {
-  html {
-    @apply bg-slate-100 text-slate-800 antialiased;
+  :root {
+    /* Surfaces */
+    --surface-page: 241 245 249; /* #f1f5f9 slate-100  target: #fcfaf4 warm paper (s20) */
+    --surface-raised: 255 255 255; /* #ffffff            cards, drawer            1.10:1 */
+    --surface-sunken: 255 255 255; /* #ffffff            form fields  target: #f0ece4 */
+    --surface-selected: 226 232 240; /* #e2e8f0 slate-200  selected chip          1.13:1 */
+
+    /* Lines */
+    --line: 203 213 225; /* #cbd5e1 slate-300           1.36:1 — FAILS 3:1, fixed in s20 */
+    --line-strong: 100 116 139; /* #64748b slate-500           4.83:1 */
+
+    /* Ink */
+    --ink-max: 15 23 42; /* #0f172a slate-900  hover    15.28:1 */
+    --ink-strong: 30 41 59; /* #1e293b slate-800  base     13.35:1 */
+    --ink: 51 65 85; /* #334155 slate-700            9.45:1 */
+    --ink-muted: 71 85 105; /* #475569 slate-600            6.92:1 */
+    --ink-faint: 100 116 139; /* #64748b slate-500            4.83:1 */
+    --ink-display: 51 65 85; /* #334155 slate-700  phase word + display headings  9.45:1 */
+
+    /* Accent — `accent` is non-text only (3.42:1); text uses `accent-strong` */
+    --accent: 13 148 136; /* #0d9488 teal-600  borders   3.42:1 */
+    --accent-strong: 15 118 110; /* #0f766e teal-700  links     5.00:1 */
+    --focus: 13 148 136; /* #0d9488             target: #2f62ac (5.5:1) */
   }
+
   html.dark {
-    @apply bg-night text-slate-200;
+    /* Surfaces */
+    --surface-page: 11 16 32; /* #0b1020 night       target: a 176deg ramp (s16) */
+    --surface-raised: 17 23 43; /* #11172b night-soft                          1.06:1 */
+    --surface-sunken: 11 16 32; /* #0b1020 night       form fields */
+    --surface-selected: 26 34 56; /* #1a2238 night-mist                         1.20:1 */
+
+    /* Lines */
+    --line: 26 34 56; /* #1a2238 night-mist  1.20:1 — FAILS 3:1, fixed in s16 */
+    --line-strong: 100 116 139; /* #64748b slate-500   shared with light today */
+
+    /* Ink — max/strong and muted/faint collapse to one value each in dark.
+       That collapse IS the "light inherits a dark-first decision" problem;
+       the tokens stay distinct so slice 20 can separate them. */
+    --ink-max: 226 232 240; /* #e2e8f0 slate-200          15.36:1 */
+    --ink-strong: 226 232 240; /* #e2e8f0 slate-200          15.36:1 */
+    --ink: 203 213 225; /* #cbd5e1 slate-300          12.75:1 */
+    --ink-muted: 148 163 184; /* #94a3b8 slate-400           7.38:1 */
+    --ink-faint: 148 163 184; /* #94a3b8 slate-400           7.38:1 */
+    --ink-display: 166 172 182; /* 8.29:1. This replaces `whisper`
+       = rgba(226,232,240,0.72), flattened over --surface-page. Exact for the
+       phase word and the research headings, which sit on the page. The two
+       uses on raised surfaces shift by at most 6/255 on one channel (the
+       drawer h2 on night-soft, the selected chip on night-mist) — the price
+       of trading a translucent color for an opaque token, and below the
+       perceptual threshold. Slice 20 retunes this anyway; target #9b9ea6. */
+
+    /* Accent */
+    --accent: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
+    --accent-strong: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
+    --focus: 45 212 191; /* #2dd4bf             target: #9ac0f8 (9.7:1) */
+  }
+
+  html {
+    @apply bg-surface-page text-ink-strong antialiased;
   }
 }

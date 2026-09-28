@@ -12,7 +12,7 @@ export function Background() {
   const reducedMotion = usePrefersReducedMotion();
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-slate-100 dark:bg-night" />
+      <div className="absolute inset-0 bg-surface-page" />
       <div
         className={`absolute -inset-1/4 bg-[radial-gradient(ellipse_at_center,rgba(45,212,191,0.5),transparent_60%)] opacity-[0.06] ${
           reducedMotion ? '' : 'animate-pulse-slow motion-reduce:animate-none'

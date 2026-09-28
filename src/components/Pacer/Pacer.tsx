@@ -3,6 +3,7 @@ import type { BreathPattern } from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
 import { breathLevel, followLevel, phaseLevelRanges, phaseWord } from './pacerMath';
 import { PATTERN_ACCENTS, DEFAULT_ACCENT } from './pacerTheme';
+import { focusRingOffset8 } from '../ui';
 import { PhaseWord } from './PhaseWord';
 import { ProgressRing } from './ProgressRing';
 import type { BreathSession } from './useBreathSession';
@@ -153,7 +154,7 @@ export function Pacer({ pattern, session }: PacerProps) {
         type="button"
         onClick={session.toggle}
         aria-label={orbLabel}
-        className="relative h-56 w-56 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal sm:h-64 sm:w-64"
+        className={`relative h-56 w-56 rounded-full sm:h-64 sm:w-64 ${focusRingOffset8}`}
       >
         {/* Idle ambient float wraps everything; CSS-animated, idle only. */}
         <div
@@ -162,12 +163,14 @@ export function Pacer({ pattern, session }: PacerProps) {
           <div
             ref={haloOuterRef}
             aria-hidden="true"
-            className={`absolute -inset-10 rounded-full blur-3xl will-change-transform ${accent.halo}`}
+            style={{ backgroundColor: accent.halo }}
+            className="absolute -inset-10 rounded-full blur-3xl will-change-transform"
           />
           <div
             ref={haloInnerRef}
             aria-hidden="true"
-            className={`absolute -inset-4 rounded-full blur-2xl will-change-transform ${accent.halo}`}
+            style={{ backgroundColor: accent.halo }}
+            className="absolute -inset-4 rounded-full blur-2xl will-change-transform"
           />
           <div
             ref={orbRef}
@@ -175,18 +178,24 @@ export function Pacer({ pattern, session }: PacerProps) {
           >
             <div
               ref={accentRef}
-              className={`absolute inset-0 rounded-full opacity-0 ${accent.accentLayer}`}
+              style={{
+                backgroundImage: `linear-gradient(to bottom right, ${accent.accentFrom}, ${accent.accentTo})`,
+              }}
+              className="absolute inset-0 rounded-full opacity-0"
             />
           </div>
           {!idle && showCountdown && (
             <span
               ref={countdownRef}
               aria-hidden="true"
+              // Not tokenized: the numeral sits on the orb, not on a surface,
+              // so a flattened token would be wrong. Slice 17 moves it off the
+              // orb and gives it a real --countdown token.
               className="absolute inset-0 flex items-center justify-center font-display text-2xl font-light tabular-nums text-slate-500/50 dark:text-white/30"
             />
           )}
         </div>
-        <ProgressRing circleRef={ringRef} visible={!idle} colorClass={accent.ring} />
+        <ProgressRing circleRef={ringRef} visible={!idle} color={accent.ring} />
       </button>
 
       <PhaseWord text={idle ? pattern.name : phaseWord(phases[wordIndex] ?? session.phase)} />

@@ -1,7 +1,7 @@
 import type { BreathPattern } from '../engine/patterns';
+import { focusRing } from './ui';
 
-const smallButton =
-  'shrink-0 rounded-full border border-slate-300 dark:border-night-mist px-4 py-1 text-xs text-slate-600 dark:text-slate-400 transition-colors hover:border-teal-600 dark:hover:border-breath-teal hover:text-slate-900 dark:hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal';
+const smallButton = `shrink-0 rounded-full border border-line px-4 py-1 text-xs text-ink-muted transition-colors hover:border-accent hover:text-ink-max ${focusRing}`;
 
 interface SharedPatternBannerProps {
   /** Decoded shared pattern, or null when the link was invalid. */
@@ -15,7 +15,7 @@ export function SharedPatternBanner({ pattern, onSave, onDismiss }: SharedPatter
   return (
     <div
       role="status"
-      className="flex max-w-md flex-wrap items-center gap-3 rounded-xl bg-white px-5 py-3 text-sm text-slate-700 dark:bg-night-soft dark:text-slate-300"
+      className="flex max-w-md flex-wrap items-center gap-3 rounded-xl bg-surface-raised px-5 py-3 text-sm text-ink"
     >
       {pattern ? (
         <>
@@ -23,7 +23,7 @@ export function SharedPatternBanner({ pattern, onSave, onDismiss }: SharedPatter
             <p className="truncate">
               Shared pattern: <span className="font-medium">{pattern.name}</span>
             </p>
-            <p className="truncate text-xs text-slate-500 dark:text-slate-400">{pattern.tagline}</p>
+            <p className="truncate text-xs text-ink-faint">{pattern.tagline}</p>
           </div>
           <button type="button" onClick={onSave} className={smallButton}>
             Save this pattern

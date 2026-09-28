@@ -49,16 +49,17 @@ Goal: one place where color lives, so every later slice can be about design inst
 
 > **Token values in this slice are today's exact colors, not the target palette.** The plan's target values (`--scene-top #171a31`, `--ink-muted #a2a6af`, …) are written as `target:` comments beside each token and get flipped deliberately in slices 15/16/20, where the layers that consume them are actually built. Mixing a structural refactor with a color change in one commit means that if something looks wrong you can't tell which caused it. This keeps the diff screenshot-clean and reviewable per file.
 
-- [ ] Add CSS custom properties to `src/index.css` as **raw channel triplets** — `--accent-core: 172 193 209` — consumed as `rgb(var(--accent-core) / <alpha-value>)`. The naive `var(--x)` form silently breaks every Tailwind alpha modifier (`text-ink-muted/60`); this is the whole reason for the triplet form.
-- [ ] Surface/line tokens at today's values — dark: `--surface-page #0b1020`, `--surface-raised #11172b`, `--surface-sunken #0b1020`, `--surface-selected #1a2238`, `--line #1a2238`; light: `#f1f5f9` / `#ffffff` / `#ffffff` / `#e2e8f0` / `#cbd5e1`
-- [ ] Ink tokens at today's values — dark: `--ink-strong #e2e8f0`, `--ink #cbd5e1`, `--ink-muted #94a3b8`, `--phase-word #a6acb6` (the flattened composite of `whisper` over `night`); light: `#1e293b` / `#334155` / `#475569` / `#334155`
-- [ ] Accent/focus tokens — dark `#2dd4bf`, light `#0d9488` (`--accent-strong` light `#0f766e`)
-- [ ] Map the tokens into `tailwind.config.js` `theme.extend.colors` so `bg-surface-raised` / `text-ink-muted` work as utilities
-- [ ] **Write the measured contrast ratio as a `min-contrast` comment beside every token.** This is the discipline that would have prevented today's 1.05:1 light-mode numeral and 1.2:1 borders.
-- [ ] Sweep all 107 `dark:` sites across 18 files to the token utilities (hotspots: `Research.tsx` ×13, `PreferencesSection.tsx` ×7, `ui.ts`, `index.css`). Per-file, reviewable, no value changes.
-- [ ] Extract the focus ring — a 130-character literal pasted into 12 files with three different offsets — into one `focusRing` export in `src/components/ui.ts`
-- [ ] Convert `pacerTheme.ts` from literal Tailwind class strings to **data**: `PATTERN_ACCENTS: Record<string, { dark: AccentTokens; light: AccentTokens }>` of hex triples. `Pacer` sets the custom properties in a `style` object on the button; layers reference `rgb(var(--accent-core))` in static classes. The Tailwind-scanner problem that forced the literal strings disappears, and the rAF loop stays color-agnostic — it only ever writes numbers.
-- [ ] Verify: screenshot-diff `/` and `/research` in both themes before and after — the only acceptable diffs are sub-1/255 rounding. Lint/test/build green.
+- [x] Add CSS custom properties to `src/index.css` as **raw channel triplets** — `--accent-core: 172 193 209` — consumed as `rgb(var(--accent-core) / <alpha-value>)`. The naive `var(--x)` form silently breaks every Tailwind alpha modifier (`text-ink-muted/60`); this is the whole reason for the triplet form.
+- [x] Surface/line tokens at today's values — dark: `--surface-page #0b1020`, `--surface-raised #11172b`, `--surface-sunken #0b1020`, `--surface-selected #1a2238`, `--line #1a2238`; light: `#f1f5f9` / `#ffffff` / `#ffffff` / `#e2e8f0` / `#cbd5e1`
+- [x] Ink tokens at today's values — dark: `--ink-strong #e2e8f0`, `--ink #cbd5e1`, `--ink-muted #94a3b8`, `--phase-word #a6acb6` (the flattened composite of `whisper` over `night`); light: `#1e293b` / `#334155` / `#475569` / `#334155`
+- [x] Accent/focus tokens — dark `#2dd4bf`, light `#0d9488` (`--accent-strong` light `#0f766e`)
+- [x] Map the tokens into `tailwind.config.js` `theme.extend.colors` so `bg-surface-raised` / `text-ink-muted` work as utilities
+- [x] **Write the measured contrast ratio as a `min-contrast` comment beside every token.** This is the discipline that would have prevented today's 1.05:1 light-mode numeral and 1.2:1 borders.
+- [x] Sweep all 107 `dark:` sites across 18 files to the token utilities (hotspots: `Research.tsx` ×13, `PreferencesSection.tsx` ×7, `ui.ts`, `index.css`). Per-file, reviewable, no value changes.
+- [x] Extract the focus ring — a 130-character literal pasted into 12 files with three different offsets — into one `focusRing` export in `src/components/ui.ts`
+- [x] Convert `pacerTheme.ts` from literal Tailwind class strings to **data**: `PATTERN_ACCENTS: Record<string, { dark: AccentTokens; light: AccentTokens }>` of hex triples. `Pacer` sets the custom properties in a `style` object on the button; layers reference `rgb(var(--accent-core))` in static classes. The Tailwind-scanner problem that forced the literal strings disappears, and the rAF loop stays color-agnostic — it only ever writes numbers.
+- [x] Verify: lint/test/build green (53 tests). Drift audit done **analytically** rather than by screenshot (the desktop preview was unavailable): every changed class resolved to hex in both themes and compared, and every new utility confirmed to emit real CSS in the built bundle. One documented exception — `whisper` was semi-transparent, so flattening it shifts two raised-surface uses by ≤6/255 on one channel.
+- [ ] *Still owed:* an eyeball screenshot-diff of `/` and `/research` in both themes, next time the preview is up.
 
 > Touches the tailwind token layer and `index.css` — ripples everywhere. Land it alone, commit it alone.
 

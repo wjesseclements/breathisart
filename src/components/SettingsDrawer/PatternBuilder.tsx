@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { BreathPattern, Phase } from '../../engine/patterns';
 import { describePhases, validatePhases } from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
-import { pillButton } from '../ui';
+import { focusRing, pillButton } from '../ui';
 import { MiniPreview } from './MiniPreview';
 import { PhaseRow } from './PhaseRow';
 
@@ -64,19 +64,21 @@ export function PatternBuilder({ initial, onBack, onDone }: PatternBuilderProps)
       <button
         type="button"
         onClick={onBack}
-        className="self-start text-sm text-slate-600 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal"
+        className={`self-start text-sm text-ink-muted transition-colors hover:text-ink-max ${focusRing}`}
       >
         ‹ All settings
       </button>
 
-      <label className="flex flex-col gap-1 text-sm text-slate-700 dark:text-slate-300">
+      <label className="flex flex-col gap-1 text-sm text-ink">
         Name
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Evening wind-down"
-          className="rounded-md border border-slate-400 dark:border-night-mist bg-white dark:bg-night px-3 py-2 text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal"
+          // TODO(slice 20): light/dark pair has no exact token — border-slate-400 / border-night-mist (--line is slate-300)
+          // TODO(slice 20): light/dark pair has no exact token — placeholder:text-slate-400 / placeholder:text-slate-600
+          className={`rounded-md border border-slate-400 dark:border-night-mist bg-surface-sunken px-3 py-2 text-sm text-ink-strong placeholder:text-slate-400 dark:placeholder:text-slate-600 ${focusRing}`}
         />
       </label>
 

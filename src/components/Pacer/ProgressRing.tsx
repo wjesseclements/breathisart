@@ -12,20 +12,24 @@ import type { RefObject } from 'react';
 export function ProgressRing({
   circleRef,
   visible,
-  colorClass,
+  color,
 }: {
   circleRef: RefObject<SVGCircleElement>;
   visible: boolean;
-  colorClass: string;
+  /** Sweep color, supplied as a hex string by `pacerTheme`. */
+  color: string;
 }) {
   return (
     <div
       aria-hidden="true"
+      style={{ color }}
       className={`absolute -inset-3 -rotate-90 transition-opacity duration-700 ${
         visible ? 'opacity-100' : 'opacity-0'
-      } ${colorClass}`}
+      }`}
     >
       <svg viewBox="0 0 100 100" className="block h-full w-full">
+        {/* Track stays a literal: at 1.12:1 it is invisible in light mode,
+            and tokenizing it here would be a visual change. Slice 16 fixes it. */}
         <circle
           cx="50"
           cy="50"

@@ -5,8 +5,37 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Dark-first palette (PRD §4): deep navy/charcoal background,
-        // teal→indigo accents for the orb gradient.
+        // Semantic tokens (PLAN_V2 slice 14). Values live in src/index.css as
+        // raw channel triplets so Tailwind's alpha modifiers keep working:
+        // `text-ink-muted/60` resolves, `var(--ink-muted)` alone would not.
+        surface: {
+          page: 'rgb(var(--surface-page) / <alpha-value>)',
+          raised: 'rgb(var(--surface-raised) / <alpha-value>)',
+          sunken: 'rgb(var(--surface-sunken) / <alpha-value>)',
+          selected: 'rgb(var(--surface-selected) / <alpha-value>)',
+        },
+        line: {
+          DEFAULT: 'rgb(var(--line) / <alpha-value>)',
+          strong: 'rgb(var(--line-strong) / <alpha-value>)',
+        },
+        ink: {
+          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
+          max: 'rgb(var(--ink-max) / <alpha-value>)',
+          strong: 'rgb(var(--ink-strong) / <alpha-value>)',
+          muted: 'rgb(var(--ink-muted) / <alpha-value>)',
+          faint: 'rgb(var(--ink-faint) / <alpha-value>)',
+          // The quiet display ink: the phase word and font-display headings.
+          display: 'rgb(var(--ink-display) / <alpha-value>)',
+        },
+
+        accent: {
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          strong: 'rgb(var(--accent-strong) / <alpha-value>)',
+        },
+        focus: 'rgb(var(--focus) / <alpha-value>)',
+
+        // Pacer-only literals (PRD §4). Slices 15/16 replace these with the
+        // per-pattern accent tokens set as custom properties on the orb.
         night: {
           DEFAULT: '#0b1020',
           soft: '#11172b',
@@ -16,7 +45,6 @@ export default {
           teal: '#2dd4bf',
           indigo: '#6366f1',
         },
-        whisper: 'rgba(226, 232, 240, 0.72)',
       },
       fontFamily: {
         display: ['system-ui', 'sans-serif'],

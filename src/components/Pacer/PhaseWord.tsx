@@ -13,8 +13,7 @@ export function PhaseWord({ text }: { text: string }) {
     setShown({ text, prev: shown.text });
   }
 
-  const wordClass =
-    'absolute inset-x-0 font-display text-3xl font-light text-slate-700 dark:text-whisper';
+  const wordClass = 'absolute inset-x-0 font-display text-3xl font-light text-ink-display';
   return (
     <div className="relative h-12 w-full text-center" aria-hidden="true">
       {shown.prev !== null && (

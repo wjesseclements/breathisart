@@ -16,7 +16,7 @@ import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
 import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
 import { SharedPatternBanner } from '../components/SharedPatternBanner';
-import { pillButton } from '../components/ui';
+import { focusRing, focusRingOffset4, pillButton } from '../components/ui';
 import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
@@ -169,11 +169,13 @@ export default function Home() {
       <h1 className="sr-only">Stillpoint — a breath pacer</h1>
       <Background />
 
+      {/* TODO(slice 20): light/dark pair has no exact token — slate-800 / slate-300
+          (the hover pair straddles two token levels: ink-strong and ink) */}
       <button
         type="button"
         onClick={() => setDrawer({ kind: 'menu' })}
         aria-label="Open settings"
-        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-slate-500 transition-[opacity,visibility,color] duration-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal ${
+        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-ink-faint transition-[opacity,visibility,color] duration-500 hover:text-slate-800 dark:hover:text-slate-300 ${focusRing} ${
           idle ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
@@ -229,7 +231,7 @@ export default function Home() {
         <FirstTimeTip />
         <Link
           to="/research"
-          className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal text-sm text-slate-600 underline-offset-4 transition-colors hover:text-teal-700 dark:text-slate-400 dark:hover:text-breath-teal hover:underline"
+          className={`rounded ${focusRingOffset4} text-sm text-ink-muted underline-offset-4 transition-colors hover:text-accent-strong hover:underline`}
         >
           The science of slow breathing
         </Link>

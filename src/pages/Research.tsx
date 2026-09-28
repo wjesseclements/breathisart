@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Background } from '../components/Background';
-import { pillButton } from '../components/ui';
+import { focusRingOffset4, pillButton } from '../components/ui';
 import { usePageTitle } from '../components/usePageTitle';
 import type { StudyCard } from './researchContent';
 import {
@@ -12,27 +12,27 @@ import {
   TECHNIQUE_NOTES,
 } from './researchContent';
 
-const h2 = 'font-display text-xl font-light text-slate-700 dark:text-whisper';
-const body = 'text-[0.95rem] leading-relaxed text-slate-700 dark:text-slate-300';
-const muted = 'text-sm leading-relaxed text-slate-600 dark:text-slate-400';
+const h2 = 'font-display text-xl font-light text-ink-display';
+const body = 'text-[0.95rem] leading-relaxed text-ink';
+const muted = 'text-sm leading-relaxed text-ink-muted';
 
 function StudyCardView({ card }: { card: StudyCard }) {
   return (
-    <article className="flex flex-col gap-3 rounded-2xl bg-white p-6 dark:bg-night-soft">
-      <h3 className="text-base font-medium text-slate-800 dark:text-slate-200">{card.claim}</h3>
+    <article className="flex flex-col gap-3 rounded-2xl bg-surface-raised p-6">
+      <h3 className="text-base font-medium text-ink-strong">{card.claim}</h3>
       <p className={muted}>
-        <span className="font-medium text-slate-500 dark:text-slate-400">What they did — </span>
+        <span className="font-medium text-ink-faint">What they did — </span>
         {card.whatTheyDid}
       </p>
       <p className={muted}>
-        <span className="font-medium text-slate-500 dark:text-slate-400">What they found — </span>
+        <span className="font-medium text-ink-faint">What they found — </span>
         {card.whatTheyFound}
       </p>
       <a
         href={card.citation.url}
         target="_blank"
         rel="noreferrer"
-        className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal text-sm text-teal-700 dark:text-breath-teal underline-offset-4 hover:underline"
+        className={`rounded ${focusRingOffset4} text-sm text-accent-strong underline-offset-4 hover:underline`}
       >
         {card.citation.label}
       </a>
@@ -47,7 +47,7 @@ export default function Research() {
       <Background />
 
       <header className="flex flex-col gap-4">
-        <h1 className="font-display text-3xl font-light text-slate-700 dark:text-whisper">
+        <h1 className="font-display text-3xl font-light text-ink-display">
           The science of slow breathing
         </h1>
         <p className={body}>
@@ -87,7 +87,7 @@ export default function Research() {
         <dl className="flex flex-col gap-4">
           {TECHNIQUE_NOTES.map((t) => (
             <div key={t.name}>
-              <dt className="text-sm font-medium text-slate-800 dark:text-slate-200">{t.name}</dt>
+              <dt className="text-sm font-medium text-ink-strong">{t.name}</dt>
               <dd className={muted}>{t.note}</dd>
             </div>
           ))}
@@ -95,7 +95,7 @@ export default function Research() {
       </section>
 
       <section
-        className="flex flex-col gap-3 rounded-2xl border border-slate-300 p-6 dark:border-night-mist"
+        className="flex flex-col gap-3 rounded-2xl border border-line p-6"
         aria-labelledby="safety"
       >
         <h2 id="safety" className={h2}>
@@ -113,7 +113,7 @@ export default function Research() {
               href={CRISIS_LINE.url}
               target="_blank"
               rel="noreferrer"
-              className="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 dark:focus-visible:outline-breath-teal text-teal-700 dark:text-breath-teal underline underline-offset-4"
+              className={`rounded ${focusRingOffset4} text-accent-strong underline underline-offset-4`}
             >
               {CRISIS_LINE.label}
             </a>
@@ -123,7 +123,7 @@ export default function Research() {
 
       <Link
         to="/"
-        className={`${pillButton} fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-100/80 backdrop-blur dark:bg-night/80`}
+        className={`${pillButton} fixed bottom-6 left-1/2 -translate-x-1/2 bg-surface-page/80 backdrop-blur`}
       >
         ← Back to breathing
       </Link>
