@@ -139,8 +139,18 @@
     }
   }
 
+  /*
+   * Written as properties, not `@apply bg-surface-page text-ink-strong`.
+   * `@apply` in `@layer base` depends on those utilities having been
+   * generated, which is order-fragile: the production build resolved it and
+   * the long-running dev server returned HTTP 500 for this file, blanking the
+   * page. Referencing the custom properties directly has no such dependency.
+   */
   html {
-    @apply bg-surface-page text-ink-strong antialiased;
+    background-color: rgb(var(--surface-page));
+    color: rgb(var(--ink-strong));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Blend modes that flip with the theme. Kept as classes rather than inline
