@@ -189,15 +189,27 @@ export default function Home() {
   }, [status]);
 
   return (
-    /* A grid with ONE child, so the hero is dead-centred and nothing moves
-       when the furniture fades or the HUD hides. 100svh, not 100vh: vh
-       resolves to the LARGEST viewport, so on mobile the orb used to centre
-       in a box 60-115px taller than what you can actually see.
-       `grid-cols-[minmax(0,1fr)]` is load-bearing: an `auto` track sizes to
-       its item's max-content and will happily grow past the viewport, which
-       silently shifted the centred hero ~54px right on a 390px phone. The
-       explicit minmax(0,...) lets the track shrink. */
-    <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] place-items-center overflow-x-hidden px-6">
+    /*
+     * Two rows: the hero centres in whatever space is left above the
+     * furniture, and the furniture sits in normal flow beneath it.
+     *
+     * The furniture used to be `absolute bottom-0` so that hiding it cost no
+     * layout. That worked, and it also meant the two could occupy the same
+     * space on a short viewport -- the footer painted over the Begin button
+     * and, being later in the DOM with pointer events live, swallowed its
+     * clicks. Begin was not covered-looking; it was genuinely dead.
+     *
+     * In-flow with `opacity-0` gets the same zero-shift behaviour without the
+     * overlap: an element at zero opacity still occupies its box, so row 2's
+     * height never changes and the hero never moves when a session starts.
+     * (The original bug was `invisible` inside a single centred flex column,
+     * which pushed the orb above true centre AND stripped the controls from
+     * the tab order. Neither applies here.)
+     *
+     * `grid-cols-[minmax(0,1fr)]` keeps an auto track from sizing to
+     * max-content and growing past the viewport.
+     */
+    <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6">
       <h1 className="sr-only">Stillpoint — a breath pacer</h1>
       <Background roomLightRef={roomLightRef} />
       <SessionProgress
@@ -225,16 +237,17 @@ export default function Home() {
         </svg>
       </button>
 
-      {/* HERO -- the only grid child. 36px inside the group, ~88px to the
-          furniture below, so three things read as one group instead of five
-          equal bands. */}
-      <div className="flex w-full min-w-0 flex-col items-center gap-9 short:gap-4">
+      {/* HERO -- centred in row 1. 36px inside the group, so three things read
+          as one group rather than five equal bands. */}
+      <div className="flex w-full min-w-0 flex-col items-center justify-center gap-9 py-6 short:gap-4">
         <Pacer pattern={pattern} session={session} roomLightRef={roomLightRef} />
 
-        {/* A 1x1 grid, so the slot's height is derived from its tallest
-            payload rather than the old hard-coded h-14, and the four states
-            crossfade in place instead of jump-cutting. */}
-        <div className="grid grid-cols-1 grid-rows-1 place-items-center">
+        {/* A 1x1 grid so the four states crossfade in place rather than
+            jump-cutting. `min-h` because only ONE state is mounted at a time:
+            without it the slot shrinks from the 58px Begin pill to the 37px
+            HUD row, and the centred hero above it slides up ~56px the moment
+            a session starts. Tied to the primary button, the tallest state. */}
+        <div className="grid min-h-[3.625rem] grid-cols-1 grid-rows-1 place-items-center">
           <div className="[grid-area:1/1]">
             {summary !== null && idle ? (
               <SessionSummary
@@ -263,13 +276,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FURNITURE -- absolute, so `opacity-0` costs ZERO layout and the hero
-          never shifts. Never `invisible`: that strips descendants from the tab
-          order AND the accessibility tree, which is how Pause and End used to
-          vanish for keyboard and screen-reader users 4s into every session. */}
+      {/* FURNITURE -- row 2, in flow. `opacity-0` keeps its box, so the hero
+          above it never shifts when a session starts. Never `invisible`: that
+          strips descendants from the tab order AND the accessibility tree,
+          which is how Pause and End used to vanish for keyboard and
+          screen-reader users 4s into every session. */}
       <div
         aria-hidden={!idle}
-        className={`absolute inset-x-0 bottom-0 flex w-full flex-col items-center gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))] transition-opacity duration-500 ${
+        className={`flex w-full min-w-0 flex-col items-center gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))] transition-opacity duration-500 ${
           idle ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >

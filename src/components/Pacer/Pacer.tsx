@@ -192,16 +192,37 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
         <ProgressRing circleRef={ring} visible={!idle && !leading} />
       </button>
 
-      {idle ? (
-        <PatternTitle pattern={pattern} />
-      ) : (
-        <PhaseWord
-          sizeClass={leading ? 'text-title' : wordSizeClass}
-          text={leading ? leadWord : phaseWord(currentPhase)}
-          countdown={leading ? null : showCountdown ? secondsLeft : null}
-          reducedMotion={reducedMotion}
-        />
-      )}
+      {/*
+        Both states occupy one grid cell, so the cell is always as tall as the
+        taller of them -- for every pattern and every width, with no magic
+        number. Rendering only one at a time made the hero shrink by ~56px when
+        a session started (a four-line identity block replaced by a one-line
+        instruction), and the centred layout slid the orb up to match. A jump
+        at the exact moment you are being asked to settle.
+      */}
+      <div className="grid w-full grid-cols-1 grid-rows-1 place-items-center">
+        <div
+          aria-hidden={!idle}
+          className={`[grid-area:1/1] w-full transition-opacity duration-300 ${
+            idle ? 'opacity-100' : 'pointer-events-none opacity-0'
+          }`}
+        >
+          <PatternTitle pattern={pattern} />
+        </div>
+        <div
+          aria-hidden={idle}
+          className={`[grid-area:1/1] w-full transition-opacity duration-300 ${
+            idle ? 'pointer-events-none opacity-0' : 'opacity-100'
+          }`}
+        >
+          <PhaseWord
+            sizeClass={leading ? 'text-title' : wordSizeClass}
+            text={leading ? leadWord : phaseWord(currentPhase)}
+            countdown={leading ? null : showCountdown ? secondsLeft : null}
+            reducedMotion={reducedMotion}
+          />
+        </div>
+      </div>
 
       {/* The pattern itself was never exposed to assistive tech, so arrow-key
           switching was silent. `aria-live` only while running, so changing
