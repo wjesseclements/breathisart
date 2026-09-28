@@ -21,18 +21,45 @@ interface ToneOpts {
   peak: number;
 }
 
+/**
+ * Minimum attack and release, in seconds.
+ *
+ * The old cues used a 40ms attack, which is a click — and a click in an app
+ * whose entire thesis is calm is a bug, not a preference. 200ms is past the
+ * threshold where the onset reads as a transient.
+ */
+const ENVELOPE_S = 0.2;
+
+/**
+ * Two slightly detuned sines through a lowpass, rather than one bare
+ * oscillator. The beating between them gives the tone some body, and rolling
+ * the top off stops it sounding like a test signal.
+ */
 function tone(ac: AudioContext, { from, to, start, duration, peak }: ToneOpts): void {
-  const osc = ac.createOscillator();
   const gain = ac.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(from, start);
-  if (to !== from) osc.frequency.exponentialRampToValueAtTime(to, start + duration);
-  gain.gain.setValueAtTime(0, start);
-  gain.gain.linearRampToValueAtTime(peak, start + 0.04);
+  const filter = ac.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(Math.max(from, to) * 3.2, start);
+  filter.Q.value = 0.6;
+
+  // The attack and release must fit inside the tone, however short it is.
+  const env = Math.min(ENVELOPE_S, duration * 0.45);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(peak, start + env);
+  gain.gain.setValueAtTime(peak, start + duration - env);
   gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-  osc.connect(gain).connect(ac.destination);
-  osc.start(start);
-  osc.stop(start + duration + 0.05);
+
+  for (const detune of [-4, 4]) {
+    const osc = ac.createOscillator();
+    osc.type = 'sine';
+    osc.detune.value = detune;
+    osc.frequency.setValueAtTime(from, start);
+    if (to !== from) osc.frequency.exponentialRampToValueAtTime(to, start + duration);
+    osc.connect(gain);
+    osc.start(start);
+    osc.stop(start + duration + 0.05);
+  }
+  gain.connect(filter).connect(ac.destination);
 }
 
 /** Diagnostic: where the audio engine currently stands. */
@@ -45,8 +72,18 @@ export function getAudioEngineState(): 'uninitialized' | 'unavailable' | AudioCo
  * Creates/resumes the AudioContext. Must be called from inside a user
  * gesture (click/keydown) — browsers refuse audio started elsewhere.
  * Wired to the app's first pointerdown/keydown; no-op afterwards.
+ *
+ * Does nothing if no context exists yet and audio is off: constructing an
+ * AudioContext for a user who never enables cues costs a real audio thread
+ * for nothing.
  */
 export function unlockAudio(): void {
+  if (!ctx) return;
+  if (ctx.state === 'suspended') void ctx.resume();
+}
+
+/** Called the first time a cue is actually wanted. */
+export function ensureAudio(): void {
   const ac = getContext();
   if (ac && ac.state === 'suspended') void ac.resume();
 }
@@ -66,17 +103,19 @@ export function playCue(kind: CueKind, volume: number): void {
     const peak = 0.25 * Math.min(1, volume);
     switch (kind) {
       case 'inhale':
-        tone(ac, { from: 240, to: 420, start: now, duration: 0.5, peak });
+        tone(ac, { from: 240, to: 400, start: now, duration: 0.7, peak: peak * 0.8 });
         break;
       case 'exhale':
-        tone(ac, { from: 420, to: 220, start: now, duration: 0.7, peak });
+        tone(ac, { from: 400, to: 220, start: now, duration: 0.95, peak: peak * 0.8 });
         break;
       case 'hold':
-        tone(ac, { from: 320, to: 320, start: now, duration: 0.12, peak: peak * 0.7 });
+        // Was a 0.12s pip -- a bare click. A soft, longer, quieter note reads
+        // as "settle here" rather than as a notification.
+        tone(ac, { from: 300, to: 296, start: now, duration: 0.55, peak: peak * 0.4 });
         break;
       case 'chime':
-        tone(ac, { from: 523.25, to: 523.25, start: now, duration: 1.1, peak: peak * 0.9 });
-        tone(ac, { from: 659.25, to: 659.25, start: now + 0.18, duration: 1.3, peak: peak * 0.7 });
+        tone(ac, { from: 523.25, to: 523.25, start: now, duration: 1.4, peak: peak * 0.8 });
+        tone(ac, { from: 659.25, to: 659.25, start: now + 0.22, duration: 1.7, peak: peak * 0.6 });
         break;
     }
   };

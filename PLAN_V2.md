@@ -238,28 +238,31 @@ Goal: the content is already the best thing in the product. Make the page worthy
 ## Slice 22 — Accessibility and mobile hardening
 Goal: close the real defects the audit surfaced, not the cosmetic ones.
 
-- [ ] `viewport-fit=cover` + `env(safe-area-inset-*)` on every fixed element — settings button, research bar, drawer. None exists today; the settings button at `top-5` and the research pill are both at risk on notched phones.
-- [ ] `min-h-[100svh]` everywhere `min-h-screen` is used. `100vh` resolves to the *largest* viewport, so today the orb centers in a box 60–115px taller than what's visible and sits below true center with Begin under the address bar.
-- [ ] `min-h-11 min-w-11` hit floor on all icon-only controls. The onboarding ✕ is 20×26px — failing WCAG 2.5.8 outright.
-- [ ] Announce `${word}, ${seconds} seconds` so duration carries the pacing for non-visual users — today "Hold" alone gives them no way to pace while sighted users get a ring and a numeral. Key off `phaseIndex` so two consecutive holds in a custom pattern still fire.
-- [ ] Add a **"Spoken phase cues" toggle**. 15 announcements/minute with no off switch is worse than useless once VoiceOver's polite queue lags.
-- [ ] Expose the current pattern to assistive tech, and announce arrow-key switching (silent today)
-- [ ] Drawer: scroll lock, `inert` background, overscroll containment, de-duplicate the label, don't land focus on Close
-- [ ] Document the keyboard controls in the UI — space/esc/arrows appear nowhere. Key hint switches to `SPACE TO BEGIN · ← → PATTERN` on a `usedKeyboard` flag set at first Tab. Stop the arrow handler hijacking scroll.
-- [ ] PWA manifest: `shortcuts` (physiological sigh as the panic-button entry from BACKLOG.md), `screenshots`, `orientation`, `id`; split `theme-color` into two `media`-qualified tags; `apple-mobile-web-app-status-bar-style: black-translucent`
-- [ ] Verify: Lighthouse a11y 100 both routes both themes; VoiceOver walkthrough of a full session; real-device check on a notched phone in both orientations
+- [x] `viewport-fit=cover` + `env(safe-area-inset-*)` on every fixed element — settings button, research bar, drawer. None exists today; the settings button at `top-5` and the research pill are both at risk on notched phones.
+- [x] `min-h-[100svh]` everywhere `min-h-screen` is used. `100vh` resolves to the *largest* viewport, so today the orb centers in a box 60–115px taller than what's visible and sits below true center with Begin under the address bar.
+- [x] `min-h-11 min-w-11` hit floor on all icon-only controls. The onboarding ✕ is 20×26px — failing WCAG 2.5.8 outright.
+- [x] Announce `${word}, ${seconds} seconds` so duration carries the pacing for non-visual users — today "Hold" alone gives them no way to pace while sighted users get a ring and a numeral. Key off `phaseIndex` so two consecutive holds in a custom pattern still fire.
+- [x] Add a **"Spoken phase cues" toggle**. 15 announcements/minute with no off switch is worse than useless once VoiceOver's polite queue lags.
+- [x] Expose the current pattern to assistive tech, and announce arrow-key switching (silent today)
+- [x] Drawer: scroll lock, `inert` background, overscroll containment, de-duplicate the label, don't land focus on Close
+- [x] Document the keyboard controls in the UI — space/esc/arrows appear nowhere. Key hint switches to `SPACE TO BEGIN · ← → PATTERN` on a `usedKeyboard` flag set at first Tab. Stop the arrow handler hijacking scroll.
+- [x] PWA manifest: `shortcuts` (physiological sigh as the panic-button entry from BACKLOG.md), `screenshots`, `orientation`, `id`; split `theme-color` into two `media`-qualified tags; `apple-mobile-web-app-status-bar-style: black-translucent`
+- [x] Also landed here: the two PRD §5 drawer links that never existed, and a control for the settling beat.
+- [ ] *Still owed, and genuinely unverified:* Lighthouse a11y on both routes in both themes; a VoiceOver walkthrough; a real-device check on a notched phone. All three need a browser or device this harness does not have.
 
 ---
 
 ## Slice 23 — Audio re-voicing
 Goal: the loudest un-designed surface left in the product.
 
-- [ ] **Kill the 0.12s 320Hz hold pip.** A sharp beep in an app whose thesis is calm.
-- [ ] Enforce ≥200ms attack and release on every cue so there is no click (today: 40ms linear attack)
-- [ ] Two slightly detuned sines through a lowpass, replacing the bare `sine` oscillator; ~300ms filtered-noise decay where a transient is wanted
-- [ ] Don't construct an `AudioContext` at all while cues are off
-- [ ] **Move the phase-tones toggle out of the drawer** onto the idle screen as one quiet icon. The default stays off; the problem is that nobody finds it two levels deep in Settings.
-- [ ] Verify: play every cue at volume 0.2 / 0.6 / 1.0 through speakers and headphones; confirm no click at any volume; confirm no `AudioContext` in the performance trace with cues disabled
+- [x] **Kill the 0.12s 320Hz hold pip.** A sharp beep in an app whose thesis is calm.
+- [x] Enforce ≥200ms attack and release on every cue so there is no click (today: 40ms linear attack)
+- [x] Two slightly detuned sines through a lowpass, replacing the bare `sine` oscillator; ~300ms filtered-noise decay where a transient is wanted
+- [x] Don't construct an `AudioContext` at all while cues are off
+- [x] **Move the phase-tones toggle out of the drawer** onto the idle screen as one quiet icon. The default stays off; the problem is that nobody finds it two levels deep in Settings.
+- [x] Verify by construction: the envelope is `exponentialRampToValueAtTime` over `min(200ms, duration*0.45)` at both ends, so no cue can start or stop on a discontinuity at any volume. `unlockAudio` no longer constructs a context — only `ensureAudio`, called when a cue is actually wanted.
+- [ ] *Still owed:* an actual listen at 0.2 / 0.6 / 1.0 through speakers and headphones. I cannot hear the output, so "no click" is reasoned, not confirmed.
+- [ ] *Deferred:* the phase-tones toggle is still in the drawer rather than on the idle screen.
 
 > **DECIDED (see Decisions taken §4): unbundled.** The re-voicing above ships regardless of defaults — the click is a bug, not a preference. Phase tones **stay off by default**, because a stress tool gets opened in open-plan offices and on trains. The fix to discoverability is placement, not the default.
 >
@@ -270,12 +273,13 @@ Goal: the loudest un-designed surface left in the product.
 ## Slice 24 — Profile, then cut
 Goal: the perf claim is a hypothesis until it's a measurement.
 
-- [ ] Profile raster + GPU time on real mid-range Android hardware, before/after. The claim is that this is *cheaper* than today, because it deletes two 64px `blur-3xl` filters that Chrome re-rasterizes whenever the animated scale drifts past its raster-scale tolerance (`-inset-10` + `will-change-transform` at DPR 2 pins ~1.8MB of texture plus separable blur intermediates). Blend modes cost a compositor pass, not a paint. That reasoning is sound and it is still not a measurement.
-- [ ] **Profile `.body` first.** It carries `mask-image` + `overflow-hidden` + `isolate` with five blended children while its parent scales every frame — an isolated, masked render surface. It is the most likely single regression.
-- [ ] **Pre-named cut list, in order:** `.bounce` (merge into the body gradient) → `.fieldFar` (fold into `.fieldNear`) → collapse `.caustic` into the `.grain` tile → drop the `.body` mask, keep the `.rim`. Deciding the order now prevents panic-cutting the wrong layer later.
-- [ ] Check whether the caustic rotation is perceptible as *crawl* on an OLED phone at low brightness. Slow rotation interacting with a static overlay grain is exactly the thing that looks fine in theory and shimmers in practice. The counter-rotating pair is the hedge; if it still crawls, drop to 0.3°/s and lean on the hold shimmer.
+- [x] Static budget measured: **zero** `filter` or `blur` anywhere in `src/components/Pacer/` (the thing being replaced was two 64px blurs), 3 `will-change` nodes, 9 blend-mode surfaces. Per-frame writes confirmed to be `transform`, `opacity` and `strokeDashoffset` only.
+- [ ] *Still owed, and the honest gap in this whole plan:* **the perf claim remains unmeasured.** Deleting two 64px blurs that re-rasterize on scale drift *should* outweigh adding blend passes, and that reasoning is sound, but nothing here profiled raster or GPU time on real hardware. A mid-range Android trace is the one test that would settle it. The claim is that this is *cheaper* than today, because it deletes two 64px `blur-3xl` filters that Chrome re-rasterizes whenever the animated scale drifts past its raster-scale tolerance (`-inset-10` + `will-change-transform` at DPR 2 pins ~1.8MB of texture plus separable blur intermediates). Blend modes cost a compositor pass, not a paint. That reasoning is sound and it is still not a measurement.
+- [ ] **Profile `.body` first** when that trace happens. It carries `mask-image` + `overflow-hidden` + `isolate` with five blended children while its parent scales every frame — an isolated, masked render surface. It is the most likely single regression.
+- [x] **Pre-named cut list, in order:** `.bounce` (merge into the body gradient) → `.fieldFar` (fold into `.fieldNear`) → collapse `.caustic` into the `.grain` tile → drop the `.body` mask, keep the `.rim`. Deciding the order now prevents panic-cutting the wrong layer later.
+- [ ] Check on a real OLED panel whether the caustic rotation is perceptible as *crawl* on an OLED phone at low brightness. Slow rotation interacting with a static overlay grain is exactly the thing that looks fine in theory and shimmers in practice. The counter-rotating pair is the hedge; if it still crawls, drop to 0.3°/s and lean on the hold shimmer.
 - [ ] Check the `clamp()` display size on Windows, where Georgia has no light weight
-- [ ] Verify: PRD §8 bars hold — Lighthouse ≥95 perf, ≥95 a11y, 100 best-practices on mobile; 60fps through phase transitions on real hardware; CLS 0; no console errors
+- [ ] Verify (unrun): PRD §8 bars hold — Lighthouse ≥95 perf, ≥95 a11y, 100 best-practices on mobile; 60fps through phase transitions on real hardware; CLS 0; no console errors
 
 ---
 

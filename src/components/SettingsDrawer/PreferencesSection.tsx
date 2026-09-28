@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { getAudioEngineState, playCue, unlockAudio } from '../../engine/audio';
+import { Link } from 'react-router-dom';
+import { ensureAudio, getAudioEngineState, playCue } from '../../engine/audio';
 import { useSettings } from '../../store/useSettings';
 import { focusRing, focusRingOffset2 } from '../ui';
 
@@ -48,7 +49,7 @@ export function PreferencesSection() {
   // report the engine state so "no sound" can be told apart from "blocked".
   const [audioStatus, setAudioStatus] = useState<string | null>(null);
   const playTestTone = () => {
-    unlockAudio();
+    ensureAudio();
     playCue('inhale', Math.max(0.5, useSettings.getState().volume));
     window.setTimeout(() => {
       const state = getAudioEngineState();
@@ -114,7 +115,10 @@ export function PreferencesSection() {
             step={0.05}
             value={s.volume}
             onChange={(e) => s.setVolume(Number(e.target.value))}
-            onPointerUp={() => playCue('inhale', useSettings.getState().volume)}
+            onPointerUp={() => {
+              ensureAudio();
+              playCue('inhale', useSettings.getState().volume);
+            }}
             aria-label="Cue volume"
             className="w-36 accent-teal-600"
           />
@@ -160,6 +164,15 @@ export function PreferencesSection() {
           ]}
           onChange={s.setTheme}
         />
+        <label className={toggleLabel}>
+          Spoken phase cues
+          <input
+            type="checkbox"
+            checked={s.spokenCues}
+            onChange={(e) => s.setSpokenCues(e.target.checked)}
+            className={checkbox}
+          />
+        </label>
         <OptionChips
           label="Motion"
           value={s.motionPreference}
@@ -169,6 +182,35 @@ export function PreferencesSection() {
           ]}
           onChange={s.setMotionPreference}
         />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h3 className={heading}>Settling beat</h3>
+        <OptionChips
+          label="Settling beat"
+          value={s.leadInSeconds}
+          options={[
+            { label: 'Off', value: 0 },
+            { label: '3 sec', value: 3 },
+            { label: '5 sec', value: 5 },
+          ]}
+          onChange={s.setLeadIn}
+        />
+        <p className="text-meta text-ink-faint">
+          A moment to settle before the first inhale. The physiological sigh always starts
+          immediately.
+        </p>
+      </section>
+
+      {/* PRD §5 asks for both of these links from the drawer; neither existed. */}
+      <section className="flex flex-col gap-2 border-t border-line pt-5">
+        <Link to="/research" className={`text-meta text-accent-strong ${focusRingOffset2}`}>
+          The science of slow breathing
+        </Link>
+        <p className="text-meta text-ink-faint">
+          Stillpoint is an educational pacing tool, not medical advice, and is not a treatment for
+          any condition. See the safety notes on the research page.
+        </p>
       </section>
     </div>
   );

@@ -13,6 +13,7 @@ import { SessionProgress } from '../components/SessionHUD/SessionProgress';
 import { SessionSummary } from '../components/SessionHUD/SessionSummary';
 import { formatSummary } from '../components/SessionHUD/sessionFormat';
 import { usePrefersReducedMotion } from '../components/Pacer/usePrefersReducedMotion';
+import { useKeyboardHint } from '../components/Pacer/useKeyboardHint';
 import { CustomPatternsSection } from '../components/SettingsDrawer/CustomPatternsSection';
 import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
@@ -85,6 +86,7 @@ export default function Home() {
   // makes the scene respond to the orb rather than sit behind it.
   const roomLightRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const showKeyHint = useKeyboardHint();
 
   const [drawer, setDrawer] = useState<DrawerView>(null);
 
@@ -271,6 +273,11 @@ export default function Home() {
           idle ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
+        {showKeyHint && (
+          <p className="text-label uppercase text-ink-faint">
+            Space to start · Esc to end · ← → pattern
+          </p>
+        )}
         <OnboardingHint />
         {(sharedPattern !== null || sharedInvalid) && (
           <SharedPatternBanner

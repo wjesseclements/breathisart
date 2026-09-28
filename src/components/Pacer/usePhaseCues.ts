@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { playCue } from '../../engine/audio';
+import { ensureAudio, playCue } from '../../engine/audio';
 import { useSettings } from '../../store/useSettings';
 import type { BreathSession } from './useBreathSession';
 
@@ -25,7 +25,10 @@ export function usePhaseCues(session: BreathSession): void {
     const key = `${cycles}:${phaseIndex}`;
     if (prevKeyRef.current === key) return;
     prevKeyRef.current = key;
-    if (audioCues) playCue(phase.kind, volume);
+    if (audioCues) {
+      ensureAudio();
+      playCue(phase.kind, volume);
+    }
     if (haptics && 'vibrate' in navigator) navigator.vibrate(20);
   }, [status, phaseIndex, cycles, phase, audioCues, volume, haptics]);
 }

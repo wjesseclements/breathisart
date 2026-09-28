@@ -47,6 +47,29 @@ export function SettingsDrawer({ open, title, onClose, children }: SettingsDrawe
     };
   }, [open]);
 
+  // Lock the page behind the drawer. Without this the background scrolls under
+  // it on touch, and `aria-modal` hides the background from screen readers but
+  // not from the keyboard.
+  useEffect(() => {
+    if (!open) return;
+    const { body } = document;
+    const prev = body.style.overflow;
+    body.style.overflow = 'hidden';
+    const root = document.getElementById('root');
+    const main = root?.querySelector('main');
+    main?.setAttribute('inert', '');
+    return () => {
+      body.style.overflow = prev;
+      main?.removeAttribute('inert');
+    };
+  }, [open]);
+
+  // Focus the panel itself, not the close button: landing on Close announces
+  // "close" as the first thing in a panel the user just chose to open.
+  useEffect(() => {
+    if (open) asideRef.current?.focus();
+  }, [open]);
+
   return (
     <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
       <AnimatePresence>
@@ -65,7 +88,8 @@ export function SettingsDrawer({ open, title, onClose, children }: SettingsDrawe
               aria-modal="true"
               aria-label={title}
               onKeyDown={trapFocus}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-surface-raised p-6"
+              tabIndex={-1}
+              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto overscroll-contain bg-surface-raised p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] focus:outline-none"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
@@ -75,7 +99,6 @@ export function SettingsDrawer({ open, title, onClose, children }: SettingsDrawe
                 <h2 className="font-display text-lg font-light text-ink-display">{title}</h2>
                 <button
                   type="button"
-                  autoFocus
                   onClick={onClose}
                   aria-label="Close settings"
                   className={`rounded-full px-3 py-1 text-ink-muted transition-colors hover:text-ink-max ${focusRing}`}

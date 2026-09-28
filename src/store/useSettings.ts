@@ -27,6 +27,12 @@ interface SettingsState {
   motionPreference: MotionPreference;
   /** First-visit "Follow the orb" line — shown once, never again. */
   onboardingDismissed: boolean;
+  /**
+   * Polite `aria-live` phase announcements. On by default because they are the
+   * only pacing cue a non-visual user has, but switchable: ~15 announcements a
+   * minute with no off switch is worse than useless once the queue lags.
+   */
+  spokenCues: boolean;
   selectPattern: (id: string) => void;
   dismissTip478: () => void;
   dismissOnboarding: () => void;
@@ -40,6 +46,7 @@ interface SettingsState {
   setLeadIn: (seconds: number) => void;
   setTheme: (theme: ThemePreference) => void;
   setMotionPreference: (preference: MotionPreference) => void;
+  setSpokenCues: (on: boolean) => void;
 }
 
 export const useSettings = create<SettingsState>()(
@@ -57,6 +64,7 @@ export const useSettings = create<SettingsState>()(
       theme: 'dark',
       motionPreference: 'system',
       onboardingDismissed: false,
+      spokenCues: true,
       selectPattern: (id) => set({ selectedPatternId: id }),
       dismissTip478: () => set({ tip478Dismissed: true }),
       dismissOnboarding: () => set({ onboardingDismissed: true }),
@@ -80,6 +88,7 @@ export const useSettings = create<SettingsState>()(
       setLeadIn: (seconds) => set({ leadInSeconds: Math.max(0, Math.min(10, seconds)) }),
       setTheme: (theme) => set({ theme }),
       setMotionPreference: (preference) => set({ motionPreference: preference }),
+      setSpokenCues: (on) => set({ spokenCues: on }),
     }),
     { name: 'stillpoint:settings' },
   ),

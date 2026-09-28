@@ -16,6 +16,19 @@ export default defineConfig({
         theme_color: '#0b1020',
         background_color: '#0b1020',
         display: 'standalone',
+        id: '/',
+        orientation: 'any',
+        // The panic button from BACKLOG.md: the physiological sigh, one tap
+        // from the home screen. It is the pattern with a zero lead-in for the
+        // same reason.
+        shortcuts: [
+          {
+            name: 'Physiological sigh',
+            short_name: 'Sigh',
+            description: 'Start the physiological sigh immediately',
+            url: '/?p=in3-in1.5-out6&n=Physiological%20Sigh',
+          },
+        ],
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },

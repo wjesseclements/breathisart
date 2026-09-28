@@ -74,6 +74,7 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
   // WORD_LEAD_S before each boundary so the incoming word lands with the new
   // phase instead of trailing it.
   const showCountdown = useSettings((st) => st.showCountdown);
+  const spokenCues = useSettings((st) => st.spokenCues);
   const [wordIndex, setWordIndex] = useState(session.phaseIndex);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const { onFrame, status } = session;
@@ -183,8 +184,14 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
         />
       )}
 
+      {/* The pattern itself was never exposed to assistive tech, so arrow-key
+          switching was silent. `aria-live` only while running, so changing
+          pattern at idle announces once rather than joining a queue. */}
       <div aria-live="polite" className="sr-only">
-        {announcement}
+        {spokenCues ? announcement : ''}
+      </div>
+      <div aria-live="polite" className="sr-only">
+        {idle ? `${pattern.name}. ${pattern.tagline}` : ''}
       </div>
     </div>
   );
