@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Background } from '../components/Background';
+import { CornerControls } from '../components/CornerControls';
 import { OnboardingHint } from '../components/OnboardingHint';
 import { Pacer } from '../components/Pacer/Pacer';
 import { useBreathSession } from '../components/Pacer/useBreathSession';
@@ -19,7 +20,7 @@ import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
 import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
 import { SharedPatternBanner } from '../components/SharedPatternBanner';
-import { focusRing, linkText, primaryButton } from '../components/ui';
+import { linkText, primaryButton } from '../components/ui';
 import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
@@ -298,57 +299,12 @@ export default function Home() {
           reducedMotion={reducedMotion}
         />
 
-        {/* TODO(slice 20): light/dark pair has no exact token — slate-800 / slate-300
-          (the hover pair straddles two token levels: ink-strong and ink) */}
-        <button
-          type="button"
-          onClick={() => setDrawer({ kind: 'menu' })}
-          aria-label="Open settings"
-          aria-hidden={!idle}
-          tabIndex={idle ? undefined : -1}
-          className={`fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 grid h-11 w-11 place-items-center rounded-full text-ink-faint transition-opacity duration-500 hover:text-slate-800 dark:hover:text-slate-300 ${focusRing} ${
-            idle ? 'opacity-100' : 'pointer-events-none opacity-0'
-          }`}
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
-            <circle cx="5" cy="12" r="1.8" />
-            <circle cx="12" cy="12" r="1.8" />
-            <circle cx="19" cy="12" r="1.8" />
-          </svg>
-        </button>
-
-        {/*
-          Persistent End (PLAN_V2 slice 18). Mirrors the settings button: that
-          one is top-right and idle-only, this one is top-left and session-only,
-          so exactly one corner control is ever on screen.
-
-          The plan specified 28% opacity. That is not shippable: measured
-          against the scene behind it, --ink-faint at 28% is 1.67:1 in dark and
-          1.50:1 in light, under even the 3:1 floor for a non-text control, and
-          it takes 78-87% before a 13px label clears 4.5:1. At that point the
-          alpha is doing nothing. So the quietness comes from the token instead
-          -- --ink-faint is the palette's quietest legible tier, and at full
-          opacity it measures 6.67:1 dark and 6.11:1 light. Dim enough to
-          ignore, which was the point; visible enough to find, which the
-          opacity number would have cost.
-
-          `aria-hidden` because End already exists in the HUD, stays in the
-          accessibility tree even while the HUD is visually faded, and is
-          reachable by keyboard throughout. A second "End, button" would only
-          double-announce. This is a redundant pointer affordance, so it is
-          pointer-only by design.
-        */}
-        <button
-          type="button"
-          onClick={endSession}
-          aria-hidden="true"
-          tabIndex={-1}
-          className={`fixed left-[max(1.25rem,env(safe-area-inset-left))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 grid h-11 place-items-center rounded-full px-3 text-meta tracking-wide text-ink-faint transition-opacity duration-500 hover:text-ink ${
-            cornerEndVisible ? 'opacity-100' : 'pointer-events-none opacity-0'
-          }`}
-        >
-          End
-        </button>
+        <CornerControls
+          idle={idle}
+          inSession={cornerEndVisible}
+          onOpenSettings={() => setDrawer({ kind: 'menu' })}
+          onEnd={endSession}
+        />
 
         {/*
         HERO -- centred in row 1.

@@ -97,15 +97,13 @@ export function PreferencesSection() {
 
       <section className="flex flex-col gap-3">
         <h3 className={heading}>Audio</h3>
-        <label className={toggleLabel}>
-          Phase tones
-          <input
-            type="checkbox"
-            checked={s.audioCues}
-            onChange={(e) => s.setAudioCues(e.target.checked)}
-            className={checkbox}
-          />
-        </label>
+        {/* The on/off switch lives on the home screen now (PLAN_V2 slice 23):
+            two levels deep in here, nobody found it. Say where it went rather
+            than leaving this section looking like a dead end. */}
+        <p className="text-meta text-ink-faint">
+          Phase tones are switched on and off from the speaker icon on the home screen. Volume and
+          the test tone stay here.
+        </p>
         <label className={toggleLabel}>
           Volume
           <input

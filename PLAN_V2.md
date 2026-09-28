@@ -275,7 +275,13 @@ Goal: the loudest un-designed surface left in the product.
 - [x] **Move the phase-tones toggle out of the drawer** onto the idle screen as one quiet icon. The default stays off; the problem is that nobody finds it two levels deep in Settings.
 - [x] Verify by construction: the envelope is `exponentialRampToValueAtTime` over `min(200ms, duration*0.45)` at both ends, so no cue can start or stop on a discontinuity at any volume. `unlockAudio` no longer constructs a context — only `ensureAudio`, called when a cue is actually wanted.
 - [ ] *Still owed:* an actual listen at 0.2 / 0.6 / 1.0 through speakers and headphones. I cannot hear the output, so "no click" is reasoned, not confirmed.
-- [ ] *Deferred:* the phase-tones toggle is still in the drawer rather than on the idle screen.
+- [x] The phase-tones toggle is on the idle screen: a speaker icon paired with the `···`, top-right, idle-only. The default stays off — the fix to discoverability is placement, not the default.
+
+   Switching it **on** plays one cue immediately, inside that click. Two reasons, and the second is the load-bearing one: you hear what you just enabled without starting a session, and iOS only lets an `AudioContext` start inside a user gesture, so this tap is also the unlock. Without it the first real cue of a session can be the one that silently fails.
+
+   The drawer's Audio section keeps Volume and the test tone, and says where the switch went rather than looking like a dead end.
+
+   All three fixed-corner controls moved to `CornerControls.tsx` — left corner means stop, right corner means adjust, and the two sets are never on screen together. `Home.tsx` was 479 lines against a ~150-line convention; this took 44 off it.
 
 > **DECIDED (see Decisions taken §4): unbundled.** The re-voicing above ships regardless of defaults — the click is a bug, not a preference. Phase tones **stay off by default**, because a stress tool gets opened in open-plan offices and on trains. The fix to discoverability is placement, not the default.
 >
