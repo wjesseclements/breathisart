@@ -114,11 +114,6 @@ export default function Home() {
     if (status === 'running' || status === 'idle') setResumedFromAway(false);
   }
 
-  useEffect(() => {
-    const id = window.setTimeout(() => start(), 50);
-    return () => window.clearTimeout(id);
-  }, [start]);
-
   // A pending app update reloads only once nothing is running, so a new
   // release never interrupts a breath.
   useEffect(() => {
