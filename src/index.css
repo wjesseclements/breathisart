@@ -41,9 +41,18 @@
     --ink-display: 102 105 113; /* #666971                    5.26:1 */
     --countdown: 130 134 144; /* #828690                    3.49:1 */
 
-    /* Accent — `accent` is non-text only; text uses `accent-strong` */
-    --accent: 117 137 153; /* #758999  3.47:1 -- matches the light box accent */
-    --accent-strong: 70 84 95; /* #46545f  7.47:1 -- links and accent text */
+    /*
+     * Chrome follows the PATTERN accent rather than carrying its own colour.
+     * These were a fixed teal left over from the pre-overhaul palette, which
+     * meant the drawer and the small buttons were one hue while the orb and
+     * Begin were another -- the app read as two palettes in one screen.
+     *
+     * `accent` is non-text (borders, rules); text uses `accent-strong`, which
+     * maps to the accent's DEEP stop on paper. Measured across all five
+     * patterns: 7.16-7.52:1 in light, 6.39-10.50:1 in dark. All clear AA.
+     */
+    --accent: var(--accent-core);
+    --accent-strong: var(--accent-deep);
     --focus: 47 98 172; /* #2f62ac  5.81:1 */
 
     /* The room: a vertical ramp, not a centred radial. The orb IS a centred
@@ -103,9 +112,10 @@
     --countdown: 112 116 126; /* #70747e  4.05:1. Was white/30 ON the orb, i.e.
                                   ~1.2:1 and flickering as the accent crossfaded. */
 
-    /* Accent */
-    --accent: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
-    --accent-strong: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
+    /* Accent — follows the pattern; see the light-mode note above. On navy the
+       core stop is already the high-contrast one, so text uses it directly. */
+    --accent: var(--accent-core);
+    --accent-strong: var(--accent-core);
     --focus: 45 212 191; /* #2dd4bf             target: #9ac0f8 (10.17:1) */
 
     /* The room. Delta-L of ~0.105 top to bottom (1.22:1) reads as light in

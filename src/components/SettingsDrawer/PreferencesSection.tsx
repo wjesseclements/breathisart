@@ -10,7 +10,7 @@ const chipOff = 'border-line text-ink-muted hover:border-line-strong hover:text-
 
 const heading = 'text-sm uppercase tracking-widest text-ink-faint';
 const toggleLabel = 'flex items-center justify-between gap-3 text-sm text-ink';
-const checkbox = 'h-4 w-4 accent-teal-600';
+const checkbox = 'h-4 w-4 accent-[rgb(var(--accent-core))]';
 
 function OptionChips<T extends string | number | null>({
   label,
@@ -120,7 +120,7 @@ export function PreferencesSection() {
               playCue('inhale', useSettings.getState().volume);
             }}
             aria-label="Cue volume"
-            className="w-36 accent-teal-600"
+            className="w-36 accent-[rgb(var(--accent-core))]"
           />
         </label>
         <button type="button" onClick={playTestTone} className={`${chip} ${chipOff} self-start`}>
