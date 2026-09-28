@@ -36,10 +36,18 @@
     --ink-max: 26 24 21; /* #1a1815  hover            16.97:1 */
     --ink-strong: 32 33 40; /* #202128  base             15.36:1 */
     --ink: 65 67 75; /* #41434b                    9.45:1 */
-    --ink-muted: 104 108 116; /* #686c74                    5.05:1 -- AA body */
-    --ink-faint: 136 140 150; /* #888c96                    3.23:1 -- large/meta only */
-    --ink-display: 102 105 113; /* #666971                    5.26:1 */
-    --countdown: 130 134 144; /* #828690                    3.49:1 */
+    /* The quiet end is set by WCAG 1.4.3, not by taste. `faint` and
+       `countdown` carry text at 11px and 13px, which is small text -- the old
+       comment here claimed "large/meta only", but 13px is not large by any
+       reading of the spec, so 4.5:1 applies and 3.23:1 did not meet it.
+       Second figure in each comment is MEASURED against the darkest place the
+       token actually lands (#dfdbd0, under the orb's multiply shadow), not
+       against --surface-page. Lighthouse checks the declared ancestor
+       background and so reported these ~0.6 too generously. */
+    --ink-muted: 76 78 84; /* #4c4e54          7.97:1 paper   6.01:1 measured */
+    --ink-faint: 93 95 102; /* #5d5f66          6.11:1 paper   4.61:1 measured */
+    --ink-display: 102 105 113; /* #666971      5.26:1 -- display sizes only */
+    --countdown: 93 95 103; /* #5d5f67          6.10:1 paper   4.60:1 measured */
 
     /*
      * Chrome follows the PATTERN accent rather than carrying its own colour.
@@ -109,7 +117,11 @@
        drawer h2 on night-soft, the selected chip on night-mist) — the price
        of trading a translucent color for an opaque token, and below the
        perceptual threshold. Slice 20 retunes this anyway; target #9b9ea6. */
-    --countdown: 112 116 126; /* #70747e  4.05:1. Was white/30 ON the orb, i.e.
+    --countdown: 132 136 148; /* #848894  5.35:1 on page, 4.60:1 measured over
+                                  the lightest scene stop behind it. Was #70747e
+                                  (4.05:1) -- under 4.5:1 at 13px, and invisible
+                                  to Lighthouse, which only ever sees the idle
+                                  screen. Before that it was white/30 ON the orb,
                                   ~1.2:1 and flickering as the accent crossfaded. */
 
     /* Accent — follows the pattern; see the light-mode note above. On navy the

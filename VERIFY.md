@@ -137,19 +137,38 @@ anyone following a shared link, got a dead page. Now `vercel.json` rewrites
 every path to `index.html`, matching what the service worker already did, and
 an unknown path redirects to `/` instead of rendering blank.
 
-**b. Light mode fails WCAG AA on small text.** Not fixed — it's a palette
-change and worth a decision. `--ink-faint` (#888c96) is 3.22:1 on paper, and it
-is used for `text-label` (11px) and `text-meta` (13px). WCAG 1.4.3 wants 4.5:1
-below 24px, so the token's own comment — "large/meta only" — was wrong about
-13px being large. Same story for the research page's uppercase labels, which
-use `--accent-core` (3.47:1) where the palette's documented rule says text
-should use `--accent-strong` (7.47:1).
+**b. Light mode failed WCAG AA on small text.** Fixed. `--ink-faint` (#888c96)
+carried 11px and 13px text at 3.22:1 where the standard wants 4.5:1 — the
+token's own comment said "large/meta only", which was wrong about 13px being
+large.
 
-Lighthouse cannot see a third instance: the in-session countdown is
-`--countdown` (#828690, 3.49:1) at 13px, and the audit only ever sees the idle
-screen.
+Measuring it properly made it worse, not better. Lighthouse checks contrast
+against the declared background of the nearest opaque ancestor, which is
+`--surface-page` (#fcfaf4). The scene ramp and the orb's multiply shadow mean
+the *real* composited background under some of that text is #dfdbd0, so
+"+ Build your own" was actually **2.43:1**, not the 3.22 reported. Every value
+below is solved against the measured background, sampled from the rendered
+pixels rather than assumed.
 
-Dark mode passes all of this at 100.
+| | before | after |
+|---|---:|---:|
+| pattern line, 11px | 2.93 | **5.54** |
+| + Build your own, 13px | 2.43 | **4.61** |
+| session HUD line, 11px | 2.82 | **5.35** |
+| countdown, 13px light | 3.03 | **5.29** |
+| countdown, 13px dark | 3.52 | **4.65** |
+
+The countdown is the one Lighthouse structurally cannot reach — it only exists
+mid-session, and the audit only ever sees the idle screen. It was the sole
+failure in dark mode, which is otherwise clean.
+
+The research page's uppercase eyebrows moved from `--accent-core` (3.47:1) to
+`--accent-strong` (7.47:1), which is what the palette's own documented rule
+already said text should use.
+
+After: light mode scores **100 / 100 / 100** on both routes. Dark mode is
+unchanged to the pixel on both routes — the only dark token that moved is the
+countdown, which isn't on screen until a session runs.
 
 ## 6. VoiceOver
 

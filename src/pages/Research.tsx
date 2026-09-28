@@ -38,7 +38,7 @@ function Section({
   return (
     <section className="flex flex-col gap-5 border-t border-line pt-8" aria-labelledby={id}>
       <div className="flex flex-col gap-2">
-        <p className="text-label uppercase tracking-[0.16em] text-[rgb(var(--accent-core))]">
+        <p className="text-label uppercase tracking-[0.16em] text-[rgb(var(--accent-strong))]">
           {label}
         </p>
         <h2 id={id} className="font-display text-lede font-normal text-ink-strong">
