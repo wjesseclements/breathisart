@@ -39,49 +39,60 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
   }, [enabled, selectedId, selectPattern, customPatterns]);
 
   return (
+    /*
+     * `justify-start` with an inner `mx-auto w-max`, NOT `sm:justify-center`.
+     * Centring a flex row that overflows puts its leading items at a negative
+     * offset, and `scrollLeft` cannot go negative — so the first chips became
+     * permanently unreachable once the row was wider than the viewport. The
+     * inner wrapper centres the row when it fits and left-aligns it when it
+     * does not. `max-w-full` keeps the overflow inside this scroller instead
+     * of widening the page, which was shoving the centred hero sideways.
+     */
     <div
       role="group"
       aria-label="Breathing pattern"
-      className="flex w-full items-center gap-2 overflow-x-auto px-6 py-2 sm:justify-center"
+      className="w-full max-w-full snap-x overflow-x-auto px-6 py-2 [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]"
     >
-      {allPatterns.map((pattern) => {
-        const selected = pattern.id === selectedId;
-        const selectButton = (
-          <button
-            key={pattern.id}
-            type="button"
-            aria-pressed={selected}
-            title={pattern.tagline}
-            onClick={() => selectPattern(pattern.id)}
-            className={`${pattern.builtIn ? chipBase : `${chipBase} rounded-r-none`} ${selected ? chipSelected : chipIdle}`}
-          >
-            {pattern.chipLabel ?? pattern.name}
-          </button>
-        );
-        if (pattern.builtIn) return selectButton;
-        return (
-          <div key={pattern.id} className="flex shrink-0 items-stretch">
-            {selectButton}
+      <div className="mx-auto flex w-max items-center gap-2">
+        {allPatterns.map((pattern) => {
+          const selected = pattern.id === selectedId;
+          const selectButton = (
             <button
+              key={pattern.id}
               type="button"
-              onClick={() => onOpenBuilder(pattern)}
-              aria-label={`Edit ${pattern.name}`}
-              title={`Edit ${pattern.name}`}
-              className={`${chipBase} rounded-l-none border-l-0 px-2.5 ${selected ? chipSelected : chipIdle}`}
+              aria-pressed={selected}
+              title={pattern.tagline}
+              onClick={() => selectPattern(pattern.id)}
+              className={`${pattern.builtIn ? chipBase : `${chipBase} rounded-r-none`} ${selected ? chipSelected : chipIdle}`}
             >
-              ✎
+              {pattern.chipLabel ?? pattern.name}
             </button>
-          </div>
-        );
-      })}
-      <button
-        type="button"
-        onClick={() => onOpenBuilder(null)}
-        title="Build your own pattern"
-        className={`${chipBase} ${chipIdle} border-dashed`}
-      >
-        Custom…
-      </button>
+          );
+          if (pattern.builtIn) return selectButton;
+          return (
+            <div key={pattern.id} className="flex shrink-0 items-stretch">
+              {selectButton}
+              <button
+                type="button"
+                onClick={() => onOpenBuilder(pattern)}
+                aria-label={`Edit ${pattern.name}`}
+                title={`Edit ${pattern.name}`}
+                className={`${chipBase} rounded-l-none border-l-0 px-2.5 ${selected ? chipSelected : chipIdle}`}
+              >
+                ✎
+              </button>
+            </div>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => onOpenBuilder(null)}
+          title="Build your own pattern"
+          className={`${chipBase} ${chipIdle} border-dashed`}
+        >
+          Custom…
+        </button>
+      </div>
     </div>
   );
 }

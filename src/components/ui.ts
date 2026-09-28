@@ -16,5 +16,22 @@ export const focusRingOffset4 = `${FOCUS_BASE} focus-visible:outline-offset-4`;
 /** The orb, which needs the ring clear of its halo. */
 export const focusRingOffset8 = `${FOCUS_BASE} focus-visible:outline-offset-8`;
 
-/** Shared pill-button styling for session controls. */
-export const pillButton = `rounded-full border border-line px-6 py-2 text-sm tracking-wide text-ink transition-colors hover:border-accent ${focusRingOffset4}`;
+/**
+ * Secondary rank: Pause, End, Again, Done, Back.
+ *
+ * There used to be exactly ONE button rank, shared by every control including
+ * Begin — which is why the product's primary action was outranked by five
+ * repeated pattern chips sitting below it.
+ */
+export const pillButton = `rounded-full border border-line px-6 py-2 text-meta tracking-wide text-ink transition-colors hover:border-line-strong ${focusRingOffset4}`;
+
+/**
+ * Primary rank: Begin, and nothing else. The only filled, only warm, only
+ * 17px element on the idle screen — which is all the hierarchy it needs.
+ * Static box-shadow on chrome, never on the pacer, and nothing animated.
+ *
+ * Uses `--accent-core`, the PATTERN accent, not the legacy `--accent` teal:
+ * the button sits directly under the orb, so a teal CTA beneath a moonlight
+ * orb reads as two unrelated palettes.
+ */
+export const primaryButton = `rounded-full border border-[rgb(var(--accent-core)/0.40)] bg-[rgb(var(--accent-core)/0.14)] px-9 py-3.5 text-body font-medium text-ink-strong shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_0_48px_-14px_rgb(var(--accent-core)/0.5)] transition-colors hover:bg-[rgb(var(--accent-core)/0.22)] ${focusRingOffset4}`;

@@ -33,6 +33,7 @@ export default {
           strong: 'rgb(var(--accent-strong) / <alpha-value>)',
         },
         focus: 'rgb(var(--focus) / <alpha-value>)',
+        countdown: 'rgb(var(--countdown) / <alpha-value>)',
 
         // Pacer-only literals (PRD §4). Slices 15/16 replace these with the
         // per-pattern accent tokens set as custom properties on the orb.
@@ -47,7 +48,37 @@ export default {
         },
       },
       fontFamily: {
-        display: ['system-ui', 'sans-serif'],
+        // `ui-serif` is a SYSTEM font: New York on macOS/iOS, Georgia on
+        // Windows, Noto Serif on Android. Zero bytes on an offline-first PWA,
+        // and instantly distinguishable from the SF/Segoe UI chrome -- which
+        // the old ['system-ui','sans-serif'] was not, making every
+        // `font-display` usage a no-op. Known cost: Georgia has no light
+        // weight, so the phase word renders at 400 on Windows.
+        display: [
+          'ui-serif',
+          'Iowan Old Style',
+          'Palatino Linotype',
+          'Georgia',
+          'Noto Serif',
+          'serif',
+        ],
+      },
+      // Seven named roles. The app had 24x text-sm, 10x text-xs, two isolated
+      // text-3xl and NOTHING between 20px and 30px -- with no mid-scale, every
+      // attempt at hierarchy had to be made with color, which is why the idle
+      // screen read as five equal-weight bands. Ratios ~1.18 at the bottom for
+      // dense meta, ~1.43 at the top for drama.
+      fontSize: {
+        label: ['0.6875rem', { lineHeight: '1', letterSpacing: '0.16em' }],
+        meta: ['0.8125rem', { lineHeight: '1.5', letterSpacing: '0.01em' }],
+        ui: ['0.9375rem', { lineHeight: '1.4' }],
+        body: ['1.0625rem', { lineHeight: '1.65' }],
+        lede: ['1.25rem', { lineHeight: '1.45' }],
+        title: ['1.75rem', { lineHeight: '1.15', letterSpacing: '-0.012em' }],
+        display: ['clamp(2.5rem,8.5vw,4.25rem)', { lineHeight: '1', letterSpacing: '-0.022em' }],
+      },
+      screens: {
+        short: { raw: '(max-height: 500px)' },
       },
       keyframes: {
         'word-in': { from: { opacity: '0' }, to: { opacity: '1' } },
@@ -67,8 +98,8 @@ export default {
         },
       },
       animation: {
-        'word-in': 'word-in 600ms ease-out forwards',
-        'word-out': 'word-out 600ms ease-out forwards',
+        'word-in': 'word-in 200ms ease-out 200ms both',
+        'word-out': 'word-out 200ms ease-in forwards',
         ambient: 'ambient 11s ease-in-out infinite',
         'sky-drift': 'sky-drift 27s ease-in-out infinite',
       },

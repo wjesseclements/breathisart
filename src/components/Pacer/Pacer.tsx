@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSettings } from '../../store/useSettings';
 import type { RefObject } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
 import { focusRingOffset8 } from '../ui';
 import { phaseWord } from './pacerMath';
 import { OrbLayers } from './OrbLayers';
 import { DEFAULT_ACCENT, PATTERN_ACCENTS, applyAccent } from './pacerTheme';
+import { PatternTitle } from './PatternTitle';
 import { PhaseWord } from './PhaseWord';
 import { ProgressRing } from './ProgressRing';
 import { useOrbPainter } from './useOrbPainter';
@@ -70,7 +72,9 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
   // The displayed word runs slightly ahead of the engine: its crossfade starts
   // WORD_LEAD_S before each boundary so the incoming word lands with the new
   // phase instead of trailing it.
+  const showCountdown = useSettings((st) => st.showCountdown);
   const [wordIndex, setWordIndex] = useState(session.phaseIndex);
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const { onFrame, status } = session;
   // While frames aren't flowing (idle/paused/pattern change), track the
   // engine's phase directly (render-phase adjustment, as in PhaseWord).
@@ -83,10 +87,11 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
     else drawFrame(lastFrameRef.current.phaseIndex, lastFrameRef.current.t, 0, 0);
     return onFrame((snap) => {
       drawFrame(snap.phaseIndex, snap.t, snap.elapsed, snap.cycles);
-      const secondsLeft = phases[snap.phaseIndex].seconds * (1 - snap.t);
-      setWordIndex(
-        secondsLeft <= WORD_LEAD_S ? (snap.phaseIndex + 1) % phases.length : snap.phaseIndex,
-      );
+      const left = phases[snap.phaseIndex].seconds * (1 - snap.t);
+      setWordIndex(left <= WORD_LEAD_S ? (snap.phaseIndex + 1) % phases.length : snap.phaseIndex);
+      // Whole seconds only, so this is a handful of renders per phase rather
+      // than one per frame.
+      setSecondsLeft(Math.max(1, Math.ceil(left)));
     });
   }, [onFrame, status, drawFrame, phases, lastFrameRef]);
 
@@ -150,7 +155,15 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
         <ProgressRing circleRef={ring} visible={!idle} />
       </button>
 
-      <PhaseWord text={idle ? pattern.name : phaseWord(phases[wordIndex] ?? session.phase)} />
+      {idle ? (
+        <PatternTitle pattern={pattern} />
+      ) : (
+        <PhaseWord
+          text={phaseWord(phases[wordIndex] ?? session.phase)}
+          countdown={showCountdown ? secondsLeft : null}
+          reducedMotion={reducedMotion}
+        />
+      )}
 
       <div aria-live="polite" className="sr-only">
         {announcement}

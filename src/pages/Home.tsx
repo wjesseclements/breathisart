@@ -16,7 +16,7 @@ import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
 import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
 import { SharedPatternBanner } from '../components/SharedPatternBanner';
-import { focusRing, focusRingOffset4, pillButton } from '../components/ui';
+import { focusRing, focusRingOffset4, primaryButton } from '../components/ui';
 import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
@@ -171,7 +171,15 @@ export default function Home() {
   }, [status]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 py-10">
+    /* A grid with ONE child, so the hero is dead-centred and nothing moves
+       when the furniture fades or the HUD hides. 100svh, not 100vh: vh
+       resolves to the LARGEST viewport, so on mobile the orb used to centre
+       in a box 60-115px taller than what you can actually see.
+       `grid-cols-[minmax(0,1fr)]` is load-bearing: an `auto` track sizes to
+       its item's max-content and will happily grow past the viewport, which
+       silently shifted the centred hero ~54px right on a 390px phone. The
+       explicit minmax(0,...) lets the track shrink. */
+    <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] place-items-center overflow-x-hidden px-6">
       <h1 className="sr-only">Stillpoint — a breath pacer</h1>
       <Background roomLightRef={roomLightRef} />
 
@@ -181,8 +189,10 @@ export default function Home() {
         type="button"
         onClick={() => setDrawer({ kind: 'menu' })}
         aria-label="Open settings"
-        className={`fixed right-5 top-5 z-30 rounded-full px-3 py-1 text-xl tracking-widest text-ink-faint transition-[opacity,visibility,color] duration-500 hover:text-slate-800 dark:hover:text-slate-300 ${focusRing} ${
-          idle ? 'visible opacity-100' : 'invisible opacity-0'
+        aria-hidden={!idle}
+        tabIndex={idle ? undefined : -1}
+        className={`fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 grid h-11 w-11 place-items-center rounded-full text-ink-faint transition-opacity duration-500 hover:text-slate-800 dark:hover:text-slate-300 ${focusRing} ${
+          idle ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
@@ -192,34 +202,50 @@ export default function Home() {
         </svg>
       </button>
 
-      <Pacer pattern={pattern} session={session} roomLightRef={roomLightRef} />
+      {/* HERO -- the only grid child. 36px inside the group, ~88px to the
+          furniture below, so three things read as one group instead of five
+          equal bands. */}
+      <div className="flex w-full min-w-0 flex-col items-center gap-9 short:gap-4">
+        <Pacer pattern={pattern} session={session} roomLightRef={roomLightRef} />
 
-      <div className="flex h-14 items-center justify-center">
-        {summary !== null && idle ? (
-          <SessionSummary
-            text={summary}
-            onAgain={() => {
-              setSummary(null);
-              start();
-            }}
-            onDone={() => setSummary(null)}
-          />
-        ) : idle ? (
-          <button type="button" onClick={start} className={pillButton}>
-            Begin
-          </button>
-        ) : (
-          <SessionHUD
-            session={session}
-            visible={status === 'paused' || !hud.hidden}
-            onEnd={endSession}
-          />
-        )}
+        {/* A 1x1 grid, so the slot's height is derived from its tallest
+            payload rather than the old hard-coded h-14, and the four states
+            crossfade in place instead of jump-cutting. */}
+        <div className="grid grid-cols-1 grid-rows-1 place-items-center">
+          <div className="[grid-area:1/1]">
+            {summary !== null && idle ? (
+              <SessionSummary
+                text={summary}
+                onAgain={() => {
+                  setSummary(null);
+                  start();
+                }}
+                onDone={() => setSummary(null)}
+              />
+            ) : idle ? (
+              <button type="button" onClick={start} className={primaryButton}>
+                Begin
+              </button>
+            ) : (
+              <SessionHUD
+                session={session}
+                pattern={pattern}
+                visible={status === 'paused' || !hud.hidden}
+                onEnd={endSession}
+              />
+            )}
+          </div>
+        </div>
       </div>
 
+      {/* FURNITURE -- absolute, so `opacity-0` costs ZERO layout and the hero
+          never shifts. Never `invisible`: that strips descendants from the tab
+          order AND the accessibility tree, which is how Pause and End used to
+          vanish for keyboard and screen-reader users 4s into every session. */}
       <div
-        className={`flex w-full flex-col items-center gap-6 transition-[opacity,visibility] duration-500 ${
-          idle ? 'visible opacity-100' : 'invisible opacity-0'
+        aria-hidden={!idle}
+        className={`absolute inset-x-0 bottom-0 flex w-full flex-col items-center gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))] transition-opacity duration-500 ${
+          idle ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
         <OnboardingHint />

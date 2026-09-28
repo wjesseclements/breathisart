@@ -36,6 +36,7 @@
     --ink-muted: 71 85 105; /* #475569 slate-600            6.92:1 */
     --ink-faint: 100 116 139; /* #64748b slate-500            4.83:1 */
     --ink-display: 51 65 85; /* #334155 slate-700  phase word + display headings  9.45:1 */
+    --countdown: 130 134 144; /* #828690  3.34:1 -- beside the word, not on the orb */
 
     /* Accent — `accent` is non-text only (3.42:1); text uses `accent-strong` */
     --accent: 13 148 136; /* #0d9488 teal-600  borders   3.42:1 */
@@ -94,6 +95,8 @@
        drawer h2 on night-soft, the selected chip on night-mist) — the price
        of trading a translucent color for an opaque token, and below the
        perceptual threshold. Slice 20 retunes this anyway; target #9b9ea6. */
+    --countdown: 112 116 126; /* #70747e  3.93:1. Was white/30 ON the orb, i.e.
+                                  ~1.2:1 and flickering as the accent crossfaded. */
 
     /* Accent */
     --accent: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */

@@ -1,34 +1,59 @@
+import type { BreathPattern } from '../../engine/patterns';
 import type { BreathSession } from '../Pacer/useBreathSession';
 import { pillButton } from '../ui';
 import { formatClock } from './sessionFormat';
 
 interface SessionHUDProps {
   session: BreathSession;
+  pattern: BreathPattern;
   visible: boolean;
   onEnd: () => void;
 }
 
-/** Minimal in-session controls: elapsed time, cycles, pause/resume, end. */
-export function SessionHUD({ session, visible, onEnd }: SessionHUDProps) {
+/**
+ * In-session controls (PLAN_V2 slice 17).
+ *
+ * Two structural fixes:
+ *
+ * 1. **It fades TO something, not out of existence.** When the HUD auto-hides
+ *    after 4s the slot used to go empty, which is most of why the session
+ *    state read as dead space. Now an ambient line takes its place, keeping
+ *    the lower anchor alive and moving the cycle count off the control row
+ *    where it was competing with the buttons.
+ * 2. **`opacity`, never `visibility`.** `invisible` removes descendants from
+ *    the tab order and the accessibility tree, so Pause and End used to
+ *    disappear entirely for keyboard and screen-reader users. `End` is also
+ *    always reachable now — the app warns that 4-7-8 causes lightheadedness,
+ *    and the stop button should not be invisible when that happens.
+ */
+export function SessionHUD({ session, pattern, visible, onEnd }: SessionHUDProps) {
   return (
-    <div
-      className={`flex items-center gap-5 transition-[opacity,visibility] duration-500 ${
-        visible ? 'visible opacity-100' : 'invisible opacity-0'
-      }`}
-    >
-      <span className="text-sm tabular-nums text-ink-muted">
-        <span className="sr-only">Elapsed time </span>
-        {formatClock(session.elapsedSeconds)}
-      </span>
-      <span className="text-sm tabular-nums text-ink-muted">
-        {session.cycles} {session.cycles === 1 ? 'cycle' : 'cycles'}
-      </span>
-      <button type="button" onClick={session.toggle} className={pillButton}>
-        {session.status === 'running' ? 'Pause' : 'Resume'}
-      </button>
-      <button type="button" onClick={onEnd} className={pillButton}>
-        End
-      </button>
+    <div className="grid grid-cols-1 grid-rows-1 place-items-center">
+      <div
+        className={`[grid-area:1/1] flex items-center gap-5 transition-opacity duration-500 ${
+          visible ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+      >
+        <span className="text-meta tabular-nums text-ink-muted">
+          <span className="sr-only">Elapsed time </span>
+          {formatClock(session.elapsedSeconds)}
+        </span>
+        <button type="button" onClick={session.toggle} className={pillButton}>
+          {session.status === 'running' ? 'Pause' : 'Resume'}
+        </button>
+        <button type="button" onClick={onEnd} className={pillButton}>
+          End
+        </button>
+      </div>
+
+      <p
+        aria-hidden="true"
+        className={`[grid-area:1/1] text-label uppercase tabular-nums text-ink-faint transition-opacity duration-500 ${
+          visible ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        {pattern.name} · cycle {session.cycles + 1}
+      </p>
     </div>
   );
 }
