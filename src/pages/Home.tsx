@@ -278,118 +278,127 @@ export default function Home() {
      * `grid-cols-[minmax(0,1fr)]` keeps an auto track from sizing to
      * max-content and growing past the viewport.
      */
-    <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6">
-      <h1 className="sr-only">Stillpoint — a breath pacer</h1>
-      <Background roomLightRef={roomLightRef} />
-      <SessionProgress
-        session={session}
-        limitSeconds={sessionLengthMin === null ? null : sessionLengthMin * 60}
-        reducedMotion={reducedMotion}
-      />
-
-      {/* TODO(slice 20): light/dark pair has no exact token — slate-800 / slate-300
-          (the hover pair straddles two token levels: ink-strong and ink) */}
-      <button
-        type="button"
-        onClick={() => setDrawer({ kind: 'menu' })}
-        aria-label="Open settings"
-        aria-hidden={!idle}
-        tabIndex={idle ? undefined : -1}
-        className={`fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 grid h-11 w-11 place-items-center rounded-full text-ink-faint transition-opacity duration-500 hover:text-slate-800 dark:hover:text-slate-300 ${focusRing} ${
-          idle ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-      >
-        <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
-          <circle cx="5" cy="12" r="1.8" />
-          <circle cx="12" cy="12" r="1.8" />
-          <circle cx="19" cy="12" r="1.8" />
-        </svg>
-      </button>
-
-      {/* HERO -- centred in row 1. 36px inside the group, so three things read
-          as one group rather than five equal bands. */}
-      <div className="flex w-full min-w-0 flex-col items-center justify-center gap-9 py-6 short:gap-4">
-        <Pacer
-          pattern={pattern}
+    <>
+      <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6">
+        <h1 className="sr-only">Stillpoint — a breath pacer</h1>
+        <Background roomLightRef={roomLightRef} />
+        <SessionProgress
           session={session}
-          roomLightRef={roomLightRef}
-          showTitle={summary === null}
+          limitSeconds={sessionLengthMin === null ? null : sessionLengthMin * 60}
+          reducedMotion={reducedMotion}
         />
 
-        {/* A 1x1 grid so the four states crossfade in place rather than
+        {/* TODO(slice 20): light/dark pair has no exact token — slate-800 / slate-300
+          (the hover pair straddles two token levels: ink-strong and ink) */}
+        <button
+          type="button"
+          onClick={() => setDrawer({ kind: 'menu' })}
+          aria-label="Open settings"
+          aria-hidden={!idle}
+          tabIndex={idle ? undefined : -1}
+          className={`fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 grid h-11 w-11 place-items-center rounded-full text-ink-faint transition-opacity duration-500 hover:text-slate-800 dark:hover:text-slate-300 ${focusRing} ${
+            idle ? 'opacity-100' : 'pointer-events-none opacity-0'
+          }`}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+            <circle cx="5" cy="12" r="1.8" />
+            <circle cx="12" cy="12" r="1.8" />
+            <circle cx="19" cy="12" r="1.8" />
+          </svg>
+        </button>
+
+        {/* HERO -- centred in row 1. 36px inside the group, so three things read
+          as one group rather than five equal bands. */}
+        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-9 py-6 short:gap-4">
+          <Pacer
+            pattern={pattern}
+            session={session}
+            roomLightRef={roomLightRef}
+            showTitle={summary === null}
+          />
+
+          {/* A 1x1 grid so the four states crossfade in place rather than
             jump-cutting. `min-h` because only ONE state is mounted at a time:
             without it the slot shrinks from the 58px Begin pill to the 37px
             HUD row, and the centred hero above it slides up ~56px the moment
             a session starts. Tied to the primary button, the tallest state. */}
-        <div className="grid min-h-[3.625rem] grid-cols-1 grid-rows-1 place-items-center">
-          <div className="[grid-area:1/1]">
-            {summary !== null && idle ? (
-              <SessionSummary
-                patternName={pattern.name}
-                time={summary.time}
-                cycles={summary.cycles}
-                onAgain={() => {
-                  setSummary(null);
-                  start();
-                }}
-                onDone={() => setSummary(null)}
-              />
-            ) : idle ? (
-              <button type="button" onClick={start} className={primaryButton}>
-                Begin
-              </button>
-            ) : (
-              <SessionHUD
-                resumedFromAway={resumedFromAway}
-                session={session}
-                pattern={pattern}
-                limitSeconds={sessionLengthMin === null ? null : sessionLengthMin * 60}
-                finishing={finishing}
-                visible={status === 'paused' || !hud.hidden}
-                onEnd={endSession}
-              />
-            )}
+          <div className="grid min-h-[3.625rem] grid-cols-1 grid-rows-1 place-items-center">
+            <div className="[grid-area:1/1]">
+              {summary !== null && idle ? (
+                <SessionSummary
+                  patternName={pattern.name}
+                  time={summary.time}
+                  cycles={summary.cycles}
+                  onAgain={() => {
+                    setSummary(null);
+                    start();
+                  }}
+                  onDone={() => setSummary(null)}
+                />
+              ) : idle ? (
+                <button type="button" onClick={start} className={primaryButton}>
+                  Begin
+                </button>
+              ) : (
+                <SessionHUD
+                  resumedFromAway={resumedFromAway}
+                  session={session}
+                  pattern={pattern}
+                  limitSeconds={sessionLengthMin === null ? null : sessionLengthMin * 60}
+                  finishing={finishing}
+                  visible={status === 'paused' || !hud.hidden}
+                  onEnd={endSession}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* FURNITURE -- row 2, in flow. `opacity-0` keeps its box, so the hero
+        {/* FURNITURE -- row 2, in flow. `opacity-0` keeps its box, so the hero
           above it never shifts when a session starts. Never `invisible`: that
           strips descendants from the tab order AND the accessibility tree,
           which is how Pause and End used to vanish for keyboard and
           screen-reader users 4s into every session. */}
-      <div
-        aria-hidden={!idle}
-        className={`flex w-full min-w-0 flex-col items-center gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))] transition-opacity duration-500 ${
-          idle ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-      >
-        {showKeyHint && (
-          <p className="text-label uppercase text-ink-faint">
-            Space to start · Esc to end · ← → pattern
-          </p>
-        )}
-        <OnboardingHint />
-        {(sharedPattern !== null || sharedInvalid) && (
-          <SharedPatternBanner
-            pattern={sharedPattern}
-            onSave={saveShared}
-            onDismiss={clearShared}
-          />
-        )}
-        <PatternPicker
-          enabled={idle && !drawerOpen}
-          onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}
-        />
-        <FirstTimeTip />
-        <Link
-          to="/research"
-          className={`rounded ${focusRingOffset4} text-sm text-ink-muted underline-offset-4 transition-colors hover:text-accent-strong hover:underline`}
+        <div
+          aria-hidden={!idle}
+          className={`flex w-full min-w-0 flex-col items-center gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))] transition-opacity duration-500 ${
+            idle ? 'opacity-100' : 'pointer-events-none opacity-0'
+          }`}
         >
-          The science of slow breathing
-        </Link>
-      </div>
+          {showKeyHint && (
+            <p className="text-label uppercase text-ink-faint">
+              Space to start · Esc to end · ← → pattern
+            </p>
+          )}
+          <OnboardingHint />
+          {(sharedPattern !== null || sharedInvalid) && (
+            <SharedPatternBanner
+              pattern={sharedPattern}
+              onSave={saveShared}
+              onDismiss={clearShared}
+            />
+          )}
+          <PatternPicker
+            enabled={idle && !drawerOpen}
+            onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}
+          />
+          <FirstTimeTip />
+          <Link
+            to="/research"
+            className={`rounded ${focusRingOffset4} text-sm text-ink-muted underline-offset-4 transition-colors hover:text-accent-strong hover:underline`}
+          >
+            The science of slow breathing
+          </Link>
+        </div>
+      </main>
 
+      {/*
+       * OUTSIDE <main>, and that is load-bearing. The drawer marks `<main>`
+       * `inert` while it is open so the page behind it is unreachable by
+       * keyboard. When the drawer was a child of <main> that inert applied to
+       * the drawer itself: every control inside it went dead, including Close,
+       * with no way out.
+       */}
       <SettingsDrawer
         open={drawerOpen}
         onClose={() => setDrawer(null)}
@@ -419,6 +428,6 @@ export default function Home() {
           />
         )}
       </SettingsDrawer>
-    </main>
+    </>
   );
 }
