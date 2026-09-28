@@ -110,6 +110,12 @@ Goal: the single largest perceived-quality jump in the plan. The orb stops being
 1. **The 1.005 overshoot ceiling was self-contradictory.** Clamping follower output at 1.005 makes the ~4% overshoot that justifies a second-order follower impossible — the unit test caught it immediately. The clamp was also unnecessary: because scale is mapped by *area*, a 3.3% overshoot in level compresses to ~0.5% in scale, and `MAX_SCALE` 0.965 already leaves 3.5% of headroom. Replaced with `LEVEL_GUARD = 1.08`, a pure divergence guard, plus a test asserting the drawn scale stays below 1.0 even at the guard value and maximum wobble.
 2. **Every radial gradient was authored as if `100%` meant the orb's edge.** CSS defaults `radial-gradient` sizing to `farthest-corner` — 70.7% of a square box, and further still when the origin is offset. The consequence was invisible in code and obvious in a screenshot: the body ramp never reached its floor stop, and the mask's dissolve *and* the rim's annulus both landed entirely outside the visible circle, so the orb had no soft terminator and no Fresnel rim at all. Fixed by sizing all eight gradients explicitly (`ellipse 67% 67%` for the body layers, `closest-side` for the rim, `farthest-side` for the fields).
 
+   A note on method: pixel-diffing is only valid for **static** states. A control
+   run — identical build, captured twice mid-session — differed on 4.1% of pixels,
+   because the capture races the breath animation. Slice 14's diff was sound
+   because both pages were at rest; slice 15 is verified by unit tests, the
+   compliance greps (per-frame writes, zero `filter`) and visual reads instead.
+
    A third, related finding: the fields' energy was concentrated where the orb hides it. Measured atmosphere brightness just outside the limb was flat (21.4 → 21.0 mean channel from r=180 to r=300, against a 19.7 background — i.e. no visible bloom). Re-authoring the stops outward gives a real falloff: **39.0 → 30.1 → 23.4 → 21.0**.
 
 ---
