@@ -91,12 +91,32 @@ export default function Home() {
   const [drawer, setDrawer] = useState<DrawerView>(null);
 
   // A new session clears any lingering summary (render-phase adjustment).
-  const [summary, setSummary] = useState<string | null>(null);
+  const [summary, setSummary] = useState<{ time: string; cycles: number } | null>(null);
+  /** Backgrounded-tab bookkeeping; see the visibility effect below. */
+  const AWAY_LIMIT_MS = 2 * 60 * 1000;
+  const awayAtRef = useRef<number | null>(null);
+  const [resumedFromAway, setResumedFromAway] = useState(false);
+  const [pendingSummary, setPendingSummary] = useState<{ time: string; cycles: number } | null>(
+    null,
+  );
   const [prevStatus, setPrevStatus] = useState(status);
   if (prevStatus !== status) {
     setPrevStatus(status);
     if (status === 'running') setSummary(null);
+    // The close ends by returning the engine to idle; that is the moment the
+    // summary is allowed to appear, ~2.2s after End was pressed.
+    if (status === 'idle' && pendingSummary) {
+      setSummary(pendingSummary);
+      setPendingSummary(null);
+    }
+    // The away note is an acknowledgement, not a state.
+    if (status === 'running' || status === 'idle') setResumedFromAway(false);
   }
+
+  useEffect(() => {
+    const id = window.setTimeout(() => start(), 50);
+    return () => window.clearTimeout(id);
+  }, [start]);
 
   useWakeLock(status === 'running');
   usePhaseCues(session);
@@ -108,24 +128,64 @@ export default function Home() {
     if (status === 'running') dismissOnboarding();
   }, [status, dismissOnboarding]);
 
-  // v1 behavior (PRD §3): backgrounding the tab auto-pauses the session.
-  useEffect(() => {
-    const onVisibility = () => {
-      if (document.visibilityState === 'hidden') pause();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, [pause]);
-
+  const { close, cycles } = session;
+  /**
+   * End through the closing sequence rather than cutting. The summary is
+   * captured now but only shown once the engine reaches idle ~2.2s later, so
+   * the orb eases out and a human line lands before any numbers do.
+   */
   const endSession = useCallback(() => {
-    setSummary(formatSummary(elapsedSeconds));
-    stop();
-  }, [elapsedSeconds, stop]);
+    setPendingSummary({ time: formatSummary(elapsedSeconds), cycles });
+    close();
+  }, [elapsedSeconds, cycles, close]);
+
+  /** Bypass the close entirely — used when returning from a long absence. */
+  const endImmediately = useCallback(
+    (seconds: number, cycleCount: number) => {
+      setSummary({ time: formatSummary(seconds), cycles: cycleCount });
+      setPendingSummary(null);
+      stop();
+    },
+    [stop],
+  );
 
   // Timed sessions (PRD §5): soft chime, then end with the summary.
   // Checked in the frame pipeline so it fires the moment the limit is
   // crossed; the summary uses the snapshot's elapsed/cycles, not the
   // once-per-second elapsedSeconds state, which lags the true time.
+  /**
+   * Backgrounding auto-pauses (PRD §3) — but returning to a frozen orb with no
+   * explanation reads as a crash. Coming back inside a couple of minutes shows
+   * a quiet line saying what happened; after that the session is over in any
+   * meaningful sense, so it closes itself rather than pretending to wait.
+   */
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        // The closing sequence is driven by rAF, and rAF does not run while
+        // the page is hidden -- so backgrounding mid-close would strand the
+        // session in `closing` forever, with Escape the only way out. There is
+        // nothing to animate for someone who is not looking: finish it now.
+        if (status === 'closing') {
+          stop();
+          return;
+        }
+        if (status === 'running' || status === 'leading') {
+          awayAtRef.current = Date.now();
+          pause();
+        }
+        return;
+      }
+      const awayFor = awayAtRef.current === null ? 0 : Date.now() - awayAtRef.current;
+      awayAtRef.current = null;
+      if (awayFor === 0) return;
+      if (awayFor > AWAY_LIMIT_MS) endImmediately(session.elapsedSeconds, session.cycles);
+      else setResumedFromAway(true);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [pause, stop, status, endImmediately, session.elapsedSeconds, session.cycles, AWAY_LIMIT_MS]);
+
   const sessionLengthMin = useSettings((s) => s.sessionLengthMin);
   const volume = useSettings((s) => s.volume);
   /** True inside the last 20s of a timed session. */
@@ -147,11 +207,11 @@ export default function Home() {
       const atCycleEnd = snap.phaseIndex === pattern.phases.length - 1;
       if (!(kind === 'exhale' || atCycleEnd) || snap.t < 0.985) return;
       playCue('chime', volume);
-      setSummary(formatSummary(snap.elapsed));
+      setPendingSummary({ time: formatSummary(snap.elapsed), cycles: snap.cycles });
       setFinishing(false);
-      stop();
+      close();
     });
-  }, [onFrame, sessionLengthMin, volume, stop, pattern.phases.length]);
+  }, [onFrame, sessionLengthMin, volume, close, pattern.phases.length]);
 
   // Esc: close the drawer first; otherwise end the session / dismiss summary.
   const drawerOpen = drawer !== null;
@@ -159,12 +219,14 @@ export default function Home() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
       if (drawerOpen) setDrawer(null);
+      else if (status === 'closing')
+        stop(); // second press skips the close
       else if (!idle) endSession();
       else setSummary(null);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [drawerOpen, idle, endSession]);
+  }, [drawerOpen, idle, status, endSession, stop]);
 
   // While running, the HUD fades out after a few seconds; tapping anywhere
   // or pressing any key brings it back. Pausing always shows it.
@@ -240,7 +302,12 @@ export default function Home() {
       {/* HERO -- centred in row 1. 36px inside the group, so three things read
           as one group rather than five equal bands. */}
       <div className="flex w-full min-w-0 flex-col items-center justify-center gap-9 py-6 short:gap-4">
-        <Pacer pattern={pattern} session={session} roomLightRef={roomLightRef} />
+        <Pacer
+          pattern={pattern}
+          session={session}
+          roomLightRef={roomLightRef}
+          showTitle={summary === null}
+        />
 
         {/* A 1x1 grid so the four states crossfade in place rather than
             jump-cutting. `min-h` because only ONE state is mounted at a time:
@@ -251,7 +318,9 @@ export default function Home() {
           <div className="[grid-area:1/1]">
             {summary !== null && idle ? (
               <SessionSummary
-                text={summary}
+                patternName={pattern.name}
+                time={summary.time}
+                cycles={summary.cycles}
                 onAgain={() => {
                   setSummary(null);
                   start();
@@ -264,6 +333,7 @@ export default function Home() {
               </button>
             ) : (
               <SessionHUD
+                resumedFromAway={resumedFromAway}
                 session={session}
                 pattern={pattern}
                 limitSeconds={sessionLengthMin === null ? null : sessionLengthMin * 60}

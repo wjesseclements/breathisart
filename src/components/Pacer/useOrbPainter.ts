@@ -61,6 +61,8 @@ export function useOrbPainter(
   phases: readonly Phase[],
   reducedMotion: boolean,
   targets: PainterTargets,
+  /** While closing, the breath target is 0 so the body settles empty. */
+  closing = false,
 ) {
   const lastFrameRef = useRef({ phaseIndex: 0, t: 0 });
   const bodyRef = useRef<BodyState>({ value: 0, velocity: 0 });
@@ -87,7 +89,7 @@ export function useOrbPainter(
   const drawFrame = useCallback(
     (phaseIndex: number, t: number, elapsed: number, cycles: number) => {
       lastFrameRef.current = { phaseIndex, t };
-      const target = breathLevel(levelRanges, phaseIndex, t);
+      const target = closing ? 0 : breathLevel(levelRanges, phaseIndex, t);
 
       const nowMs = performance.now();
       const dt = atMsRef.current === null ? 0 : (nowMs - atMsRef.current) / 1000;
@@ -218,6 +220,7 @@ export function useOrbPainter(
       phases,
       levelRanges,
       reducedMotion,
+      closing,
       orbRef,
       innerLightRef,
       bounceRef,

@@ -24,6 +24,8 @@ export interface BreathSession extends DiscreteState {
   toggle: () => void;
   /** Cut the settling beat short and begin the first inhale. */
   skipLeadIn: () => void;
+  /** Ease out over ~2s and then return to idle, rather than cutting. */
+  close: () => void;
   stop: () => void;
   /** Per-frame snapshots for imperative style updates; returns unsubscribe. */
   onFrame: (listener: FrameListener) => () => void;
@@ -76,13 +78,24 @@ export function useBreathSession(pattern: BreathPattern, leadInSeconds?: number)
 
   // The single rAF loop, alive only while the session is running.
   useEffect(() => {
-    // The loop runs for `leading` too: the lead-in is on the same clock.
-    if (discrete.status !== 'running' && discrete.status !== 'leading') return;
+    // The loop runs for `leading` and `closing` too: both are on the same clock.
+    if (
+      discrete.status !== 'running' &&
+      discrete.status !== 'leading' &&
+      discrete.status !== 'closing'
+    )
+      return;
     let raf = 0;
     function step(frameNowMs: number) {
       const snap = engine.tick(frameNowMs);
       publish(snap);
-      if (snap.status === 'running' || snap.status === 'leading') raf = requestAnimationFrame(step);
+      // Every state that advances the clock must keep asking for frames.
+      // Omitting `closing` here stranded the closing sequence after a single
+      // frame -- it never reached CLOSE_SECONDS, so the engine never returned
+      // to idle and the summary never appeared.
+      if (snap.status === 'running' || snap.status === 'leading' || snap.status === 'closing') {
+        raf = requestAnimationFrame(step);
+      }
     }
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
@@ -93,6 +106,7 @@ export function useBreathSession(pattern: BreathPattern, leadInSeconds?: number)
   const resume = useCallback(() => publish(engine.resume(performance.now())), [engine, publish]);
   const stop = useCallback(() => publish(engine.stop()), [engine, publish]);
   const skipLeadIn = useCallback(() => publish(engine.skipLeadIn()), [engine, publish]);
+  const close = useCallback(() => publish(engine.close(performance.now())), [engine, publish]);
 
   const toggle = useCallback(() => {
     if (discrete.status === 'idle') start();
@@ -100,6 +114,8 @@ export function useBreathSession(pattern: BreathPattern, leadInSeconds?: number)
     // inhale rather than pausing a countdown.
     else if (discrete.status === 'leading') skipLeadIn();
     else if (discrete.status === 'running') pause();
+    else if (discrete.status === 'closing')
+      return; // let the close finish
     else resume();
   }, [discrete.status, start, pause, resume, skipLeadIn]);
 
@@ -110,5 +126,5 @@ export function useBreathSession(pattern: BreathPattern, leadInSeconds?: number)
     };
   }, []);
 
-  return { ...discrete, start, pause, resume, toggle, stop, skipLeadIn, onFrame };
+  return { ...discrete, start, pause, resume, toggle, stop, skipLeadIn, close, onFrame };
 }

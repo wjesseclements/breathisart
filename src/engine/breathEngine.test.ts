@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBreathEngine } from './breathEngine';
+import { CLOSE_SECONDS, createBreathEngine } from './breathEngine';
 import type { BreathPattern } from './patterns';
 import { BUILT_IN_PATTERNS } from './patterns';
 
@@ -255,5 +255,54 @@ describe('lead-in', () => {
     // 20 min of box breathing at 16s per cycle, the lead-in excluded from elapsed.
     expect(snap.elapsed).toBeCloseTo(20 * 60, 6);
     expect(snap.cycles).toBe((20 * 60) / 16);
+  });
+});
+
+describe('closing sequence', () => {
+  const box = BUILT_IN_PATTERNS[0];
+
+  it('keeps ticking so the visuals can ease, then returns to idle on its own', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 0 });
+    e.start(0);
+    e.tick(5000);
+    const started = e.close(5000);
+    expect(started.status).toBe('closing');
+    expect(started.closeProgress).toBe(0);
+
+    expect(e.tick(6100).status).toBe('closing');
+    expect(e.tick(6100).closeProgress).toBeCloseTo(1.1 / CLOSE_SECONDS, 5);
+
+    // Crossing CLOSE_SECONDS hands back to idle without another call.
+    expect(e.tick(5000 + CLOSE_SECONDS * 1000 + 1).status).toBe('idle');
+  });
+
+  it('freezes elapsed and cycles, so the summary reports the real totals', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 0 });
+    e.start(0);
+    const before = e.tick(20_000);
+    e.close(20_000);
+    const during = e.tick(21_500);
+    expect(during.elapsed).toBeCloseTo(before.elapsed, 6);
+    expect(during.cycles).toBe(before.cycles);
+  });
+
+  it('can be entered from the lead-in as well as mid-breath', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 3 });
+    e.start(0);
+    e.tick(1000);
+    expect(e.close(1000).status).toBe('closing');
+  });
+
+  it('is a no-op from idle', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 0 });
+    expect(e.close(0).status).toBe('idle');
+  });
+
+  it('stop() cuts the close short', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 0 });
+    e.start(0);
+    e.tick(4000);
+    e.close(4000);
+    expect(e.stop().status).toBe('idle');
   });
 });

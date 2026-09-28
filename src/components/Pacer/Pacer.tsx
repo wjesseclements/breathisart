@@ -22,6 +22,11 @@ interface PacerProps {
   session: BreathSession;
   /** The room's cast-light layer, so the scene can answer the orb. */
   roomLightRef?: RefObject<HTMLDivElement>;
+  /**
+   * False while the post-session summary is up: the summary already names the
+   * pattern, so showing the identity block too printed "Box Breathing" twice.
+   */
+  showTitle?: boolean;
 }
 
 /**
@@ -32,7 +37,7 @@ interface PacerProps {
  * shortcut. All per-frame painting lives in `useOrbPainter`, and the layer
  * stack lives in `OrbLayers`.
  */
-export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
+export function Pacer({ pattern, session, roomLightRef, showTitle = true }: PacerProps) {
   const reducedMotion = usePrefersReducedMotion();
   const isDark = useIsDarkTheme();
 
@@ -72,21 +77,27 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
     if (longest > 6) return 'text-hero';
     return 'text-display';
   }, [phases]);
-  const { drawFrame, lastFrameRef, resetClock } = useOrbPainter(phases, reducedMotion, {
-    orb,
-    innerLight,
-    bounce,
-    depth,
-    causticA,
-    causticB,
-    waterline,
-    rim,
-    fieldNear,
-    fieldFar,
-    ground,
-    ring,
-    roomLight: roomLightRef,
-  });
+  const closing = session.status === 'closing';
+  const { drawFrame, lastFrameRef, resetClock } = useOrbPainter(
+    phases,
+    reducedMotion,
+    {
+      orb,
+      innerLight,
+      bounce,
+      depth,
+      causticA,
+      causticB,
+      waterline,
+      rim,
+      fieldNear,
+      fieldFar,
+      ground,
+      ring,
+      roomLight: roomLightRef,
+    },
+    closing,
+  );
 
   // The displayed word runs slightly ahead of the engine: its crossfade starts
   // WORD_LEAD_S before each boundary so the incoming word lands with the new
@@ -146,25 +157,30 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
     session.leadSeconds > 3 ? 'Settle in' : `Breathe in, in ${Math.max(1, session.leadSeconds)}`;
   const orbLabel = idle
     ? 'Begin breathing session'
-    : leading
-      ? 'Skip the settling beat and breathe in now'
-      : `${status === 'running' ? 'Pause' : 'Resume'} breathing session`;
+    : closing
+      ? 'Session ending'
+      : leading
+        ? 'Skip the settling beat and breathe in now'
+        : `${status === 'running' ? 'Pause' : 'Resume'} breathing session`;
   // Announce the duration too: without it a non-visual user gets "Hold" and no
   // way to pace, while sighted users get a ring and a numeral.
   const currentPhase = phases[wordIndex] ?? session.phase;
-  const announcement = leading
-    ? leadWord
-    : status === 'running'
-      ? `${phaseWord(currentPhase)}, ${currentPhase.seconds} seconds`
-      : status === 'paused'
-        ? 'Paused'
-        : '';
+  const announcement = closing
+    ? 'Session complete'
+    : leading
+      ? leadWord
+      : status === 'running'
+        ? `${phaseWord(currentPhase)}, ${currentPhase.seconds} seconds`
+        : status === 'paused'
+          ? 'Paused'
+          : '';
 
   return (
     <div className="flex flex-col items-center gap-10">
       <button
         type="button"
         onClick={session.toggle}
+        disabled={closing}
         aria-label={orbLabel}
         data-status={status}
         className={`relative h-[min(17rem,44svh)] w-[min(17rem,44svh)] rounded-full ${focusRingOffset8}`}
@@ -189,7 +205,7 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
             ground={ground}
           />
         </div>
-        <ProgressRing circleRef={ring} visible={!idle && !leading} />
+        <ProgressRing circleRef={ring} visible={!idle && !leading && !closing} />
       </button>
 
       {/*
@@ -202,9 +218,9 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
       */}
       <div className="grid w-full grid-cols-1 grid-rows-1 place-items-center">
         <div
-          aria-hidden={!idle}
+          aria-hidden={!idle || !showTitle}
           className={`[grid-area:1/1] w-full transition-opacity duration-300 ${
-            idle ? 'opacity-100' : 'pointer-events-none opacity-0'
+            idle && showTitle ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
           <PatternTitle pattern={pattern} />
@@ -216,9 +232,11 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
           }`}
         >
           <PhaseWord
-            sizeClass={leading ? 'text-title' : wordSizeClass}
-            text={leading ? leadWord : phaseWord(currentPhase)}
-            countdown={leading ? null : showCountdown ? secondsLeft : null}
+            sizeClass={leading || closing ? 'text-title' : wordSizeClass}
+            text={
+              closing ? 'That’s it. Take a moment.' : leading ? leadWord : phaseWord(currentPhase)
+            }
+            countdown={leading || closing ? null : showCountdown ? secondsLeft : null}
             reducedMotion={reducedMotion}
           />
         </div>

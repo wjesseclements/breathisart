@@ -10,6 +10,8 @@ interface SessionHUDProps {
   limitSeconds: number | null;
   /** Inside the last 20s, so the close can be telegraphed. */
   finishing: boolean;
+  /** Just came back from a backgrounded tab — say so rather than sitting frozen. */
+  resumedFromAway: boolean;
   visible: boolean;
   onEnd: () => void;
 }
@@ -40,14 +42,20 @@ export function SessionHUD({
   pattern,
   limitSeconds,
   finishing,
+  resumedFromAway,
   visible,
   onEnd,
 }: SessionHUDProps) {
+  // Nothing to offer while the session is ending: Pause/Resume would both be
+  // lies, and End has already happened.
+  const closing = session.status === 'closing';
+  const showControls = visible && !closing;
+
   return (
     <div className="grid grid-cols-1 grid-rows-1 place-items-center">
       <div
         className={`[grid-area:1/1] flex items-center gap-5 transition-opacity duration-300 ${
-          visible ? 'opacity-100 delay-300' : 'pointer-events-none opacity-0 delay-0'
+          showControls ? 'opacity-100 delay-300' : 'pointer-events-none opacity-0 delay-0'
         }`}
       >
         {/* Remaining, not elapsed, when the session is timed: elapsed is the
@@ -78,13 +86,21 @@ export function SessionHUD({
 
       <p
         aria-hidden="true"
-        className={`[grid-area:1/1] text-label uppercase tabular-nums text-ink-faint transition-opacity duration-300 ${
-          visible ? 'opacity-0 delay-0' : 'opacity-100 delay-300'
+        // `pointer-events-none` unconditionally: this line shares a grid cell
+        // with the Pause/End row, and an invisible <p> still swallows clicks.
+        // Fading it was not enough -- End was unclickable whenever the
+        // ambient line was the layer on top.
+        className={`pointer-events-none [grid-area:1/1] text-label uppercase tabular-nums text-ink-faint transition-opacity duration-300 ${
+          showControls ? 'opacity-0 delay-0' : 'opacity-100 delay-300'
         }`}
       >
-        {session.status === 'leading'
-          ? 'Settling'
-          : `${pattern.name} · cycle ${session.cycles + 1}`}
+        {closing
+          ? ''
+          : resumedFromAway
+            ? 'Paused while you were away'
+            : session.status === 'leading'
+              ? 'Settling'
+              : `${pattern.name} · cycle ${session.cycles + 1}`}
       </p>
     </div>
   );

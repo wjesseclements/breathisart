@@ -7,7 +7,10 @@ import { validatePhases } from './patterns';
  * its remainder into the first phase exactly as a phase boundary does, and
  * inherits the same drift test.
  */
-export type EngineStatus = 'idle' | 'leading' | 'running' | 'paused';
+export type EngineStatus = 'idle' | 'leading' | 'running' | 'paused' | 'closing';
+
+/** How long the closing sequence runs before the engine returns to idle. */
+export const CLOSE_SECONDS = 2.2;
 
 export interface EngineSnapshot {
   status: EngineStatus;
@@ -21,6 +24,8 @@ export interface EngineSnapshot {
   cycles: number;
   /** Seconds left in the lead-in; 0 unless `status === 'leading'`. */
   leadRemaining: number;
+  /** 0..1 through the closing sequence; 0 unless `status === 'closing'`. */
+  closeProgress: number;
 }
 
 export interface EngineOptions {
@@ -37,6 +42,13 @@ export interface BreathEngine {
   start(nowMs: number): EngineSnapshot;
   /** Cut the lead-in short and begin the first inhale now. */
   skipLeadIn(): EngineSnapshot;
+  /**
+   * Begin the closing sequence. The clock keeps ticking for CLOSE_SECONDS so
+   * the orb can ease out through its follower instead of snapping, then the
+   * engine returns to idle on its own. `elapsed` and `cycles` freeze, so the
+   * summary reads the session's real totals.
+   */
+  close(nowMs: number): EngineSnapshot;
   pause(nowMs: number): EngineSnapshot;
   resume(nowMs: number): EngineSnapshot;
   stop(): EngineSnapshot;
@@ -63,6 +75,7 @@ export function createBreathEngine(
 
   let status: EngineStatus = 'idle';
   let leadElapsed = 0;
+  let closeElapsed = 0;
   /** What to return to on resume, so pausing mid-lead-in keeps the lead-in. */
   let pausedFrom: 'leading' | 'running' = 'running';
   let phaseIndex = 0;
@@ -80,10 +93,22 @@ export function createBreathEngine(
       elapsed,
       cycles,
       leadRemaining: status === 'leading' ? Math.max(0, leadInSeconds - leadElapsed) : 0,
+      closeProgress: status === 'closing' ? Math.min(1, closeElapsed / CLOSE_SECONDS) : 0,
     };
   }
 
   function advance(deltaSeconds: number): void {
+    if (status === 'closing') {
+      // Time passes so the visuals can ease, but nothing about the breath
+      // advances: elapsed and cycles are the session's final totals.
+      closeElapsed += deltaSeconds;
+      if (closeElapsed >= CLOSE_SECONDS) {
+        status = 'idle';
+        phaseIndex = 0;
+        phaseElapsed = 0;
+      }
+      return;
+    }
     if (status === 'leading') {
       leadElapsed += deltaSeconds;
       if (leadElapsed < leadInSeconds) return;
@@ -118,8 +143,21 @@ export function createBreathEngine(
       elapsed = 0;
       cycles = 0;
       leadElapsed = 0;
+      closeElapsed = 0;
       pausedFrom = 'running';
       lastNowMs = nowMs;
+      return snapshot();
+    },
+
+    close(nowMs) {
+      if (status === 'running' || status === 'leading') {
+        advance(Math.max(0, nowMs - lastNowMs) / 1000);
+      }
+      if (status !== 'idle') {
+        status = 'closing';
+        closeElapsed = 0;
+        lastNowMs = nowMs;
+      }
       return snapshot();
     },
 
@@ -154,11 +192,12 @@ export function createBreathEngine(
       phaseIndex = 0;
       phaseElapsed = 0;
       leadElapsed = 0;
+      closeElapsed = 0;
       return snapshot();
     },
 
     tick(nowMs) {
-      if (status === 'running' || status === 'leading') {
+      if (status === 'running' || status === 'leading' || status === 'closing') {
         advance(Math.max(0, nowMs - lastNowMs) / 1000);
         lastNowMs = nowMs;
       }
