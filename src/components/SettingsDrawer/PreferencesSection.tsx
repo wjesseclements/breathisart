@@ -4,13 +4,29 @@ import { ensureAudio, getAudioEngineState, playCue } from '../../engine/audio';
 import { useSettings } from '../../store/useSettings';
 import { focusRing, focusRingOffset2, linkText } from '../ui';
 
-const chip = `rounded-full border px-3 py-1 text-xs transition-colors ${focusRingOffset2}`;
+/*
+ * Sizes here are hit targets, not decoration. Measured in the open drawer, the
+ * controls were: chips 26px tall, checkbox rows 20px, the checkbox itself 16px,
+ * the volume slider 16px. WCAG 2.5.8 sets the floor at 24x24 and the practical
+ * phone guideline is 44 — so nine of the twenty-five controls in here were
+ * under even the floor, which is what "clicking seems erratic" was.
+ *
+ * `cursor-pointer` because Tailwind's preflight only gives it to `button` and
+ * `[role=button]`. Labels, checkboxes and range inputs got the arrow, which
+ * reads as "not clickable" on a row that very much is — hovering the same
+ * panel gave a finger over the chips and an arrow over the toggles.
+ *
+ * Nothing here was ever blocked by an overlay; every control's hit test
+ * reached itself. The problem was size and signalling, not layering.
+ */
+const chip = `inline-flex min-h-9 cursor-pointer items-center rounded-full border px-4 text-xs transition-colors ${focusRingOffset2}`;
 const chipOn = 'border-accent bg-surface-selected text-ink-display';
 const chipOff = 'border-line text-ink-muted hover:border-line-strong hover:text-ink-max';
 
 const heading = 'text-sm uppercase tracking-widest text-ink-faint';
-const toggleLabel = 'flex items-center justify-between gap-3 text-sm text-ink';
-const checkbox = 'h-4 w-4 accent-[rgb(var(--accent-core))]';
+const toggleLabel =
+  'flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm text-ink';
+const checkbox = 'h-6 w-6 cursor-pointer accent-[rgb(var(--accent-core))]';
 
 function OptionChips<T extends string | number | null>({
   label,
@@ -89,7 +105,7 @@ export function PreferencesSection() {
                 s.setSessionLength(Math.min(180, Math.max(1, Number(e.target.value) || 1)))
               }
               // TODO(slice 20): light/dark pair has no exact token — slate-400 / night-mist
-              className={`w-20 rounded-md border border-slate-400 dark:border-night-mist bg-surface-sunken px-2 py-1 text-center text-sm tabular-nums text-ink-strong ${focusRing}`}
+              className={`min-h-11 w-20 rounded-md border border-slate-400 dark:border-night-mist bg-surface-sunken px-2 text-center text-sm tabular-nums text-ink-strong ${focusRing}`}
             />
           </label>
         )}
@@ -118,7 +134,7 @@ export function PreferencesSection() {
               playCue('inhale', useSettings.getState().volume);
             }}
             aria-label="Cue volume"
-            className="w-36 accent-[rgb(var(--accent-core))]"
+            className="h-6 w-36 cursor-pointer accent-[rgb(var(--accent-core))]"
           />
         </label>
         <button type="button" onClick={playTestTone} className={`${chip} ${chipOff} self-start`}>
@@ -202,7 +218,7 @@ export function PreferencesSection() {
 
       {/* PRD §5 asks for both of these links from the drawer; neither existed. */}
       <section className="flex flex-col gap-2 border-t border-line pt-5">
-        <Link to="/research" className={`text-meta ${linkText}`}>
+        <Link to="/research" className={`inline-flex min-h-11 items-center text-meta ${linkText}`}>
           The science of slow breathing
         </Link>
         <p className="text-meta text-ink-faint">

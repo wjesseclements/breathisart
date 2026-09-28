@@ -101,7 +101,7 @@ export function SettingsDrawer({ open, title, onClose, children }: SettingsDrawe
                   type="button"
                   onClick={onClose}
                   aria-label="Close settings"
-                  className={`rounded-full px-3 py-1 text-ink-muted transition-colors hover:text-ink-max ${focusRing}`}
+                  className={`grid h-11 w-11 place-items-center rounded-full text-ink-muted transition-colors hover:text-ink-max ${focusRing}`}
                 >
                   ✕
                 </button>

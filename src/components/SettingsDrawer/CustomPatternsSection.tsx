@@ -4,7 +4,7 @@ import { buildSharePath } from '../../engine/shareUrl';
 import { useSettings } from '../../store/useSettings';
 import { focusRing, pillButton } from '../ui';
 
-const rowButton = `shrink-0 rounded-full border border-line px-4 py-1 text-xs text-ink-muted transition-colors hover:border-accent hover:text-ink-max ${focusRing}`;
+const rowButton = `inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-full border border-line px-4 text-xs text-ink-muted transition-colors hover:border-accent hover:text-ink-max ${focusRing}`;
 
 interface CustomPatternsSectionProps {
   onNew: () => void;

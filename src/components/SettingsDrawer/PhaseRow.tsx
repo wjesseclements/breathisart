@@ -3,8 +3,8 @@ import { MAX_PHASE_SECONDS, MIN_PHASE_SECONDS } from '../../engine/patterns';
 import { focusRing } from '../ui';
 
 // TODO(slice 20): light/dark pair has no exact token — slate-400 / night-mist
-const field = `rounded-md border border-slate-400 dark:border-night-mist bg-surface-sunken px-2 py-1 text-sm text-ink-strong ${focusRing}`;
-const iconButton = `rounded-md border border-line px-2 py-1 text-sm text-ink-muted transition-colors hover:border-accent hover:text-ink-max disabled:opacity-30 disabled:hover:border-line ${focusRing}`;
+const field = `min-h-11 rounded-md border border-slate-400 dark:border-night-mist bg-surface-sunken px-2 text-sm text-ink-strong ${focusRing}`;
+const iconButton = `inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-md border border-line text-sm text-ink-muted transition-colors hover:border-accent hover:text-ink-max disabled:cursor-default disabled:opacity-30 disabled:hover:border-line ${focusRing}`;
 
 interface PhaseRowProps {
   phase: Phase;
