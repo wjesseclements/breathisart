@@ -6,6 +6,13 @@
  */
 
 export interface StudyCard {
+  /**
+   * Optional eyebrow. Used only to lift the verbatim "The honest counterpoint"
+   * prefix out of the claim so the card can be visually distinguished — the
+   * page's integrity rests on that third card, and it used to render
+   * identically to the two supporting results. Re-typesetting, not rewording.
+   */
+  kicker?: string;
   claim: string;
   whatTheyDid: string;
   whatTheyFound: string;
@@ -37,8 +44,8 @@ export const STUDY_CARDS: StudyCard[] = [
     },
   },
   {
-    claim:
-      'The honest counterpoint: in one well-controlled trial, slow breathing did not beat a faster-breathing placebo.',
+    kicker: 'The honest counterpoint',
+    claim: 'In one well-controlled trial, slow breathing did not beat a faster-breathing placebo.',
     whatTheyDid:
       'A 2023 placebo-controlled randomized trial (about 400 participants) compared coherent breathing at ~5.5 breaths per minute against a 12 breaths-per-minute placebo protocol.',
     whatTheyFound:

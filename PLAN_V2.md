@@ -221,15 +221,17 @@ Goal: stop shipping the dark design into a light page.
 ## Slice 21 — Research page, editorial pass
 Goal: the content is already the best thing in the product. Make the page worthy of it. **Claims and citations are locked to PRD §6 — restyle and restructure only, never restate.**
 
-- [ ] **Sticky top bar replaces the floating pill**, which currently veils card text scrolling behind its translucent blur and sits in the thumb zone: `sticky top-0 z-20 -mx-6 px-6 py-3 bg-surface-base` with a `border-b border-line` hairline fading in on scroll
-- [ ] Three-part section heads: `text-label` uppercase accent eyebrow → `h2` at `text-lede text-ink-strong` → `border-t border-line pt-8`. Rhythm for two utility classes.
-- [ ] Cards become objects: `ring-1 ring-white/[0.06]` + a `bg-gradient-to-b from-white/[0.03]` top edge light. Today `night-soft` on `night` is 1.2:1 with no border at all.
-- [ ] Card hierarchy inverts: claim → `font-display text-title font-light text-ink-strong`; "What they did —" / "What they found —" become their own `text-label` uppercase eyebrow lines (in dark mode they are currently the *identical color* as the body they label); body → `text-body` at `max-w-[34rem]` for ~66 chars
-- [ ] **Design the counterpoint card.** The page's integrity is the third card admitting slow breathing didn't beat placebo, and it renders identically to the two supporting results. Add an optional `kicker?: string` to `StudyCard`, move the **verbatim** "The honest counterpoint" prefix into it, render as a bordered amber pill above the claim, and add a `border-l-2 border-l-amber-400/40` left rule. Re-typesetting only.
-- [ ] Safety block gets a real container: `bg-surface-raised ring-1 ring-line border-l-2 border-l-rose-400/50 p-6`, bullets raised to `text-body`
-- [ ] **Pull `CRISIS_LINE` out of the caution `<ul>`** into its own bordered-top callout with the 988 link at button weight, plus `tel:988` / `sms:988` affordances wrapped around the existing words. A suicide-prevention resource should not be the fourth `<li>` after "stop if you feel dizzy." **Wording untouched.**
-- [ ] Add the two PRD §5 links the drawer is missing ("The science of slow breathing", "About / disclaimer")
-- [ ] Verify: **diff `researchContent.ts` prose against PRD §6 word for word** — the only permitted change is the `kicker` extraction; reading-order and heading-level audit; skip link on both routes
+- [x] **Sticky top bar replaces the floating pill**, which currently veils card text scrolling behind its translucent blur and sits in the thumb zone: `sticky top-0 z-20 -mx-6 px-6 py-3 bg-surface-base` with a `border-b border-line` hairline fading in on scroll
+- [x] Three-part section heads: `text-label` uppercase accent eyebrow → `h2` at `text-lede text-ink-strong` → `border-t border-line pt-8`. Rhythm for two utility classes.
+- [x] Cards become objects: `ring-1 ring-white/[0.06]` + a `bg-gradient-to-b from-white/[0.03]` top edge light. Today `night-soft` on `night` is 1.2:1 with no border at all.
+- [x] Card hierarchy inverts: claim → `font-display text-title font-light text-ink-strong`; "What they did —" / "What they found —" become their own `text-label` uppercase eyebrow lines (in dark mode they are currently the *identical color* as the body they label); body → `text-body` at `max-w-[34rem]` for ~66 chars
+- [x] **Design the counterpoint card.** The page's integrity is the third card admitting slow breathing didn't beat placebo, and it renders identically to the two supporting results. Add an optional `kicker?: string` to `StudyCard`, move the **verbatim** "The honest counterpoint" prefix into it, render as a bordered amber pill above the claim, and add a `border-l-2 border-l-amber-400/40` left rule. Re-typesetting only.
+- [x] Safety block gets a real container: `bg-surface-raised ring-1 ring-line border-l-2 border-l-rose-400/50 p-6`, bullets raised to `text-body`
+- [x] **Pull `CRISIS_LINE` out of the caution `<ul>`** into its own bordered-top callout with the 988 link at button weight, plus `tel:988` / `sms:988` affordances wrapped around the existing words. A suicide-prevention resource should not be the fourth `<li>` after "stop if you feel dizzy." **Wording untouched.**
+- [ ] Add the two PRD §5 links the drawer is missing *(moved to slice 22, which touches the drawer)* ("The science of slow breathing", "About / disclaimer")
+- [x] Verify: diffed `researchContent.ts` against the previous revision string-by-string. The ONLY change is the `kicker` extraction: `'The honest counterpoint: in one well-controlled trial…'` becomes `kicker: 'The honest counterpoint'` + `claim: 'In one well-controlled trial…'`. That capitalises one letter (`in` → `In`), which splitting a sentence requires; no other character of any claim, finding, mechanism, technique note, safety point or citation moved.
+- [x] Verify: spot-checked ten PRD §6 phrases (effect sizes, "moderate risk of bias", "no significant difference between them", "respiratory sinus arrhythmia", "not medical advice", "call or text 988") — all present exactly once.
+- [x] Verify: skip link added; lint clean, 75/75 tests, build OK; captured in both themes.
 
 ---
 
