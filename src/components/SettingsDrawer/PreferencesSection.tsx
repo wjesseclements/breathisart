@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ensureAudio, getAudioEngineState, playCue } from '../../engine/audio';
 import { useSettings } from '../../store/useSettings';
-import { focusRing, focusRingOffset2 } from '../ui';
+import { focusRing, focusRingOffset2, linkText } from '../ui';
 
 const chip = `rounded-full border px-3 py-1 text-xs transition-colors ${focusRingOffset2}`;
 const chipOn = 'border-accent bg-surface-selected text-ink-display';
@@ -204,7 +204,7 @@ export function PreferencesSection() {
 
       {/* PRD §5 asks for both of these links from the drawer; neither existed. */}
       <section className="flex flex-col gap-2 border-t border-line pt-5">
-        <Link to="/research" className={`text-meta text-accent-strong ${focusRingOffset2}`}>
+        <Link to="/research" className={`text-meta ${linkText}`}>
           The science of slow breathing
         </Link>
         <p className="text-meta text-ink-faint">

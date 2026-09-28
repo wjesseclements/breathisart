@@ -19,7 +19,7 @@ import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
 import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
 import { SharedPatternBanner } from '../components/SharedPatternBanner';
-import { focusRing, focusRingOffset4, primaryButton } from '../components/ui';
+import { focusRing, linkText, primaryButton } from '../components/ui';
 import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
@@ -378,10 +378,7 @@ export default function Home() {
             onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}
           />
           <FirstTimeTip />
-          <Link
-            to="/research"
-            className={`rounded ${focusRingOffset4} text-sm text-ink-muted underline-offset-4 transition-colors hover:text-accent-strong hover:underline`}
-          >
+          <Link to="/research" className={`rounded text-meta ${linkText}`}>
             The science of slow breathing
           </Link>
         </div>

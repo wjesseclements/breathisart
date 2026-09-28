@@ -17,6 +17,18 @@ export const focusRingOffset4 = `${FOCUS_BASE} focus-visible:outline-offset-4`;
 export const focusRingOffset8 = `${FOCUS_BASE} focus-visible:outline-offset-8`;
 
 /**
+ * Inline links.
+ *
+ * Always underlined, never underline-on-hover. Once chrome started following
+ * the pattern accent, the near-neutral "moonlight" default put link colour at
+ * 1.27:1 against body ink in light mode — indistinguishable. WCAG 1.4.1 wants
+ * 3:1 when colour is the only cue, and hover is not a cue that exists on
+ * touch. An underline is the one signal that survives every accent and both
+ * themes.
+ */
+export const linkText = `text-accent-strong underline decoration-[rgb(var(--accent-strong)/0.35)] underline-offset-4 transition-colors hover:decoration-[rgb(var(--accent-strong))] ${focusRingOffset4}`;
+
+/**
  * Secondary rank: Pause, End, Again, Done, Back.
  *
  * There used to be exactly ONE button rank, shared by every control including

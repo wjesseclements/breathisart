@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Background } from '../components/Background';
-import { focusRingOffset4, pillButton } from '../components/ui';
+import { focusRingOffset4, linkText, pillButton } from '../components/ui';
 import { usePageTitle } from '../components/usePageTitle';
 import type { StudyCard } from './researchContent';
 import {
@@ -76,7 +76,7 @@ function StudyCardView({ card }: { card: StudyCard }) {
         href={card.citation.url}
         target="_blank"
         rel="noreferrer"
-        className={`rounded text-meta text-accent-strong underline-offset-4 hover:underline ${focusRingOffset4}`}
+        className={`rounded text-meta ${linkText}`}
       >
         {card.citation.label}
       </a>
