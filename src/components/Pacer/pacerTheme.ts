@@ -99,15 +99,26 @@ export function triplet(hex: string): string {
   return `${parseInt(h.slice(0, 2), 16)} ${parseInt(h.slice(2, 4), 16)} ${parseInt(h.slice(4, 6), 16)}`;
 }
 
-/** The custom properties the orb's static CSS reads. */
-export function accentVars(a: AccentTokens): Record<string, string> {
-  return {
-    '--accent-core': triplet(a.core),
-    '--accent-mid': triplet(a.mid),
-    '--accent-deep': triplet(a.deep),
-    '--accent-floor': triplet(a.floor),
-    '--accent-glow': triplet(a.glow),
-    '--accent-rim': triplet(a.rim),
-    '--accent-bounce': triplet(a.bounce),
-  };
+const VAR_NAMES: Array<[string, keyof AccentTokens]> = [
+  ['--accent-core', 'core'],
+  ['--accent-mid', 'mid'],
+  ['--accent-deep', 'deep'],
+  ['--accent-floor', 'floor'],
+  ['--accent-glow', 'glow'],
+  ['--accent-rim', 'rim'],
+  ['--accent-bounce', 'bounce'],
+];
+
+/**
+ * Applies an accent to the document root.
+ *
+ * Root rather than the orb, because the *room* needs the accent too — the sky
+ * glow and the cast light are painted by `Background`, which is not a
+ * descendant of the pacer. Writing custom properties on the root does force a
+ * style recalc for every subscriber, which is why the rAF loop never touches
+ * them: this runs only when the pattern changes.
+ */
+export function applyAccent(a: AccentTokens): void {
+  const root = document.documentElement;
+  for (const [name, key] of VAR_NAMES) root.style.setProperty(name, triplet(a[key]));
 }

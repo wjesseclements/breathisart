@@ -38,6 +38,13 @@ export interface PainterTargets {
   fieldFar: Div;
   ground: Div;
   ring: RefObject<SVGCircleElement>;
+  /**
+   * The room's cast-light layer, owned by `Home` and painted by `Background`.
+   * Optional so the pacer still works without a room around it (the builder's
+   * mini preview). Driven from the FAR follower, so the room trails the breath
+   * by ~440ms -- the medium lags the body.
+   */
+  roomLight?: Div;
 }
 
 /**
@@ -74,6 +81,7 @@ export function useOrbPainter(
     fieldFar: fieldFarRef,
     ground: groundRef,
     ring: ringRef,
+    roomLight: roomLightRef,
   } = targets;
 
   const drawFrame = useCallback(
@@ -190,6 +198,12 @@ export function useOrbPainter(
         waterlineRef.current.style.transform = `translate3d(0, ${((1 - level) * 100).toFixed(2)}%, 0)`;
       }
 
+      // The room answers the lamp. Driven from the FAR follower, so it trails
+      // the breath by ~440ms: the medium lags the body.
+      if (roomLightRef?.current && !reducedMotion) {
+        roomLightRef.current.style.opacity = String(0.18 + 0.52 * slow.far);
+      }
+
       const ring = ringRef.current;
       if (ring) {
         const exhaling = phases[phaseIndex].kind === 'exhale';
@@ -216,6 +230,7 @@ export function useOrbPainter(
       fieldFarRef,
       ringRef,
       groundRef,
+      roomLightRef,
     ],
   );
 

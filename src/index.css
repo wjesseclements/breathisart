@@ -42,6 +42,25 @@
     --accent-strong: 15 118 110; /* #0f766e teal-700  links     5.00:1 */
     --focus: 13 148 136; /* #0d9488             target: #2f62ac (5.5:1) */
 
+    /* The room: a vertical ramp, not a centred radial. The orb IS a centred
+       radial glow, so a second one behind it destroys the figure/ground
+       contrast its own field needs. Slice 20 warms these toward paper. */
+    --scene-top: 248 250 252; /* #f8fafc */
+    --scene-mid: 241 245 249; /* #f1f5f9  today's flat page color */
+    --scene-low: 232 237 243; /* #e8edf3 */
+    --scene-floor: 226 232 240; /* #e2e8f0 */
+    --vignette: 100 116 139; /* #64748b, used at very low alpha */
+
+    /* Default accent (box/moonlight). The pacer overrides these on the root
+       when the pattern changes; /research has no pacer and uses them as-is. */
+    --accent-core: 117 137 153;
+    --accent-mid: 131 151 171;
+    --accent-deep: 70 84 95;
+    --accent-floor: 51 66 78;
+    --accent-glow: 168 186 200;
+    --accent-rim: 200 214 226;
+    --accent-bounce: 159 198 200;
+
     /* Pacer atmosphere. On paper, glow is impossible -- adding light to
        near-white does nothing -- so the bloom becomes a colored shadow. */
     --field-far: 148 139 184;
@@ -80,6 +99,24 @@
     --accent: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
     --accent-strong: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
     --focus: 45 212 191; /* #2dd4bf             target: #9ac0f8 (9.7:1) */
+
+    /* The room. Delta-L of ~0.105 top to bottom (1.22:1) reads as light in
+       the room with no discernible boundary, and it is darkest at the BOTTOM
+       so depth falls away below the orb. */
+    --scene-top: 23 26 49; /* #171a31 */
+    --scene-mid: 14 19 41; /* #0e1329 */
+    --scene-low: 7 11 29; /* #070b1d */
+    --scene-floor: 4 6 15; /* #04060f */
+    --vignette: 1 2 14; /* #01020e */
+
+    /* Default accent (box/moonlight) -- see the light-mode note above. */
+    --accent-core: 172 193 209;
+    --accent-mid: 131 151 171;
+    --accent-deep: 84 113 125;
+    --accent-floor: 51 66 78;
+    --accent-glow: 210 224 236;
+    --accent-rim: 226 236 245;
+    --accent-bounce: 159 198 200;
 
     /* Pacer atmosphere. The far field is violet-shifted (#818cf8): air is
        cooler than the source it scatters. `plus-lighter` is the ideal blend

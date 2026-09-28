@@ -76,6 +76,12 @@ export default function Home() {
   const { status, elapsedSeconds, cycles, start, pause, stop } = session;
   const idle = status === 'idle';
 
+  // The room's cast-light layer. `Home` owns it because it is the only common
+  // ancestor of the pacer (which paints it, from its own frame loop) and the
+  // background (which renders it). Slightly impure, and worth it: it is what
+  // makes the scene respond to the orb rather than sit behind it.
+  const roomLightRef = useRef<HTMLDivElement>(null);
+
   const [drawer, setDrawer] = useState<DrawerView>(null);
 
   // A new session clears any lingering summary (render-phase adjustment).
@@ -167,7 +173,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 py-10">
       <h1 className="sr-only">Stillpoint — a breath pacer</h1>
-      <Background />
+      <Background roomLightRef={roomLightRef} />
 
       {/* TODO(slice 20): light/dark pair has no exact token — slate-800 / slate-300
           (the hover pair straddles two token levels: ink-strong and ink) */}
@@ -186,7 +192,7 @@ export default function Home() {
         </svg>
       </button>
 
-      <Pacer pattern={pattern} session={session} />
+      <Pacer pattern={pattern} session={session} roomLightRef={roomLightRef} />
 
       <div className="flex h-14 items-center justify-center">
         {summary !== null && idle ? (

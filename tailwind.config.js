@@ -52,20 +52,25 @@ export default {
       keyframes: {
         'word-in': { from: { opacity: '0' }, to: { opacity: '1' } },
         'word-out': { from: { opacity: '1' }, to: { opacity: '0' } },
+        // A lamp breathing in a still room, not a hovering UI element.
         ambient: {
           '0%, 100%': { transform: 'translate3d(0, 0, 0) scale(1)' },
-          '50%': { transform: 'translate3d(0, -6px, 0) scale(1.02)' },
+          '50%': { transform: 'translate3d(0, -4px, 0) scale(1.015)' },
         },
-        'pulse-slow': {
-          '0%, 100%': { opacity: '0.04' },
-          '50%': { opacity: '0.09' },
+        // Deliberately NOT phase-locked and deliberately slower than any
+        // breath: the sky must stay environment, never instruction. The old
+        // 18s sat close enough to a box cycle (16s) to drift in and out of
+        // phase with the pacer and read as a contradictory cue.
+        'sky-drift': {
+          '0%, 100%': { opacity: '0.58' },
+          '55%': { opacity: '0.8' },
         },
       },
       animation: {
         'word-in': 'word-in 600ms ease-out forwards',
         'word-out': 'word-out 600ms ease-out forwards',
-        ambient: 'ambient 9s ease-in-out infinite',
-        'pulse-slow': 'pulse-slow 18s ease-in-out infinite',
+        ambient: 'ambient 11s ease-in-out infinite',
+        'sky-drift': 'sky-drift 27s ease-in-out infinite',
       },
     },
   },

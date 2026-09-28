@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import type { RefObject } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
 import { focusRingOffset8 } from '../ui';
 import { phaseWord } from './pacerMath';
 import { OrbLayers } from './OrbLayers';
-import { DEFAULT_ACCENT, PATTERN_ACCENTS, accentVars } from './pacerTheme';
+import { DEFAULT_ACCENT, PATTERN_ACCENTS, applyAccent } from './pacerTheme';
 import { PhaseWord } from './PhaseWord';
 import { ProgressRing } from './ProgressRing';
 import { useOrbPainter } from './useOrbPainter';
@@ -16,6 +17,8 @@ const WORD_LEAD_S = 0.35;
 interface PacerProps {
   pattern: BreathPattern;
   session: BreathSession;
+  /** The room's cast-light layer, so the scene can answer the orb. */
+  roomLightRef?: RefObject<HTMLDivElement>;
 }
 
 /**
@@ -26,9 +29,13 @@ interface PacerProps {
  * shortcut. All per-frame painting lives in `useOrbPainter`, and the layer
  * stack lives in `OrbLayers`.
  */
-export function Pacer({ pattern, session }: PacerProps) {
+export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
   const reducedMotion = usePrefersReducedMotion();
   const accent = PATTERN_ACCENTS[pattern.id] ?? DEFAULT_ACCENT;
+
+  useEffect(() => {
+    applyAccent(accent);
+  }, [accent]);
 
   const orb = useRef<HTMLDivElement>(null);
   const innerLight = useRef<HTMLDivElement>(null);
@@ -57,6 +64,7 @@ export function Pacer({ pattern, session }: PacerProps) {
     fieldFar,
     ground,
     ring,
+    roomLight: roomLightRef,
   });
 
   // The displayed word runs slightly ahead of the engine: its crossfade starts
@@ -117,7 +125,6 @@ export function Pacer({ pattern, session }: PacerProps) {
         onClick={session.toggle}
         aria-label={orbLabel}
         data-status={status}
-        style={accentVars(accent)}
         className={`relative h-[min(17rem,44svh)] w-[min(17rem,44svh)] rounded-full ${focusRingOffset8}`}
       >
         {/* Idle ambient float wraps everything; CSS-animated, idle only, and
