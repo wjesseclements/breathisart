@@ -1,89 +1,35 @@
 import { Link } from 'react-router-dom';
 import { Background } from '../components/Background';
-import { focusRingOffset4, linkText, pillButton } from '../components/ui';
+import { focusRingOffset4, pillButton } from '../components/ui';
 import { usePageTitle } from '../components/usePageTitle';
-import type { StudyCard } from './researchContent';
 import {
   CRISIS_LINE,
+  FURTHER_READING,
+  FURTHER_READING_INTRO,
   MECHANISMS,
   MECHANISM_INTRO,
   SAFETY_POINTS,
   STUDY_CARDS,
   TECHNIQUE_NOTES,
 } from './researchContent';
+import {
+  CitationLink,
+  ReadingItem,
+  Section,
+  StudyCardView,
+  body,
+  eyebrow,
+  muted,
+} from './researchParts';
 
 /**
  * The research page (PLAN_V2 slice 21).
  *
- * Claims and citations are locked to PRD §6 — this pass restyles and
- * restructures only. The one content change is mechanical: the verbatim
- * "The honest counterpoint" prefix moved from the claim string into a `kicker`
- * field so that card can be designed.
+ * Claims and citations are locked to PRD §6. The mechanism bullets now carry
+ * their sources and a further-reading section follows the technique notes,
+ * both added to §6 first — the page follows the PRD, never the other way
+ * round. Presentational pieces live in `researchParts.tsx`.
  */
-const body = 'text-body text-ink';
-const muted = 'text-meta leading-relaxed text-ink-muted';
-const eyebrow = 'text-label uppercase text-ink-faint';
-
-function Section({
-  id,
-  eyebrow: label,
-  title,
-  children,
-}: {
-  id: string;
-  eyebrow: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="flex flex-col gap-5 border-t border-line pt-8" aria-labelledby={id}>
-      <div className="flex flex-col gap-2">
-        <p className="text-label uppercase tracking-[0.16em] text-[rgb(var(--accent-strong))]">
-          {label}
-        </p>
-        <h2 id={id} className="font-display text-lede font-normal text-ink-strong">
-          {title}
-        </h2>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function StudyCardView({ card }: { card: StudyCard }) {
-  const counterpoint = card.kicker !== undefined;
-  return (
-    <article
-      className={`flex flex-col gap-4 rounded-2xl bg-surface-raised p-6 ring-1 ring-line ${
-        counterpoint ? 'border-l-2 border-l-amber-500/50 dark:border-l-amber-400/40' : ''
-      }`}
-    >
-      {counterpoint && (
-        <p className="self-start rounded-full border border-amber-600/40 px-2 py-0.5 text-label uppercase text-amber-700 dark:border-amber-400/40 dark:text-amber-300/90">
-          {card.kicker}
-        </p>
-      )}
-      <h3 className="font-display text-title font-light text-ink-strong">{card.claim}</h3>
-      <div className="flex flex-col gap-1">
-        <p className={eyebrow}>What they did</p>
-        <p className={`${body} max-w-[34rem]`}>{card.whatTheyDid}</p>
-      </div>
-      <div className="flex flex-col gap-1">
-        <p className={eyebrow}>What they found</p>
-        <p className={`${body} max-w-[34rem]`}>{card.whatTheyFound}</p>
-      </div>
-      <a
-        href={card.citation.url}
-        target="_blank"
-        rel="noreferrer"
-        className={`rounded text-meta ${linkText}`}
-      >
-        {card.citation.label}
-      </a>
-    </article>
-  );
-}
-
 export default function Research() {
   usePageTitle('The science of slow breathing — Stillpoint');
   return (
@@ -136,10 +82,15 @@ export default function Research() {
           title="Why slowing the breath does anything at all"
         >
           <p className={muted}>{MECHANISM_INTRO}</p>
-          <ul className="flex list-disc flex-col gap-3 pl-5">
+          <ul className="flex list-disc flex-col gap-4 pl-5">
             {MECHANISMS.map((m) => (
-              <li key={m.slice(0, 32)} className={`${body} max-w-[34rem]`}>
-                {m}
+              <li key={m.text.slice(0, 32)} className={`${body} max-w-[34rem]`}>
+                {m.text}
+                {m.citation && (
+                  <span className="mt-1 block">
+                    <CitationLink label={m.citation.label} url={m.citation.url} />
+                  </span>
+                )}
               </li>
             ))}
           </ul>
@@ -154,6 +105,15 @@ export default function Research() {
               </div>
             ))}
           </dl>
+        </Section>
+
+        <Section id="further-reading" eyebrow="Further reading" title="If you want to go deeper">
+          <p className={muted}>{FURTHER_READING_INTRO}</p>
+          <div className="flex flex-col gap-5">
+            {FURTHER_READING.map((r) => (
+              <ReadingItem key={r.url} reading={r} />
+            ))}
+          </div>
         </Section>
 
         <section

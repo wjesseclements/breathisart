@@ -23,9 +23,9 @@ export const STUDY_CARDS: StudyCard[] = [
   {
     claim: 'Breathwork reduces self-reported stress, anxiety, and depressive symptoms.',
     whatTheyDid:
-      'A 2023 meta-analysis in Scientific Reports pooled randomized controlled trials comparing breathwork against non-breathwork controls.',
+      'A 2023 meta-analysis in Scientific Reports pooled 12 randomized controlled trials — 785 participants in total — comparing breathwork against non-breathwork controls.',
     whatTheyFound:
-      'Small-to-medium effects favoring breathwork: stress g ≈ −0.35, anxiety g ≈ −0.32, depressive symptoms g ≈ −0.40. The authors caution that many included studies carried moderate risk of bias, and urge against overhyping.',
+      'Small-to-medium effects favoring breathwork: stress g ≈ −0.35, anxiety g ≈ −0.32, depressive symptoms g ≈ −0.40. The authors state that most included studies were at moderate risk of bias, and urge against overhyping.',
     citation: {
       label: 'Fincham et al. 2023, Scientific Reports (meta-analysis)',
       url: 'https://www.nature.com/articles/s41598-022-27247-y',
@@ -35,7 +35,7 @@ export const STUDY_CARDS: StudyCard[] = [
     claim:
       'Five minutes a day of structured breathing improved mood and lowered resting respiratory rate.',
     whatTheyDid:
-      'A randomized controlled trial in Cell Reports Medicine assigned about 110 participants to five minutes daily of cyclic sighing, box breathing, cyclic hyperventilation, or mindfulness meditation for one month.',
+      'A randomized controlled trial in Cell Reports Medicine assigned 108 participants to five minutes daily of cyclic sighing, box breathing, cyclic hyperventilation, or mindfulness meditation for one month. It is published as a brief report, and the four groups are small — between 21 and 33 people each.',
     whatTheyFound:
       'All groups improved. The controlled-breathing groups improved mood more than meditation, and exhale-emphasized cyclic sighing performed best — including a reduction in resting respiratory rate.',
     citation: {
@@ -47,9 +47,9 @@ export const STUDY_CARDS: StudyCard[] = [
     kicker: 'The honest counterpoint',
     claim: 'In one well-controlled trial, slow breathing did not beat a faster-breathing placebo.',
     whatTheyDid:
-      'A 2023 placebo-controlled randomized trial (about 400 participants) compared coherent breathing at ~5.5 breaths per minute against a 12 breaths-per-minute placebo protocol.',
+      'A 2023 placebo-controlled randomized trial (400 participants) compared coherent breathing at ~5.5 breaths per minute against a 12 breaths-per-minute placebo protocol, about ten minutes a day for four weeks.',
     whatTheyFound:
-      'Both groups improved, with no significant difference between them — evidence that expectation and ritual contribute, and that the field still needs better-controlled trials.',
+      'Both groups improved, with no significant difference between them — and no difference in how credible participants found the exercise they were given. The authors concluded there was no measurable effect of coherent breathing over and above a well-designed placebo, and called for more robustly controlled trials.',
     citation: {
       label: 'Fincham et al. 2023, Scientific Reports (placebo-controlled RCT)',
       url: 'https://www.nature.com/articles/s41598-023-49279-8',
@@ -60,10 +60,65 @@ export const STUDY_CARDS: StudyCard[] = [
 export const MECHANISM_INTRO =
   'A fair caveat up front: the mechanisms below are better established than some of the clinical claims built on top of them.';
 
-export const MECHANISMS: string[] = [
-  'Slow breathing (around 5–6 breaths per minute) increases heart-rate variability and engages the parasympathetic — "rest and digest" — system via vagal pathways. Long exhales in particular slow the heart rate, a rhythm called respiratory sinus arrhythmia.',
-  'The double inhale of a physiological sigh reinflates collapsed alveoli and offloads CO₂ efficiently — part of why a long sigh is the body’s built-in reset.',
-  'Breathing is unusual: it is the one autonomic process we can directly steer, which makes it a lever on a system that is otherwise hard to reach.',
+export interface MechanismNote {
+  text: string;
+  /**
+   * Absent on the third note by intent (PRD §6.2): it is framing, not a
+   * finding, and attaching a citation to it would misrepresent what a citation
+   * is for. The first two are empirical claims and now carry sources — this
+   * section used to assert physiology on nothing while the evidence section
+   * beside it was meticulous.
+   */
+  citation?: { label: string; url: string };
+}
+
+export const MECHANISMS: MechanismNote[] = [
+  {
+    text: 'Slow breathing (around 5–6 breaths per minute) increases heart-rate variability and engages the parasympathetic — "rest and digest" — system via vagal pathways. Long exhales in particular slow the heart rate, a rhythm called respiratory sinus arrhythmia.',
+    citation: {
+      label:
+        'Laborde et al. 2022, Neuroscience & Biobehavioral Reviews — systematic review and meta-analysis of 223 studies',
+      url: 'https://doi.org/10.1016/j.neubiorev.2022.104711',
+    },
+  },
+  {
+    text: 'The double inhale of a physiological sigh reinflates collapsed alveoli and offloads CO₂ efficiently — part of why a long sigh is the body’s built-in reset.',
+    citation: {
+      label: 'Severs, Vlemincx & Ramirez 2022, Biological Psychology',
+      url: 'https://doi.org/10.1016/j.biopsycho.2022.108313',
+    },
+  },
+  {
+    text: 'Breathing is unusual: it is the one autonomic process we can directly steer, which makes it a lever on a system that is otherwise hard to reach.',
+  },
+];
+
+export interface Reading {
+  label: string;
+  url: string;
+  note: string;
+}
+
+/** PRD §6.5. Two, not ten — a reading list that cannot be finished is decoration. */
+export const FURTHER_READING_INTRO =
+  'If you want more than this page carries, these two are the places to start.';
+
+export const FURTHER_READING: Reading[] = [
+  {
+    label: 'Zaccaro et al. 2018, Frontiers in Human Neuroscience',
+    url: 'https://doi.org/10.3389/fnhum.2018.00353',
+    note: 'A systematic review of what slow breathing does to the body and brain: heart-rate variability and respiratory sinus arrhythmia rise, EEG alpha rises, and people report less anxiety and arousal. Free to read in full, which is why it is here.',
+  },
+  {
+    // The DOI, like every other citation here. PubMed and Europe PMC both look
+    // friendlier for a reader, but all three sit behind bot protection that I
+    // cannot see past from a headless browser, so I could not establish that
+    // either is actually easier to open. The DOI is at least canonical and
+    // permanent. The paywall is called out in the note instead.
+    label: 'Morgan, Lengacher & Seo 2025, Journal of Holistic Nursing',
+    url: 'https://doi.org/10.1177/08980101241273860',
+    note: 'The most recent systematic review aimed squarely at breathing exercises for anxiety and stress in adults. Nineteen studies; twelve reported significant improvement in anxiety. Its own caveat is worth keeping: there is still "limited evidence that includes large randomized controlled trials." Abstract free; the full text is paywalled.',
+  },
 ];
 
 export interface TechniqueNote {

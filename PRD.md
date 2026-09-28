@@ -156,15 +156,20 @@ Long-form, readable (max-width ~65ch), same visual language. Content in §6. Eac
 Tone: honest and specific. Lead with what's well-supported, flag what's preliminary. No curing claims.
 
 ### 6.1 The headline evidence
-- **Breathwork reduces self-reported stress, anxiety, and depressive symptoms (meta-analysis).** Fincham et al. 2023, *Scientific Reports* — meta-analysis of randomized controlled trials found small-to-medium effects favoring breathwork vs. controls: stress g ≈ −0.35, anxiety g ≈ −0.32, depressive symptoms g ≈ −0.40. Authors caution that many included studies carried moderate risk of bias and urge against overhyping. https://www.nature.com/articles/s41598-022-27247-y
-- **Five minutes a day of structured breathing improved mood and lowered resting respiratory rate (RCT).** Balban et al. 2023, *Cell Reports Medicine* — ~110 participants randomized to 5 min/day of cyclic sighing, box breathing, cyclic hyperventilation, or mindfulness meditation for one month. All groups improved; controlled-breathing groups improved mood more than meditation, and **exhale-emphasized cyclic sighing performed best**, including a reduction in resting respiratory rate. https://doi.org/10.1016/j.xcrm.2022.100895
-- **Honest counterpoint to include:** a 2023 placebo-controlled RCT of coherent breathing (~5.5 breaths/min vs. a 12 breaths/min placebo, ~400 participants) found both groups improved with **no significant difference between them** — evidence that expectation and ritual contribute, and that the field still needs better-controlled trials. Fincham et al. 2023, *Scientific Reports*. https://www.nature.com/articles/s41598-023-49279-8
+- **Breathwork reduces self-reported stress, anxiety, and depressive symptoms (meta-analysis).** Fincham et al. 2023, *Scientific Reports* — meta-analysis of randomized controlled trials found small-to-medium effects favoring breathwork vs. controls: stress g ≈ −0.35 (12 trials, 785 participants), anxiety g ≈ −0.32, depressive symptoms g ≈ −0.40. Authors state that **most** included studies were at moderate risk of bias, and urge against overhyping. State the trial count: the headline result rests on a small evidence base and the page should say so. https://www.nature.com/articles/s41598-022-27247-y
+- **Five minutes a day of structured breathing improved mood and lowered resting respiratory rate (RCT).** Balban et al. 2023, *Cell Reports Medicine* — 108 participants randomized to 5 min/day of cyclic sighing, box breathing, cyclic hyperventilation, or mindfulness meditation for one month. All groups improved; controlled-breathing groups improved mood more than meditation, and **exhale-emphasized cyclic sighing performed best**, including a reduction in resting respiratory rate. Disclose the size: it is published as a brief report and the arms are 21–33 people each (24 meditation, 30 cyclic sighing, 21 box, 33 cyclic hyperventilation). https://doi.org/10.1016/j.xcrm.2022.100895
+- **Honest counterpoint to include:** a 2023 placebo-controlled RCT of coherent breathing (~5.5 breaths/min vs. a 12 breaths/min placebo, 400 participants, ~10 min/day for 4 weeks) found both groups improved with **no significant difference between them**, and no difference in how credible participants found their assigned exercise. The authors concluded there was no measurable effect of coherent breathing over and above a well-designed breathwork placebo, and called for more robustly controlled trials. Report their conclusion, not an inference from it — "expectation and ritual are doing the work" is a reading we would be putting in their mouths. Fincham et al. 2023, *Scientific Reports*. https://www.nature.com/articles/s41598-023-49279-8
 
 ### 6.2 Mechanism section ("Why slowing the breath does anything at all")
-Cover, in plain language, with the caveat that mechanisms are better established than some clinical claims:
-- Slow breathing (~5–6 breaths/min) increases heart-rate variability and engages the parasympathetic ("rest and digest") system via vagal pathways; long exhales in particular slow heart rate (respiratory sinus arrhythmia).
-- The double-inhale of a physiological sigh reinflates collapsed alveoli and offloads CO₂ efficiently, which is part of why a long sigh is the body's built-in reset.
-- Breathing is unusual: it's the one autonomic process we can directly steer, which makes it a lever on a system that's otherwise hard to reach.
+Cover, in plain language, with the caveat that mechanisms are better established than some clinical claims.
+
+**These claims must carry citations.** They previously did not, which left the
+page in the odd position of sourcing its clinical claims meticulously and
+asserting its physiology on nothing.
+
+- Slow breathing (~5–6 breaths/min) increases heart-rate variability and engages the parasympathetic ("rest and digest") system via vagal pathways; long exhales in particular slow heart rate (respiratory sinus arrhythmia). **Laborde et al. 2022, *Neuroscience & Biobehavioral Reviews*** — systematic review and meta-analysis of 223 studies; vagally-mediated HRV rose during the breathing session, immediately after a single session, and after a multi-session intervention. https://doi.org/10.1016/j.neubiorev.2022.104711
+- The double-inhale of a physiological sigh reinflates collapsed alveoli and offloads CO₂ efficiently, which is part of why a long sigh is the body's built-in reset. **Severs, Vlemincx & Ramirez 2022, *Biological Psychology*** — "The psychophysiology of the sigh I: the physiological perspective." https://doi.org/10.1016/j.biopsycho.2022.108313
+- Breathing is unusual: it's the one autonomic process we can directly steer, which makes it a lever on a system that's otherwise hard to reach. *Deliberately uncited — this is framing, not a finding, and dressing it in a citation would misrepresent what a citation is for.*
 
 ### 6.3 Per-technique notes
 - **Box breathing:** widely used for acute composure (popularized via military use); performed comparably to other structured techniques in the Stanford RCT.
@@ -177,6 +182,19 @@ Cover, in plain language, with the caveat that mechanisms are better established
 - Stop if dizzy or lightheaded; breath holds and long exhales can cause lightheadedness, especially standing.
 - People who are pregnant or have cardiovascular, respiratory, or panic-related conditions should check with a clinician before breath-hold practices.
 - If you're in crisis, seek professional help (link 988 in the US).
+
+### 6.5 Further reading (render between the technique notes and the safety block)
+For readers who want more than the page itself carries. Two, not ten — a
+reading list that cannot be finished is decoration.
+- **Zaccaro et al. 2018, *Frontiers in Human Neuroscience*** — systematic review of the psychophysiology of slow breathing: HRV and respiratory sinus arrhythmia rise, EEG alpha rises, and subjects report reduced anxiety and arousal. **Open access**, which is the point: it is the one a curious reader can actually open and read. https://doi.org/10.3389/fnhum.2018.00353
+- **Morgan, Lengacher & Seo 2025, *Journal of Holistic Nursing*** — the most recent systematic review aimed specifically at breathing exercises for anxiety and stress in adults. 19 studies; 12 reported significant improvement in anxiety. Quote its own caveat rather than only its conclusion: there is "limited evidence that includes large randomized controlled trials." Flag on the page that the full text is paywalled; the abstract is free. https://doi.org/10.1177/08980101241273860
+
+Not cited, and why: **Goessl, Curtiss & Hofmann 2017, *Psychological Medicine*** is a
+meta-analysis of HRV *biofeedback* for stress and anxiety with a large effect
+(between-groups Hedges' g = 0.83, 24 studies). It is tempting precisely because
+the number is bigger than anything else on this page — and it is evidence for a
+sensor-driven intervention this app does not implement. Adding it would invite
+a reader to credit Stillpoint with an effect size it has not earned.
 
 ---
 
