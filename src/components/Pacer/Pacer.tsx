@@ -150,11 +150,11 @@ export function Pacer({ pattern, session, roomLightRef, showTitle = true }: Pace
   const idle = status === 'idle';
   const leading = status === 'leading';
   /**
-   * The settling beat. "Settle in" first, then a count, so the first inhale
-   * lands on a cue rather than while your finger is still leaving the button.
+   * The settling beat. One steady phrase, with the count carried by the
+   * numeral beneath it — "Breathe in, in 3" put the preposition twice in a row
+   * and read as a stumble. The prep is the point; the sentence was not.
    */
-  const leadWord =
-    session.leadSeconds > 3 ? 'Settle in' : `Breathe in, in ${Math.max(1, session.leadSeconds)}`;
+  const leadWord = 'Settle in';
   const orbLabel = idle
     ? 'Begin breathing session'
     : closing
@@ -168,7 +168,7 @@ export function Pacer({ pattern, session, roomLightRef, showTitle = true }: Pace
   const announcement = closing
     ? 'Session complete'
     : leading
-      ? leadWord
+      ? `Settle in, starting in ${session.leadSeconds}`
       : status === 'running'
         ? `${phaseWord(currentPhase)}, ${currentPhase.seconds} seconds`
         : status === 'paused'
@@ -236,7 +236,9 @@ export function Pacer({ pattern, session, roomLightRef, showTitle = true }: Pace
             text={
               closing ? 'That’s it. Take a moment.' : leading ? leadWord : phaseWord(currentPhase)
             }
-            countdown={leading || closing ? null : showCountdown ? secondsLeft : null}
+            countdown={
+              closing ? null : leading ? session.leadSeconds : showCountdown ? secondsLeft : null
+            }
             reducedMotion={reducedMotion}
           />
         </div>

@@ -2,10 +2,7 @@ import { useState } from 'react';
 
 interface PhaseWordProps {
   text: string;
-  /**
-   * Type size for the whole session, chosen once from the pattern's longest
-   * word — never from the word currently showing.
-   */
+  /** Type size for the whole session, chosen once from the pattern's longest word. */
   sizeClass: string;
   /** Seconds left in this phase, or null to hide the numeral. */
   countdown: number | null;
@@ -14,18 +11,13 @@ interface PhaseWordProps {
 }
 
 /**
- * The phase word, and the countdown beside it.
+ * The phase word, with the countdown on its own line beneath it.
  *
- * The size is a prop rather than a function of `text`. It used to be
- * `text.length > 6 ? title : display`, which was meant to step down long
- * custom labels — but "Hold" is 4 characters and "Breathe in" is 10, so the
- * built-in patterns hit both branches and the word resized on *every single
- * phase transition*. One size per session is the only stable answer.
- *
- * The size also lives on the container, not just the span: `h-[1.15em]`
- * resolves `em` against the inherited font size, so with the size only on the
- * child the box was ~18px tall while the text was up to 68px. It overflowed,
- * and everything underneath sat far too close to it.
+ * The numeral used to sit inline beside the word at 0.42em. Two type sizes
+ * that far apart on one baseline read as a word with a footnote stuck to it
+ * rather than as one considered thing — the size clash was the problem, not
+ * the number. Giving it its own line lets the word be the word and the count
+ * be quiet meta beneath it, and it keeps the composition centred.
  */
 export function PhaseWord({ text, sizeClass, countdown, reducedMotion }: PhaseWordProps) {
   const [shown, setShown] = useState<{ text: string; prev: string | null }>({ text, prev: null });
@@ -35,29 +27,27 @@ export function PhaseWord({ text, sizeClass, countdown, reducedMotion }: PhaseWo
     setShown({ text, prev: reducedMotion ? null : shown.text });
   }
 
-  // `whitespace-nowrap`: a wrapped phase word overflows its 1.15em box and
+  // `whitespace-nowrap`: a wrapped phase word overflows its line box and
   // collides with whatever sits beneath it.
   const wordClass =
     'absolute inset-x-0 whitespace-nowrap font-display font-light leading-none text-ink-display';
 
   return (
-    <div
-      aria-hidden="true"
-      className={`relative h-[1.15em] w-full text-center ${sizeClass} leading-none`}
-    >
-      {shown.prev !== null && (
-        <span key={`${shown.prev}->${shown.text}`} className={`${wordClass} animate-word-out`}>
-          {shown.prev}
-        </span>
-      )}
-      <span key={shown.text} className={reducedMotion ? wordClass : `${wordClass} animate-word-in`}>
-        {shown.text}
-        {countdown !== null && (
-          <span className="ml-3 align-baseline text-[0.42em] tabular-nums text-countdown">
-            {countdown}
+    <div aria-hidden="true" className="flex w-full flex-col items-center gap-4">
+      <div className={`relative h-[1.15em] w-full text-center ${sizeClass} leading-none`}>
+        {shown.prev !== null && (
+          <span key={`${shown.prev}->${shown.text}`} className={`${wordClass} animate-word-out`}>
+            {shown.prev}
           </span>
         )}
-      </span>
+        <span
+          key={shown.text}
+          className={reducedMotion ? wordClass : `${wordClass} animate-word-in`}
+        >
+          {shown.text}
+        </span>
+      </div>
+      {countdown !== null && <p className="text-meta tabular-nums text-countdown">{countdown}</p>}
     </div>
   );
 }

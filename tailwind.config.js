@@ -102,8 +102,10 @@ export default {
         },
       },
       animation: {
-        'word-in': 'word-in 200ms ease-out 200ms both',
-        'word-out': 'word-out 200ms ease-in forwards',
+        // 320ms each half, sequenced not overlapped, with a symmetric ease so
+        // neither end of the swap has a hard edge.
+        'word-in': 'word-in 320ms cubic-bezier(0.4, 0, 0.2, 1) 320ms both',
+        'word-out': 'word-out 320ms cubic-bezier(0.4, 0, 0.2, 1) forwards',
         ambient: 'ambient 11s ease-in-out infinite',
         'sky-drift': 'sky-drift 27s ease-in-out infinite',
       },

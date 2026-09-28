@@ -45,14 +45,20 @@ export function areaScale(level: number): number {
   return Math.sqrt(lo + (hi - lo) * level);
 }
 
-/** Damping ratio: under 1, so the body overshoots ~4% at the turn and settles. */
-export const BODY_ZETA = 0.72;
 /**
- * Natural frequency (rad/s). Measured behavior at ζ=0.72: peak overshoot 3.3%,
- * permanently inside 2% of target by 417ms. The direction quoted "4% / ~350ms"
- * from the envelope approximation; the tests measure the integrator instead.
+ * Damping ratio. Was 0.72, which overshot 3.3% at each turn — a small bounce
+ * that reads as liveliness in a UI and as *twitch* in a breath pacer. Jesse
+ * asked for every transition to be gentler, so this is now near-critical:
+ * the turn arrives and settles without ever crossing its target.
  */
-export const BODY_OMEGA_N = 14;
+export const BODY_ZETA = 0.9;
+/**
+ * Natural frequency (rad/s). Measured at ζ=0.90: peak overshoot 0.07% —
+ * imperceptible — and permanently inside 1% of target by 483ms. Slower than
+ * the previous 14 on purpose: the approach itself is part of what makes a
+ * transition feel soft.
+ */
+export const BODY_OMEGA_N = 11;
 /** Fixed sub-step for the integrator, so behavior is frame-rate independent. */
 const SUB_STEP_S = 0.004;
 /** A long frame (tab throttling, GC pause) should not be integrated in full. */

@@ -17,8 +17,12 @@ import {
 } from './pacerFollowers';
 import type { BodyState } from './pacerFollowers';
 
-/** The ring fades across its dashoffset reset so the jump is never seen. */
-export const RING_FADE_LEAD_S = 0.25;
+/**
+ * The ring fades across its dashoffset reset so the jump is never seen.
+ * Widened from 0.25s: a longer, softer fade is a gentler boundary, and it
+ * matches the slower body follower.
+ */
+export const RING_FADE_LEAD_S = 0.42;
 /** Degrees per second. Incommensurate (ratio 1.774) so they never re-align. */
 const CAUSTIC_A_RATE = 0.55;
 const CAUSTIC_B_RATE = -0.31;

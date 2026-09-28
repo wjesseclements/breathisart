@@ -42,15 +42,31 @@ describe('areaScale', () => {
 });
 
 describe('stepBody', () => {
-  it('overshoots its target at the turn, which a first-order follower cannot', () => {
+  /**
+   * The design intent changed here. The follower originally overshot ~3.3% on
+   * purpose, on the argument that a real breath overshoots a hair. In use that
+   * read as a twitch at every turn rather than as life, so ζ moved to 0.90.
+   * The second-order follower is still worth keeping over a first-order one:
+   * it approaches with a velocity profile that eases in AND out, where a
+   * first-order follower is fastest at the instant it starts.
+   */
+  it('approaches without a perceptible bounce', () => {
     const { peak } = settle(1, 1.5);
-    expect(peak).toBeGreaterThan(1.02);
-    expect(peak).toBeLessThan(1.05);
+    expect(peak).toBeLessThan(1.005);
   });
 
-  it('settles inside 2% of the target by ~420ms', () => {
-    expect(Math.abs(settle(1, 0.42).state.value - 1)).toBeLessThan(0.02);
-    // ...and is still visibly moving at 200ms, which is the point of a spring.
+  it('eases in as well as out — it is not fastest at the first instant', () => {
+    const early = settle(1, 0.05).state.value;
+    const mid = settle(1, 0.2).state.value;
+    // A first-order follower covers its largest fraction immediately; this one
+    // is still gathering speed at 50ms.
+    expect(early).toBeLessThan(mid * 0.35);
+  });
+
+  it('settles inside 1% of the target by ~500ms', () => {
+    expect(Math.abs(settle(1, 0.5).state.value - 1)).toBeLessThan(0.01);
+    // ...and is still visibly moving at 200ms: the approach is part of what
+    // makes the turn feel soft rather than snapped.
     expect(Math.abs(settle(1, 0.2).state.value - 1)).toBeGreaterThan(0.02);
   });
 
