@@ -82,8 +82,13 @@ export const LEVEL_FOLLOWER_TAU_S = 0.07;
  * time covers the same distance no matter how many frames it spans, so the
  * orb glides through breathLevel's velocity kinks instead of jerking.
  */
-export function followLevel(current: number, target: number, dtSeconds: number): number {
-  return target + (current - target) * Math.exp(-dtSeconds / LEVEL_FOLLOWER_TAU_S);
+export function followLevel(
+  current: number,
+  target: number,
+  dtSeconds: number,
+  tauSeconds: number = LEVEL_FOLLOWER_TAU_S,
+): number {
+  return target + (current - target) * Math.exp(-dtSeconds / tauSeconds);
 }
 
 const WORDS: Record<PhaseKind, string> = {

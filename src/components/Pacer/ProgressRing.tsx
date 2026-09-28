@@ -1,42 +1,52 @@
 import type { RefObject } from 'react';
 
 /**
- * Thin per-phase progress ring around the orb. The sweep is driven from
- * the single rAF loop via strokeDashoffset on the referenced circle
- * (pathLength is normalized to 100). Under reduced motion this ring and
- * the phase word carry the pacing.
+ * Per-phase progress ring. The sweep is driven from the single rAF loop via
+ * `strokeDashoffset` on the referenced circle (`pathLength` normalized to 100).
  *
- * The SVG fills an explicitly-sized wrapper div: absolutely positioning
- * the SVG itself via inset leaves its size unreliable in Safari.
+ * Two changes from the original (PLAN_V2 slice 15):
+ *
+ * 1. **The sweep carries direction.** The arc grows while you fill or hold and
+ *    retreats while you empty — `dashoffset = exhale ? 100*t : 100*(1-t)`. As
+ *    a side effect the exhale→hold boundary becomes continuous (the arc is at
+ *    zero on both sides), so fewer discontinuities need the fade to cover them.
+ * 2. **It stops reading as a gauge.** Pushed out to `-inset-6`, stroke down to
+ *    0.52 units (~1.66px), and butt-capped — round caps at this weight read as
+ *    a loading spinner. The gap to the orb now swings 1.98x over a breath
+ *    rather than 7x.
  */
 export function ProgressRing({
   circleRef,
   visible,
-  color,
 }: {
   circleRef: RefObject<SVGCircleElement>;
   visible: boolean;
-  /** Sweep color, supplied as a hex string by `pacerTheme`. */
-  color: string;
 }) {
   return (
     <div
       aria-hidden="true"
-      style={{ color }}
-      className={`absolute -inset-3 -rotate-90 transition-opacity duration-700 ${
+      className={`absolute -inset-6 -rotate-90 transition-opacity duration-700 ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
     >
       <svg viewBox="0 0 100 100" className="block h-full w-full">
-        {/* Track stays a literal: at 1.12:1 it is invisible in light mode,
-            and tokenizing it here would be a visual change. Slice 16 fixes it. */}
+        <defs>
+          {/* Static: a bright leading end fading to a dim tail. */}
+          <linearGradient id="pacer-sweep" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="rgb(var(--accent-core))" stopOpacity="1" />
+            <stop offset="100%" stopColor="rgb(var(--accent-core))" stopOpacity="0.25" />
+          </linearGradient>
+        </defs>
+        {/* Ink, not --line: the track crosses the orb's bloom, and a surface
+            color darker than the bloom reads as a scratch across it. A faint
+            ink hairline stays additive over both the navy and the glow. */}
         <circle
           cx="50"
           cy="50"
           r="48.5"
           fill="none"
-          stroke="rgba(148,163,184,0.15)"
-          strokeWidth="1"
+          stroke="rgb(var(--ink-faint) / 0.16)"
+          strokeWidth="0.52"
         />
         <circle
           ref={circleRef}
@@ -44,13 +54,11 @@ export function ProgressRing({
           cy="50"
           r="48.5"
           fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
+          stroke="url(#pacer-sweep)"
+          strokeWidth="0.52"
           pathLength={100}
           strokeDasharray="100"
           strokeDashoffset="100"
-          className="opacity-70"
         />
       </svg>
     </div>

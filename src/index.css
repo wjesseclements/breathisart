@@ -41,6 +41,12 @@
     --accent: 13 148 136; /* #0d9488 teal-600  borders   3.42:1 */
     --accent-strong: 15 118 110; /* #0f766e teal-700  links     5.00:1 */
     --focus: 13 148 136; /* #0d9488             target: #2f62ac (5.5:1) */
+
+    /* Pacer atmosphere. On paper, glow is impossible -- adding light to
+       near-white does nothing -- so the bloom becomes a colored shadow. */
+    --field-far: 148 139 184;
+    --glow-blend: multiply;
+    --light-blend: soft-light;
   }
 
   html.dark {
@@ -74,9 +80,35 @@
     --accent: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
     --accent-strong: 45 212 191; /* #2dd4bf breath-teal        10.17:1 */
     --focus: 45 212 191; /* #2dd4bf             target: #9ac0f8 (9.7:1) */
+
+    /* Pacer atmosphere. The far field is violet-shifted (#818cf8): air is
+       cooler than the source it scatters. `plus-lighter` is the ideal blend
+       but is gated below -- `screen` is the floor, and the field gradients
+       are authored so screen still reads correctly. */
+    --field-far: 129 140 248;
+    --glow-blend: screen;
+    --light-blend: screen;
+  }
+
+  /* Normal-blend alpha averages toward the backdrop and destroys chroma:
+     teal at 15% over navy lands at #102d38, chroma 0.133 -> 0.040. That gray-
+     green film IS the muddy halo, and no hue choice fixes it. */
+  @supports (mix-blend-mode: plus-lighter) {
+    html.dark {
+      --glow-blend: plus-lighter;
+    }
   }
 
   html {
     @apply bg-surface-page text-ink-strong antialiased;
+  }
+
+  /* Blend modes that flip with the theme. Kept as classes rather than inline
+     styles so the var() substitution happens in the stylesheet. */
+  .blend-glow {
+    mix-blend-mode: var(--glow-blend);
+  }
+  .blend-light {
+    mix-blend-mode: var(--light-blend);
   }
 }
