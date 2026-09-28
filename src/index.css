@@ -161,4 +161,18 @@
   .blend-light {
     mix-blend-mode: var(--light-blend);
   }
+
+  /*
+   * Paused withdraws the scene. A state change driven by an attribute, not a
+   * per-frame animation and not phase timing -- so it does not touch the one
+   * clock. Necessary because holds are no longer a frozen frame: paused is now
+   * the only genuinely motionless state, and if it is merely still rather than
+   * visibly dimmer it reads as the app hanging.
+   */
+  [data-status] .pacer-dimmable {
+    transition: opacity 500ms ease-out;
+  }
+  [data-status='paused'] .pacer-dimmable {
+    opacity: 0.35 !important;
+  }
 }

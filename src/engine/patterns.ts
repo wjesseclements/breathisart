@@ -17,6 +17,12 @@ export interface BreathPattern {
   builtIn: boolean;
   /** Short name for the picker chips, e.g. "Box" for "Box Breathing". */
   chipLabel?: string;
+  /**
+   * Per-pattern override for the settling beat before the first inhale.
+   * Only the sigh sets it (to 0): it is the panic-button pattern, so a 3s
+   * lead-in fights the use case that makes it worth having.
+   */
+  leadInSeconds?: number;
 }
 
 export function findPatternById(id: string): BreathPattern | undefined {
@@ -123,6 +129,7 @@ export const BUILT_IN_PATTERNS: BreathPattern[] = [
       { kind: 'exhale', seconds: 6 },
     ],
     cycleSuggestion: 'Even 1–3 cycles can help',
+    leadInSeconds: 0,
     builtIn: true,
   },
 ];

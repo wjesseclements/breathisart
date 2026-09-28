@@ -184,3 +184,76 @@ describe('stop and restart', () => {
     expect(snap).toMatchObject({ status: 'idle', t: 0, elapsed: 0 });
   });
 });
+
+describe('lead-in', () => {
+  const box = BUILT_IN_PATTERNS[0];
+
+  it('starts in `leading` and counts down, holding phase state at zero', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 3 });
+    expect(e.start(0).status).toBe('leading');
+    const mid = e.tick(1200);
+    expect(mid.status).toBe('leading');
+    expect(mid.leadRemaining).toBeCloseTo(1.8, 5);
+    expect(mid.elapsed).toBe(0);
+    expect(mid.phaseIndex).toBe(0);
+    expect(mid.t).toBe(0);
+  });
+
+  it('carries the remainder into the first phase, exactly like a boundary', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 3 });
+    e.start(0);
+    // One 3.5s step: 3s of lead-in, then 0.5s of the first inhale.
+    const snap = e.tick(3500);
+    expect(snap.status).toBe('running');
+    expect(snap.elapsed).toBeCloseTo(0.5, 6);
+    expect(snap.t).toBeCloseTo(0.5 / 4, 6);
+  });
+
+  it('skips the state entirely when the lead-in is zero', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 0 });
+    expect(e.start(0).status).toBe('running');
+    expect(e.tick(1000).elapsed).toBeCloseTo(1, 6);
+  });
+
+  it('honours a pattern-level override — the sigh is instant', () => {
+    const sigh = BUILT_IN_PATTERNS.find((p) => p.id === 'sigh');
+    expect(sigh?.leadInSeconds).toBe(0);
+    const e = createBreathEngine(sigh!, { leadInSeconds: 3 });
+    // The pattern's own 0 is applied by the caller (useBreathSession); the
+    // engine still honours an explicit option, so assert the pattern value
+    // reaches the engine when no option is given.
+    expect(createBreathEngine(sigh!).start(0).status).toBe('running');
+    expect(e.start(0).status).toBe('leading');
+  });
+
+  it('skipLeadIn jumps straight to the first inhale', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 3 });
+    e.start(0);
+    e.tick(500);
+    const snap = e.skipLeadIn();
+    expect(snap.status).toBe('running');
+    expect(snap.elapsed).toBe(0);
+    expect(e.tick(1500).elapsed).toBeCloseTo(1, 6);
+  });
+
+  it('pausing mid-lead-in resumes into the lead-in, not past it', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 3 });
+    e.start(0);
+    e.tick(1000);
+    expect(e.pause(1000).status).toBe('paused');
+    const resumed = e.resume(9000);
+    expect(resumed.status).toBe('leading');
+    expect(resumed.leadRemaining).toBeCloseTo(2, 5);
+  });
+
+  it('does not add drift: 20 minutes with a lead-in still lands cleanly', () => {
+    const e = createBreathEngine(box, { leadInSeconds: 3 });
+    e.start(0);
+    const end = 3000 + 20 * 60 * 1000;
+    for (let ms = 16; ms < end; ms += 16) e.tick(ms);
+    const snap = e.tick(end); // land exactly on the endpoint, not 8ms short of it
+    // 20 min of box breathing at 16s per cycle, the lead-in excluded from elapsed.
+    expect(snap.elapsed).toBeCloseTo(20 * 60, 6);
+    expect(snap.cycles).toBe((20 * 60) / 16);
+  });
+});

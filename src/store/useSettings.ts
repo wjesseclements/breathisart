@@ -17,6 +17,11 @@ interface SettingsState {
   haptics: boolean;
   /** Timed session length in minutes; null = open-ended (default). */
   sessionLengthMin: number | null;
+  /**
+   * Settling beat before the first inhale. A pattern may override it — the
+   * physiological sigh sets 0, because it is the panic-button pattern.
+   */
+  leadInSeconds: number;
   theme: ThemePreference;
   /** 'reduced' forces reduced motion regardless of the OS setting. */
   motionPreference: MotionPreference;
@@ -32,6 +37,7 @@ interface SettingsState {
   setVolume: (volume: number) => void;
   setHaptics: (on: boolean) => void;
   setSessionLength: (minutes: number | null) => void;
+  setLeadIn: (seconds: number) => void;
   setTheme: (theme: ThemePreference) => void;
   setMotionPreference: (preference: MotionPreference) => void;
 }
@@ -47,6 +53,7 @@ export const useSettings = create<SettingsState>()(
       volume: 0.6,
       haptics: false,
       sessionLengthMin: null,
+      leadInSeconds: 3,
       theme: 'dark',
       motionPreference: 'system',
       onboardingDismissed: false,
@@ -70,6 +77,7 @@ export const useSettings = create<SettingsState>()(
       setVolume: (volume) => set({ volume: Math.min(1, Math.max(0, volume)) }),
       setHaptics: (on) => set({ haptics: on }),
       setSessionLength: (minutes) => set({ sessionLengthMin: minutes }),
+      setLeadIn: (seconds) => set({ leadInSeconds: Math.max(0, Math.min(10, seconds)) }),
       setTheme: (theme) => set({ theme }),
       setMotionPreference: (preference) => set({ motionPreference: preference }),
     }),

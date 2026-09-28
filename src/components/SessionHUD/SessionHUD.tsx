@@ -1,11 +1,15 @@
 import type { BreathPattern } from '../../engine/patterns';
 import type { BreathSession } from '../Pacer/useBreathSession';
 import { pillButton } from '../ui';
-import { formatClock } from './sessionFormat';
+import { formatClock, formatRemaining } from './sessionFormat';
 
 interface SessionHUDProps {
   session: BreathSession;
   pattern: BreathPattern;
+  /** Total seconds for a timed session, or null when open-ended. */
+  limitSeconds: number | null;
+  /** Inside the last 20s, so the close can be telegraphed. */
+  finishing: boolean;
   visible: boolean;
   onEnd: () => void;
 }
@@ -26,7 +30,14 @@ interface SessionHUDProps {
  *    always reachable now — the app warns that 4-7-8 causes lightheadedness,
  *    and the stop button should not be invisible when that happens.
  */
-export function SessionHUD({ session, pattern, visible, onEnd }: SessionHUDProps) {
+export function SessionHUD({
+  session,
+  pattern,
+  limitSeconds,
+  finishing,
+  visible,
+  onEnd,
+}: SessionHUDProps) {
   return (
     <div className="grid grid-cols-1 grid-rows-1 place-items-center">
       <div
@@ -34,12 +45,26 @@ export function SessionHUD({ session, pattern, visible, onEnd }: SessionHUDProps
           visible ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
-        <span className="text-meta tabular-nums text-ink-muted">
-          <span className="sr-only">Elapsed time </span>
-          {formatClock(session.elapsedSeconds)}
+        {/* Remaining, not elapsed, when the session is timed: elapsed is the
+            number you stare at when you want it to be over. */}
+        <span
+          className={`text-meta tabular-nums transition-colors ${finishing ? 'text-ink' : 'text-ink-muted'}`}
+        >
+          <span className="sr-only">
+            {limitSeconds === null ? 'Elapsed time ' : 'Time remaining '}
+          </span>
+          {limitSeconds === null
+            ? formatClock(session.elapsedSeconds)
+            : formatRemaining(limitSeconds - session.elapsedSeconds)}
         </span>
+        {/* During the settling beat the toggle SKIPS it, so say so. It used to
+            fall through to "Resume", which described nothing that was happening. */}
         <button type="button" onClick={session.toggle} className={pillButton}>
-          {session.status === 'running' ? 'Pause' : 'Resume'}
+          {session.status === 'leading'
+            ? 'Skip'
+            : session.status === 'running'
+              ? 'Pause'
+              : 'Resume'}
         </button>
         <button type="button" onClick={onEnd} className={pillButton}>
           End
@@ -52,7 +77,9 @@ export function SessionHUD({ session, pattern, visible, onEnd }: SessionHUDProps
           visible ? 'opacity-0' : 'opacity-100'
         }`}
       >
-        {pattern.name} · cycle {session.cycles + 1}
+        {session.status === 'leading'
+          ? 'Settling'
+          : `${pattern.name} · cycle ${session.cycles + 1}`}
       </p>
     </div>
   );

@@ -9,8 +9,10 @@ import { useWakeLock } from '../components/Pacer/useWakeLock';
 import { FirstTimeTip } from '../components/PatternPicker/FirstTimeTip';
 import { PatternPicker } from '../components/PatternPicker/PatternPicker';
 import { SessionHUD } from '../components/SessionHUD/SessionHUD';
+import { SessionProgress } from '../components/SessionHUD/SessionProgress';
 import { SessionSummary } from '../components/SessionHUD/SessionSummary';
 import { formatSummary } from '../components/SessionHUD/sessionFormat';
+import { usePrefersReducedMotion } from '../components/Pacer/usePrefersReducedMotion';
 import { CustomPatternsSection } from '../components/SettingsDrawer/CustomPatternsSection';
 import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
@@ -72,8 +74,9 @@ export default function Home() {
 
   const pattern =
     sharedPattern ?? resolvePattern(selectedId, customPatterns) ?? BUILT_IN_PATTERNS[0];
-  const session = useBreathSession(pattern);
-  const { status, elapsedSeconds, cycles, start, pause, stop } = session;
+  const leadInSeconds = useSettings((st) => st.leadInSeconds);
+  const session = useBreathSession(pattern, leadInSeconds);
+  const { status, elapsedSeconds, start, pause, stop } = session;
   const idle = status === 'idle';
 
   // The room's cast-light layer. `Home` owns it because it is the only common
@@ -81,6 +84,7 @@ export default function Home() {
   // background (which renders it). Slightly impure, and worth it: it is what
   // makes the scene respond to the orb rather than sit behind it.
   const roomLightRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
 
   const [drawer, setDrawer] = useState<DrawerView>(null);
 
@@ -112,9 +116,9 @@ export default function Home() {
   }, [pause]);
 
   const endSession = useCallback(() => {
-    setSummary(formatSummary(elapsedSeconds, cycles));
+    setSummary(formatSummary(elapsedSeconds));
     stop();
-  }, [elapsedSeconds, cycles, stop]);
+  }, [elapsedSeconds, stop]);
 
   // Timed sessions (PRD §5): soft chime, then end with the summary.
   // Checked in the frame pipeline so it fires the moment the limit is
@@ -122,18 +126,30 @@ export default function Home() {
   // once-per-second elapsedSeconds state, which lags the true time.
   const sessionLengthMin = useSettings((s) => s.sessionLengthMin);
   const volume = useSettings((s) => s.volume);
+  /** True inside the last 20s of a timed session. */
+  const [finishing, setFinishing] = useState(false);
   const { onFrame } = session;
   useEffect(() => {
     if (sessionLengthMin === null) return;
     const limitSeconds = sessionLengthMin * 60;
     return onFrame((snap) => {
-      if (snap.status === 'running' && snap.elapsed >= limitSeconds) {
-        playCue('chime', volume);
-        setSummary(formatSummary(snap.elapsed, snap.cycles));
-        stop();
-      }
+      if (snap.status !== 'running') return;
+      // Telegraph the ending: once inside the last 20s, mark it so the close
+      // is expected rather than abrupt.
+      setFinishing(snap.elapsed >= limitSeconds - 20);
+      if (snap.elapsed < limitSeconds) return;
+      // Close on an OUT-breath. Crossing the limit mid-inhale used to cut the
+      // session off in the middle of a breath; now it runs to the end of the
+      // current exhale (or the end of the cycle if the pattern has no exhale).
+      const kind = snap.phase.kind;
+      const atCycleEnd = snap.phaseIndex === pattern.phases.length - 1;
+      if (!(kind === 'exhale' || atCycleEnd) || snap.t < 0.985) return;
+      playCue('chime', volume);
+      setSummary(formatSummary(snap.elapsed));
+      setFinishing(false);
+      stop();
     });
-  }, [onFrame, sessionLengthMin, volume, stop]);
+  }, [onFrame, sessionLengthMin, volume, stop, pattern.phases.length]);
 
   // Esc: close the drawer first; otherwise end the session / dismiss summary.
   const drawerOpen = drawer !== null;
@@ -182,6 +198,11 @@ export default function Home() {
     <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] place-items-center overflow-x-hidden px-6">
       <h1 className="sr-only">Stillpoint — a breath pacer</h1>
       <Background roomLightRef={roomLightRef} />
+      <SessionProgress
+        session={session}
+        limitSeconds={sessionLengthMin === null ? null : sessionLengthMin * 60}
+        reducedMotion={reducedMotion}
+      />
 
       {/* TODO(slice 20): light/dark pair has no exact token — slate-800 / slate-300
           (the hover pair straddles two token levels: ink-strong and ink) */}
@@ -230,6 +251,8 @@ export default function Home() {
               <SessionHUD
                 session={session}
                 pattern={pattern}
+                limitSeconds={sessionLengthMin === null ? null : sessionLengthMin * 60}
+                finishing={finishing}
                 visible={status === 'paused' || !hud.hidden}
                 onEnd={endSession}
               />

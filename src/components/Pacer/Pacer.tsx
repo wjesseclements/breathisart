@@ -117,11 +117,28 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
   }, [toggle]);
 
   const idle = status === 'idle';
+  const leading = status === 'leading';
+  /**
+   * The settling beat. "Settle in" first, then a count, so the first inhale
+   * lands on a cue rather than while your finger is still leaving the button.
+   */
+  const leadWord =
+    session.leadSeconds > 3 ? 'Settle in' : `Breathe in, in ${Math.max(1, session.leadSeconds)}`;
   const orbLabel = idle
     ? 'Begin breathing session'
-    : `${status === 'running' ? 'Pause' : 'Resume'} breathing session`;
-  const announcement =
-    status === 'running' ? phaseWord(session.phase) : status === 'paused' ? 'Paused' : '';
+    : leading
+      ? 'Skip the settling beat and breathe in now'
+      : `${status === 'running' ? 'Pause' : 'Resume'} breathing session`;
+  // Announce the duration too: without it a non-visual user gets "Hold" and no
+  // way to pace, while sighted users get a ring and a numeral.
+  const currentPhase = phases[wordIndex] ?? session.phase;
+  const announcement = leading
+    ? leadWord
+    : status === 'running'
+      ? `${phaseWord(currentPhase)}, ${currentPhase.seconds} seconds`
+      : status === 'paused'
+        ? 'Paused'
+        : '';
 
   return (
     <div className="flex flex-col items-center gap-10">
@@ -152,15 +169,15 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
             ground={ground}
           />
         </div>
-        <ProgressRing circleRef={ring} visible={!idle} />
+        <ProgressRing circleRef={ring} visible={!idle && !leading} />
       </button>
 
       {idle ? (
         <PatternTitle pattern={pattern} />
       ) : (
         <PhaseWord
-          text={phaseWord(phases[wordIndex] ?? session.phase)}
-          countdown={showCountdown ? secondsLeft : null}
+          text={leading ? leadWord : phaseWord(currentPhase)}
+          countdown={leading ? null : showCountdown ? secondsLeft : null}
           reducedMotion={reducedMotion}
         />
       )}

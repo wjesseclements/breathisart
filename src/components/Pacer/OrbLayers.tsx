@@ -178,10 +178,14 @@ export function OrbLayers({
 }: OrbLayerProps) {
   return (
     <>
-      <div ref={fieldFar} aria-hidden className="absolute -inset-[46%] rounded-full">
+      <div ref={fieldFar} aria-hidden className="pacer-dimmable absolute -inset-[46%] rounded-full">
         <div className="blend-glow absolute inset-0 rounded-full" style={FIELD_FAR} />
       </div>
-      <div ref={fieldNear} aria-hidden className="absolute -inset-[22%] rounded-full">
+      <div
+        ref={fieldNear}
+        aria-hidden
+        className="pacer-dimmable absolute -inset-[22%] rounded-full"
+      >
         <div className="blend-glow absolute inset-0 rounded-full" style={FIELD_NEAR} />
       </div>
       <div
