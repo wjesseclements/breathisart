@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSettings } from '../../store/useSettings';
 import type { RefObject } from 'react';
 import type { BreathPattern } from '../../engine/patterns';
@@ -54,6 +54,24 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
   const ring = useRef<SVGCircleElement>(null);
 
   const { phases } = pattern;
+  /**
+   * One type size for the whole session, from the longest word this pattern
+   * will ever show. Deriving it per-word made the hero resize on every phase
+   * transition, because "Hold" and "Breathe in" fall on opposite sides of any
+   * length threshold.
+   */
+  const wordSizeClass = useMemo(() => {
+    // Phase words only. The lead-in string ("Breathe in, in 3") is the longest
+    // thing shown and would drag every pattern down a step, so it carries its
+    // own modest size instead — it is a transient cue, not the hero.
+    const longest = Math.max(...phases.map((p) => phaseWord(p).length));
+    if (longest > 20) return 'text-lede';
+    if (longest > 14) return 'text-title';
+    // "Breathe in" / "Breathe out" (10-11 chars) live here. `display` is only
+    // safe for a single short word.
+    if (longest > 6) return 'text-hero';
+    return 'text-display';
+  }, [phases]);
   const { drawFrame, lastFrameRef, resetClock } = useOrbPainter(phases, reducedMotion, {
     orb,
     innerLight,
@@ -178,6 +196,7 @@ export function Pacer({ pattern, session, roomLightRef }: PacerProps) {
         <PatternTitle pattern={pattern} />
       ) : (
         <PhaseWord
+          sizeClass={leading ? 'text-title' : wordSizeClass}
           text={leading ? leadWord : phaseWord(currentPhase)}
           countdown={leading ? null : showCountdown ? secondsLeft : null}
           reducedMotion={reducedMotion}

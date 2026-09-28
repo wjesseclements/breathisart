@@ -75,6 +75,10 @@ export default {
         body: ['1.0625rem', { lineHeight: '1.65' }],
         lede: ['1.25rem', { lineHeight: '1.45' }],
         title: ['1.75rem', { lineHeight: '1.15', letterSpacing: '-0.012em' }],
+        // The phase word's usual size. `display` is sized for a single short
+        // word; two-word phrases like "Breathe out" wrap at that scale, and a
+        // wrapped hero collides with everything under it.
+        hero: ['clamp(1.75rem,6vw,2.75rem)', { lineHeight: '1', letterSpacing: '-0.018em' }],
         display: ['clamp(2.5rem,8.5vw,4.25rem)', { lineHeight: '1', letterSpacing: '-0.022em' }],
       },
       screens: {

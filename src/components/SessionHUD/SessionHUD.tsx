@@ -19,6 +19,11 @@ interface SessionHUDProps {
  *
  * Two structural fixes:
  *
+ * The two states share one grid cell and hand off in sequence — one fades out
+ * over 300ms, then the other fades in. Crossfading them simultaneously left
+ * the ambient line sitting semi-transparently over the End pill for the whole
+ * transition, which is exactly what it looked like.
+ *
  * 1. **It fades TO something, not out of existence.** When the HUD auto-hides
  *    after 4s the slot used to go empty, which is most of why the session
  *    state read as dead space. Now an ambient line takes its place, keeping
@@ -41,8 +46,8 @@ export function SessionHUD({
   return (
     <div className="grid grid-cols-1 grid-rows-1 place-items-center">
       <div
-        className={`[grid-area:1/1] flex items-center gap-5 transition-opacity duration-500 ${
-          visible ? 'opacity-100' : 'pointer-events-none opacity-0'
+        className={`[grid-area:1/1] flex items-center gap-5 transition-opacity duration-300 ${
+          visible ? 'opacity-100 delay-300' : 'pointer-events-none opacity-0 delay-0'
         }`}
       >
         {/* Remaining, not elapsed, when the session is timed: elapsed is the
@@ -73,8 +78,8 @@ export function SessionHUD({
 
       <p
         aria-hidden="true"
-        className={`[grid-area:1/1] text-label uppercase tabular-nums text-ink-faint transition-opacity duration-500 ${
-          visible ? 'opacity-0' : 'opacity-100'
+        className={`[grid-area:1/1] text-label uppercase tabular-nums text-ink-faint transition-opacity duration-300 ${
+          visible ? 'opacity-0 delay-0' : 'opacity-100 delay-300'
         }`}
       >
         {session.status === 'leading'

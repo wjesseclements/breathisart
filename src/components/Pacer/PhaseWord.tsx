@@ -2,6 +2,11 @@ import { useState } from 'react';
 
 interface PhaseWordProps {
   text: string;
+  /**
+   * Type size for the whole session, chosen once from the pattern's longest
+   * word — never from the word currently showing.
+   */
+  sizeClass: string;
   /** Seconds left in this phase, or null to hide the numeral. */
   countdown: number | null;
   /** Hard-swaps instead of crossfading, and stops any double-image. */
@@ -11,22 +16,18 @@ interface PhaseWordProps {
 /**
  * The phase word, and the countdown beside it.
  *
- * Two changes from the original (PLAN_V2 slice 17):
+ * The size is a prop rather than a function of `text`. It used to be
+ * `text.length > 6 ? title : display`, which was meant to step down long
+ * custom labels — but "Hold" is 4 characters and "Breathe in" is 10, so the
+ * built-in patterns hit both branches and the word resized on *every single
+ * phase transition*. One size per session is the only stable answer.
  *
- * 1. **It no longer doubles as the pattern title.** One 48px slot used to
- *    carry both "Box Breathing" (13 chars, an identifier read once) and "In"
- *    (2 chars, an instruction read peripherally 40 times). That is why the
- *    idle title was too big to be a label and too small to be a hero, and why
- *    session start read as a glitch. `PatternTitle` handles idle now.
- * 2. **The crossfade stops overlapping.** 200ms out, then 200ms in. The old
- *    600ms overlap left two strings superimposed at readable opacities for
- *    roughly 15% of a box session.
- *
- * The countdown moved here from inside the orb, where it measured ~1.2:1
- * against the accent and planted a high-frequency focal point in the exact
- * spot the product asks you to unfocus.
+ * The size also lives on the container, not just the span: `h-[1.15em]`
+ * resolves `em` against the inherited font size, so with the size only on the
+ * child the box was ~18px tall while the text was up to 68px. It overflowed,
+ * and everything underneath sat far too close to it.
  */
-export function PhaseWord({ text, countdown, reducedMotion }: PhaseWordProps) {
+export function PhaseWord({ text, sizeClass, countdown, reducedMotion }: PhaseWordProps) {
   const [shown, setShown] = useState<{ text: string; prev: string | null }>({ text, prev: null });
   // Render-phase state adjustment (React's documented pattern for tracking the
   // previous value of a prop).
@@ -34,33 +35,29 @@ export function PhaseWord({ text, countdown, reducedMotion }: PhaseWordProps) {
     setShown({ text, prev: reducedMotion ? null : shown.text });
   }
 
-  // Long custom labels step down so they stay on one line.
-  const size = text.length > 6 ? 'text-title' : 'text-display';
-  const wordClass = `absolute inset-x-0 font-display ${size} font-light text-ink-display`;
+  // `whitespace-nowrap`: a wrapped phase word overflows its 1.15em box and
+  // collides with whatever sits beneath it.
+  const wordClass =
+    'absolute inset-x-0 whitespace-nowrap font-display font-light leading-none text-ink-display';
 
   return (
     <div
-      className="relative flex h-[1.15em] w-full items-baseline justify-center"
       aria-hidden="true"
+      className={`relative h-[1.15em] w-full text-center ${sizeClass} leading-none`}
     >
-      <div className="relative w-full text-center">
-        {shown.prev !== null && (
-          <span key={`${shown.prev}->${shown.text}`} className={`${wordClass} animate-word-out`}>
-            {shown.prev}
+      {shown.prev !== null && (
+        <span key={`${shown.prev}->${shown.text}`} className={`${wordClass} animate-word-out`}>
+          {shown.prev}
+        </span>
+      )}
+      <span key={shown.text} className={reducedMotion ? wordClass : `${wordClass} animate-word-in`}>
+        {shown.text}
+        {countdown !== null && (
+          <span className="ml-3 align-baseline text-[0.42em] tabular-nums text-countdown">
+            {countdown}
           </span>
         )}
-        <span
-          key={shown.text}
-          className={reducedMotion ? wordClass : `${wordClass} animate-word-in`}
-        >
-          {shown.text}
-          {countdown !== null && (
-            <span className="ml-3 align-baseline text-title tabular-nums text-countdown">
-              {countdown}
-            </span>
-          )}
-        </span>
-      </div>
+      </span>
     </div>
   );
 }
