@@ -114,14 +114,13 @@ Lighthouse 13.4.1 against production.
 
 | Route | Theme | Performance | Accessibility | Best Practices |
 |-------|-------|------------:|--------------:|---------------:|
-| `/` | dark (default) | **99** | **100** | **100** |
-| `/research` | dark (default) | **99**\* | **100** | **100** |
-| `/` | light | **100** | 96 | **100** |
-| `/research` | light | **100** | 95 | **100** |
+| `/` | dark | **100** | **100** | **100** |
+| `/research` | dark | **100** | **100** | **100** |
+| `/` | light | **100** | **100** | **100** |
+| `/research` | light | **100** | **100** | **100** |
 
-\* measured against a local production preview, because production returns
-404 for `/research` on a cold load — see below. Its performance number is not
-comparable to the others; its accessibility number is.
+Measured against production after both fixes landed, on clean browser profiles.
+Before the fixes the same runs gave 99/100/100 dark and 100/96/100 light.
 
 PRD §8 asks for Performance ≥95, Accessibility ≥95, Best Practices 100. **All
 eight numbers clear it.** Core Web Vitals on the home page: LCP 1.6s, total
