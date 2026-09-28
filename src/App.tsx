@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { unlockAudio } from './engine/audio';
 import Home from './pages/Home';
 import Research from './pages/Research';
@@ -23,6 +23,11 @@ export function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/research" element={<Research />} />
+      {/* Vercel rewrites every path to index.html so /research survives a
+          cold load, which means an unknown path lands here rather than on the
+          host's 404. Without this the router matches nothing and renders a
+          blank page. */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

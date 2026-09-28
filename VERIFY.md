@@ -1,14 +1,31 @@
 # VERIFY.md — what still needs a human and a device
 
-Everything in here is unverified. Not "probably fine" — **unverified**. I built
-it, reasoned about it, and in some cases measured it, but I have never seen it
-on a phone, heard it, or run a real profiler against it.
+Items 1, 2, 6, 7, 9, 10 and 11 are still unverified — not "probably fine" but
+**unverified**. I built them, reasoned about them, and in some cases measured
+them, but I have never seen them on a phone, heard them, or profiled them.
+
+Items 3, 4, 5 and 8 are now closed. Their results are recorded in place.
 
 Live: **https://breathisart.vercel.app**
 
 Each item says what to do, what a pass looks like, and what failure looks like
-so you can report it precisely. Work top-down: the first three are the ones
-most likely to find something.
+so you can report it precisely.
+
+## Status board
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Safari iPhone — the orb's edge | open |
+| 2 | iPhone layout | fix shipped `6ff1f89`, needs a re-look |
+| 3 | Touch — is anything dead? | **passed** — "touch seems to work fine" |
+| 4 | Audio | **passed** — no clicks |
+| 5 | Lighthouse | **done by me** — see the scores below |
+| 6 | VoiceOver | open |
+| 7 | Reduced motion | open |
+| 8 | OLED crawl | **passed** — "the oled crawl is fine" |
+| 9 | Windows font | open |
+| 10 | PWA install and offline | open — retest after the `/research` 404 fix |
+| 11 | Frame rate on a mid-range phone | open |
 
 ---
 
@@ -43,7 +60,7 @@ claim I've made about phone layout is inference**, not observation.
 - **Fail:** content under the notch, the orb jumping when the toolbar
   collapses, or the orb cut off in landscape.
 
-## 3. Touch — is anything dead?
+## 3. Touch — is anything dead?  ✅ PASSED 2026-09-28
 
 **Why it matters:** I shipped three separate "looks fine, doesn't respond" bugs
 today. I've clicked through everything with a synthetic mouse, but **iOS touch
@@ -64,7 +81,7 @@ Tap each of these on the phone and confirm it responds:
 
 - **Fail:** a tap does nothing, or you have to tap twice. Tell me which one.
 
-## 4. Audio — I have never heard it
+## 4. Audio — I have never heard it  ✅ PASSED 2026-09-28
 
 **Why it matters:** I rewrote every cue (killed a 0.12s pip, put a ≥200ms
 attack and release on everything, two detuned sines through a lowpass). I
@@ -81,17 +98,58 @@ cannot hear the result. "No click" is reasoned from the envelope, not confirmed.
   that sounds abrupt or buzzy; the hold tone drawing attention.
 - Also: with Phase tones **off**, no audio should initialise at all.
 
-## 5. Lighthouse
+> **Result:** no clicks heard, with the cues audible (inhale, hold and exhale
+> all confirmed in the previous pass). That closes the one risk I could not
+> reason my way out of — a click means a discontinuity in the envelope, and
+> there isn't one. Untested and not worth chasing: whether the hold tone reads
+> as quieter than the other two. That is taste, not a defect.
 
-1. Desktop Chrome → open https://breathisart.vercel.app → DevTools → Lighthouse.
-2. Mode: Navigation. Device: **Mobile**. Categories: Performance,
-   Accessibility, Best Practices.
-3. Run it on `/` and then on `/research`.
-4. Switch the app to **Light** in Settings and run both again.
+## 5. Lighthouse  ✅ DONE BY ME 2026-09-28
 
-- **Target (PRD §8):** Performance ≥95, Accessibility ≥95, Best Practices 100.
-- Send me the four scores and any failing audit names. Accessibility failures
-  are the ones I most want.
+Lighthouse is Google's automated page-audit tool, built into Chrome DevTools.
+It loads the page in a throttled, emulated mobile Chrome and scores four
+categories out of 100. It turned out to be scriptable from here, so **you don't
+need to run it** — I did, on both routes and both themes, emulated mobile,
+Lighthouse 13.4.1 against production.
+
+| Route | Theme | Performance | Accessibility | Best Practices |
+|-------|-------|------------:|--------------:|---------------:|
+| `/` | dark (default) | **99** | **100** | **100** |
+| `/research` | dark (default) | **99**\* | **100** | **100** |
+| `/` | light | **100** | 96 | **100** |
+| `/research` | light | **100** | 95 | **100** |
+
+\* measured against a local production preview, because production returns
+404 for `/research` on a cold load — see below. Its performance number is not
+comparable to the others; its accessibility number is.
+
+PRD §8 asks for Performance ≥95, Accessibility ≥95, Best Practices 100. **All
+eight numbers clear it.** Core Web Vitals on the home page: LCP 1.6s, total
+blocking time 0ms, cumulative layout shift 0.
+
+Two things it found:
+
+**a. `/research` 404s on a cold load.** Fixed. Vercel had no SPA rewrite, so
+`https://breathisart.vercel.app/research` returned Vercel's own 404 page. It
+worked for us because the service worker serves `index.html` for any navigation
+once installed — so a *return* visitor was fine and a *first* visitor, or
+anyone following a shared link, got a dead page. Now `vercel.json` rewrites
+every path to `index.html`, matching what the service worker already did, and
+an unknown path redirects to `/` instead of rendering blank.
+
+**b. Light mode fails WCAG AA on small text.** Not fixed — it's a palette
+change and worth a decision. `--ink-faint` (#888c96) is 3.22:1 on paper, and it
+is used for `text-label` (11px) and `text-meta` (13px). WCAG 1.4.3 wants 4.5:1
+below 24px, so the token's own comment — "large/meta only" — was wrong about
+13px being large. Same story for the research page's uppercase labels, which
+use `--accent-core` (3.47:1) where the palette's documented rule says text
+should use `--accent-strong` (7.47:1).
+
+Lighthouse cannot see a third instance: the in-session countdown is
+`--countdown` (#828690, 3.49:1) at 13px, and the audit only ever sees the idle
+screen.
+
+Dark mode passes all of this at 100.
 
 ## 6. VoiceOver
 
@@ -120,7 +178,7 @@ is tested with a real screen reader.
 - **Fail:** the orb still scales a lot, or you genuinely cannot tell which
   direction the breath is going.
 
-## 8. OLED — does the surface crawl?
+## 8. OLED — does the surface crawl?  ✅ PASSED 2026-09-28
 
 **Why it matters:** two layers inside the orb rotate at 0.55°/s and −0.31°/s so
 holds aren't a frozen frame. I flagged at design time that this could read as
@@ -132,6 +190,8 @@ crawling rather than as life, and I can't judge it on this display.
 - **Pass:** the surface feels alive but you can't point at anything moving.
 - **Fail:** a visible drift or shimmer, like the texture is sliding. Say so and
   I'll halve the rate.
+
+> **Result:** no crawl. The caustic layers stay at 0.55°/s and −0.31°/s.
 
 ## 9. Windows
 
