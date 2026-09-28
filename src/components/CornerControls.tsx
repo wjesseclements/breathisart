@@ -6,11 +6,12 @@ import { focusRing } from './ui';
  * The three fixed-corner controls, together because their rules only make
  * sense against each other.
  *
- * Top-right, idle only: phase tones and settings.
- * Top-left, session only: End.
+ * Left corner means stop: `End`, session only.
+ * Right corner means adjust: phase tones always, settings when idle.
  *
- * So the left corner means stop and the right corner means adjust, and the two
- * sets are never on screen at the same time.
+ * The asymmetry on the right is deliberate. Silencing the tones is a one-tap
+ * toggle you might want mid-breath; opening the drawer over a running session
+ * is an interruption. So one stays and one steps aside.
  *
  * Extracted from `Home` when the sound toggle landed — that file was already
  * 479 lines against a ~150-line convention, and this is the one cluster in it
@@ -60,40 +61,47 @@ export function CornerControls({
   const volume = useSettings((s) => s.volume);
 
   /**
-   * Switching tones on plays one immediately, inside this click. Two reasons,
-   * and the second is the load-bearing one: you find out what you just enabled
-   * without starting a session, and iOS only lets an AudioContext start inside
-   * a user gesture — so this tap is also the unlock. Without it the first real
-   * cue of the session can be the one that silently fails.
+   * `ensureAudio` always, because iOS only lets an AudioContext start inside a
+   * user gesture and this tap is the only gesture we are guaranteed — without
+   * it the first real cue of the session can be the one that silently fails.
+   *
+   * The confirmation cue only when nothing is running. Idle, it tells you what
+   * you just switched on. Mid-session it would be a stray tone out of rhythm
+   * with the breath, and the next phase cue arrives within seconds anyway and
+   * confirms it better than a beep could.
    */
   const toggleTones = () => {
     const next = !audioCues;
     setAudioCues(next);
-    if (next) {
-      ensureAudio();
-      playCue('inhale', volume);
-    }
+    if (!next) return;
+    ensureAudio();
+    if (!inSession) playCue('inhale', volume);
   };
 
   return (
     <>
-      <div
-        className={`fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 flex items-center gap-1 ${
-          idle ? '' : 'pointer-events-none'
-        }`}
-      >
+      <div className="fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 flex items-center gap-1">
         {/* On the idle screen rather than two levels deep in Settings, where
             nobody found it (PLAN_V2 slice 23). The default stays off — a
             stress tool gets opened in open-plan offices — so the fix to
-            discoverability is placement, not the default. */}
+            discoverability is placement, not the default.
+
+            Visible in EVERY state, unlike its neighbour. It first shipped
+            idle-only, mirroring the `···`, which was wrong: mid-session is
+            precisely when you want to silence it — someone walks in, or the
+            tones turn out to be more intrusive than they sounded. Idle-only
+            meant ending the session to change your mind. The settings button
+            keeps hiding, because a drawer over a running breath is a genuine
+            interruption and a one-tap toggle is not.
+
+            Its neighbour keeps its 44px box while faded, so this one does not
+            slide sideways when a session starts. */}
         <button
           type="button"
           onClick={toggleTones}
           aria-label="Phase tones"
           aria-pressed={audioCues}
-          aria-hidden={!idle}
-          tabIndex={idle ? undefined : -1}
-          className={`${cornerButton} ${cornerHover} ${idle ? 'opacity-100' : 'opacity-0'}`}
+          className={`${cornerButton} ${cornerHover} opacity-100`}
         >
           <SpeakerIcon on={audioCues} />
         </button>
@@ -104,7 +112,7 @@ export function CornerControls({
           aria-label="Open settings"
           aria-hidden={!idle}
           tabIndex={idle ? undefined : -1}
-          className={`${cornerButton} ${cornerHover} ${idle ? 'opacity-100' : 'opacity-0'}`}
+          className={`${cornerButton} ${cornerHover} ${idle ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
             <circle cx="5" cy="12" r="1.8" />

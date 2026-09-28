@@ -275,9 +275,11 @@ Goal: the loudest un-designed surface left in the product.
 - [x] **Move the phase-tones toggle out of the drawer** onto the idle screen as one quiet icon. The default stays off; the problem is that nobody finds it two levels deep in Settings.
 - [x] Verify by construction: the envelope is `exponentialRampToValueAtTime` over `min(200ms, duration*0.45)` at both ends, so no cue can start or stop on a discontinuity at any volume. `unlockAudio` no longer constructs a context — only `ensureAudio`, called when a cue is actually wanted.
 - [ ] *Still owed:* an actual listen at 0.2 / 0.6 / 1.0 through speakers and headphones. I cannot hear the output, so "no click" is reasoned, not confirmed.
-- [x] The phase-tones toggle is on the idle screen: a speaker icon paired with the `···`, top-right, idle-only. The default stays off — the fix to discoverability is placement, not the default.
+- [x] The phase-tones toggle is on the idle screen: a speaker icon paired with the `···`, top-right. The default stays off — the fix to discoverability is placement, not the default.
 
-   Switching it **on** plays one cue immediately, inside that click. Two reasons, and the second is the load-bearing one: you hear what you just enabled without starting a session, and iOS only lets an `AudioContext` start inside a user gesture, so this tap is also the unlock. Without it the first real cue of a session can be the one that silently fails.
+   It shipped idle-only first, mirroring the `···`, and that was wrong: mid-session is precisely when you want to silence it, and idle-only meant ending the session to change your mind. It is now visible in every state. The `···` still hides during a session, because a drawer over a running breath is an interruption and a one-tap toggle is not.
+
+   Switching it **on** unlocks the `AudioContext` inside that click — iOS allows no other moment, and without it the first real cue of a session can be the one that silently fails. The confirmation cue plays only when nothing is running: idle it tells you what you just enabled, mid-session it would be a stray tone out of rhythm, and the next phase cue confirms it better than a beep could.
 
    The drawer's Audio section keeps Volume and the test tone, and says where the switch went rather than looking like a dead end.
 
