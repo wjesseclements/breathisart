@@ -36,7 +36,7 @@ export default function Research() {
     <>
       <a
         href="#research-main"
-        className={`sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-surface-raised focus:px-4 focus:py-2 focus:text-meta focus:text-ink ${focusRingOffset4}`}
+        className={`sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-full focus:bg-surface-raised focus:px-4 focus:text-meta focus:text-ink ${focusRingOffset4}`}
       >
         Skip to content
       </a>
@@ -48,7 +48,7 @@ export default function Research() {
         <div className="mx-auto flex max-w-prose items-center px-6 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
           <Link
             to="/"
-            className={`rounded text-meta text-ink-muted transition-colors hover:text-ink ${focusRingOffset4}`}
+            className={`inline-flex min-h-11 items-center rounded text-meta text-ink-muted transition-colors hover:text-ink ${focusRingOffset4}`}
           >
             ← Back to breathing
           </Link>

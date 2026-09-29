@@ -34,8 +34,12 @@ export const linkText = `text-accent-strong underline decoration-[rgb(var(--acce
  * There used to be exactly ONE button rank, shared by every control including
  * Begin — which is why the product's primary action was outranked by five
  * repeated pattern chips sitting below it.
+ *
+ * `min-h-11` rather than `py-2`: measured at 38px, which clears WCAG 2.5.8's
+ * 24px floor but not the 44px a thumb wants — and Pause and End are pressed
+ * mid-breath, often without looking.
  */
-export const pillButton = `rounded-full border border-line px-6 py-2 text-meta tracking-wide text-ink transition-colors hover:border-line-strong ${focusRingOffset4}`;
+export const pillButton = `inline-flex min-h-11 items-center rounded-full border border-line px-6 text-meta tracking-wide text-ink transition-colors hover:border-line-strong ${focusRingOffset4}`;
 
 /**
  * Primary rank: Begin, and nothing else. The only filled, only warm, only

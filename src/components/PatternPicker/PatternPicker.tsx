@@ -127,7 +127,7 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
       <button
         type="button"
         onClick={() => onOpenBuilder(null)}
-        className={`rounded-md px-3 py-1 text-meta text-ink-faint transition-colors hover:text-ink-muted ${focusRingOffset2}`}
+        className={`inline-flex min-h-11 items-center rounded-md px-3 text-meta text-ink-faint transition-colors hover:text-ink-muted ${focusRingOffset2}`}
       >
         + Build your own
       </button>

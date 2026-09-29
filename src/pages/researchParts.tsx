@@ -15,7 +15,17 @@ export const eyebrow = 'text-label uppercase text-ink-faint';
 /** Every outbound citation on the page goes through here, so they cannot drift. */
 export function CitationLink({ label, url }: { label: string; url: string }) {
   return (
-    <a href={url} target="_blank" rel="noreferrer" className={`rounded text-meta ${linkText}`}>
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      /* `inline-block` with vertical padding, not `inline-flex`: these labels
+         wrap to two and three lines, and a flex line box would refuse to break
+         them. Measured at 20px when they happen to fit on one line, which is
+         under WCAG 2.5.8's 24px floor — the ones that passed only passed by
+         accident of wrapping. */
+      className={`inline-block rounded py-3 text-meta ${linkText}`}
+    >
       {label}
     </a>
   );

@@ -327,7 +327,7 @@ export default function Home() {
             without it the slot shrinks from the 58px Begin pill to the 37px
             HUD row, and the centred hero above it slides up ~56px the moment
             a session starts. Tied to the primary button, the tallest state. */}
-          <div className="grid min-h-[3.625rem] grid-cols-1 grid-rows-1 place-items-center">
+          <div className="grid min-h-16 grid-cols-1 grid-rows-1 place-items-center">
             <div className="[grid-area:1/1]">
               {summary !== null && idle ? (
                 <SessionSummary
@@ -366,7 +366,11 @@ export default function Home() {
           screen-reader users 4s into every session. */}
         <div
           aria-hidden={!idle}
-          className={`flex w-full min-w-0 flex-col items-center gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))] transition-opacity duration-500 ${
+          /* Tighter below `sm`. Raising every target to 44px added ~47px to this
+           row, and on a 390x641 small viewport the page already overflowed by
+           51 before that — the pattern picker sat just below the fold. The
+           gaps give it back; the targets keep their size. */
+          className={`flex w-full min-w-0 flex-col items-center gap-3 pb-[calc(1rem+env(safe-area-inset-bottom))] transition-opacity duration-500 sm:gap-5 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] ${
             idle ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
@@ -388,7 +392,10 @@ export default function Home() {
             onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}
           />
           <FirstTimeTip />
-          <Link to="/research" className={`rounded text-meta ${linkText}`}>
+          <Link
+            to="/research"
+            className={`inline-flex min-h-11 items-center rounded text-meta ${linkText}`}
+          >
             The science of slow breathing
           </Link>
         </div>
