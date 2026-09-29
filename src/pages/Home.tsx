@@ -314,7 +314,7 @@ export default function Home() {
         split the 81px overflow and pushed the orb up behind Safari's URL bar.
         32svh plus tighter gaps below `sm` brings it to ~453px.
       */}
-        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 py-4 sm:gap-9 sm:py-6 short:gap-3 short:py-2">
+        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 py-4 [justify-content:safe_center] sm:gap-9 sm:py-6 short:gap-3 short:py-2">
           <Pacer
             pattern={pattern}
             session={session}
@@ -359,19 +359,34 @@ export default function Home() {
           </div>
         </div>
 
-        {/* FURNITURE -- row 2, in flow. `opacity-0` keeps its box, so the hero
-          above it never shifts when a session starts. Never `invisible`: that
-          strips descendants from the tab order AND the accessibility tree,
-          which is how Pause and End used to vanish for keyboard and
-          screen-reader users 4s into every session. */}
+        {/*
+          FURNITURE -- row 2, in flow.
+
+          It used to hold its full box during a session so the hero above it
+          could not shift. Measured on an iPhone at 390x641 that meant 164px
+          reserved for something invisible and 209px of dead screen below the
+          cycle line, while the orb was squeezed to 19px of clearance from
+          Safari's URL bar and its progress ring ran under the corner controls.
+          Reserving space for nothing was costing the one thing on screen.
+
+          So it collapses now — but over 500ms, together with the fade, so the
+          orb glides down into the middle rather than jumping there. The
+          transition is the whole point: a layout that snaps at the moment you
+          start breathing is worse than one that settles.
+
+          `max-h-0` with `opacity-0`, not `hidden` or `invisible`. This row is
+          `aria-hidden` during a session anyway, so the distinction is about
+          the transition rather than semantics — `display: none` cannot be
+          animated, and the settle is the point.
+        */}
         <div
           aria-hidden={!idle}
           /* Tighter below `sm`. Raising every target to 44px added ~47px to this
            row, and on a 390x641 small viewport the page already overflowed by
            51 before that — the pattern picker sat just below the fold. The
            gaps give it back; the targets keep their size. */
-          className={`flex w-full min-w-0 flex-col items-center gap-3 pb-[calc(1rem+env(safe-area-inset-bottom))] transition-opacity duration-500 sm:gap-5 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] ${
-            idle ? 'opacity-100' : 'pointer-events-none opacity-0'
+          className={`flex w-full min-w-0 flex-col items-center gap-3 overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom))] transition-[opacity,max-height] duration-500 sm:gap-5 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] ${
+            idle ? 'max-h-[32rem] opacity-100' : 'pointer-events-none max-h-0 opacity-0'
           }`}
         >
           {showKeyHint && (
