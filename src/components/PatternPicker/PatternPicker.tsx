@@ -66,71 +66,89 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
        * offset, and `scrollLeft` cannot go negative — so the first patterns
        * became permanently unreachable once the row was wider than the screen.
        */}
-      <div
-        ref={scrollerRef}
-        role="radiogroup"
-        aria-label="Breathing pattern"
-        className="w-full max-w-full snap-x overflow-x-auto px-6 py-1 [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]"
-      >
-        <div className="mx-auto flex w-max items-center gap-1">
-          {allPatterns.map((pattern) => {
-            const selected = pattern.id === selectedId;
-            return (
-              <div key={pattern.id} className="flex shrink-0 items-center">
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  aria-describedby={`tagline-${pattern.id}`}
-                  data-selected={selected}
-                  tabIndex={selected ? 0 : -1}
-                  onClick={() => selectPattern(pattern.id)}
-                  className={`${itemBase} ${selected ? itemSelected : itemIdle}`}
-                >
-                  {pattern.chipLabel ?? pattern.name}
-                  <span
-                    aria-hidden="true"
-                    className={`absolute inset-x-2 bottom-1 h-px transition-opacity ${
-                      selected ? 'bg-[rgb(var(--accent-core))] opacity-80' : 'opacity-0'
-                    }`}
-                  />
-                  <span id={`tagline-${pattern.id}`} className="sr-only">
-                    {pattern.tagline}
-                  </span>
-                </button>
-                {!pattern.builtIn && (
-                  <button
-                    type="button"
-                    onClick={() => onOpenBuilder(pattern)}
-                    aria-label={`Edit ${pattern.name}`}
-                    className={`${itemBase} ${itemIdle} px-2`}
-                  >
-                    {/* Inline SVG, not U+270E: that glyph renders as a colour
-                        emoji pencil on several Android builds and sits
-                        off-centre against the surrounding sans. */}
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 24 24"
-                      className="h-3.5 w-3.5 fill-current"
+      {/* Custom sits OUTSIDE the scroller, pinned to the right of the same
+          line. Inside it, at the end of six names, it was off-screen on a
+          390px phone until you scrolled the row — technically on the line and
+          practically invisible. Pinned, it is always reachable, and the chips
+          keep the remaining width to scroll in. */}
+      <div className="flex w-full min-w-0 items-center">
+        <div
+          ref={scrollerRef}
+          className="min-w-0 flex-1 snap-x overflow-x-auto px-6 py-1 [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]"
+        >
+          <div className="mx-auto flex w-max items-center gap-1">
+            {/* `radiogroup` sits on this inner row rather than the scroller, so
+              Custom can share the same scrolling line while staying OUTSIDE
+              the group — it opens the builder, it does not select a pattern,
+              and a button that opens a dialog has no business being announced
+              as one of a set of radio options. */}
+            <div
+              role="radiogroup"
+              aria-label="Breathing pattern"
+              className="flex items-center gap-1"
+            >
+              {allPatterns.map((pattern) => {
+                const selected = pattern.id === selectedId;
+                return (
+                  <div key={pattern.id} className="flex shrink-0 items-center">
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      aria-describedby={`tagline-${pattern.id}`}
+                      data-selected={selected}
+                      tabIndex={selected ? 0 : -1}
+                      onClick={() => selectPattern(pattern.id)}
+                      className={`${itemBase} ${selected ? itemSelected : itemIdle}`}
                     >
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-            );
-          })}
+                      {pattern.chipLabel ?? pattern.name}
+                      <span
+                        aria-hidden="true"
+                        className={`absolute inset-x-2 bottom-1 h-px transition-opacity ${
+                          selected ? 'bg-[rgb(var(--accent-core))] opacity-80' : 'opacity-0'
+                        }`}
+                      />
+                      <span id={`tagline-${pattern.id}`} className="sr-only">
+                        {pattern.tagline}
+                      </span>
+                    </button>
+                    {!pattern.builtIn && (
+                      <button
+                        type="button"
+                        onClick={() => onOpenBuilder(pattern)}
+                        aria-label={`Edit ${pattern.name}`}
+                        className={`${itemBase} ${itemIdle} px-2`}
+                      >
+                        {/* Inline SVG, not U+270E: that glyph renders as a colour
+                          emoji pencil on several Android builds and sits
+                          off-centre against the surrounding sans. */}
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          className="h-3.5 w-3.5 fill-current"
+                        >
+                          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Outside the radiogroup: this is a mode switch, not a selection. */}
-      <button
-        type="button"
-        onClick={() => onOpenBuilder(null)}
-        className={`inline-flex min-h-11 items-center rounded-md px-3 text-meta text-ink-faint transition-colors hover:text-ink-muted ${focusRingOffset2}`}
-      >
-        + Build your own
-      </button>
+        {/* One tier quieter than the patterns: it belongs with them spatially
+            but is not one of them. Its own line cost a 44px row plus a gap
+            under the hero, on a screen that already overflowed a short phone. */}
+        <button
+          type="button"
+          onClick={() => onOpenBuilder(null)}
+          className={`${itemBase} ${itemIdle} mr-6 text-meta text-ink-faint hover:text-ink-muted`}
+        >
+          Custom
+        </button>
+      </div>
     </div>
   );
 }
