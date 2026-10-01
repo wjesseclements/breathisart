@@ -85,7 +85,7 @@ export const BUILT_IN_PATTERNS: BreathPattern[] = [
     id: '478',
     chipLabel: '4-7-8',
     name: '4-7-8',
-    tagline: 'Relaxing breath — long hold, longer exhale',
+    tagline: 'Popularised for winding down towards sleep',
     phases: [
       { kind: 'inhale', seconds: 4 },
       { kind: 'hold', seconds: 7 },
@@ -98,7 +98,7 @@ export const BUILT_IN_PATTERNS: BreathPattern[] = [
     id: 'coherent',
     chipLabel: 'Coherent',
     name: 'Coherent Breathing',
-    tagline: 'About 5.5 breaths per minute, no holds',
+    tagline: 'The standard pace in heart-rate-variability research',
     phases: [
       { kind: 'inhale', seconds: 5.5 },
       { kind: 'exhale', seconds: 5.5 },

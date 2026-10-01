@@ -20,7 +20,7 @@ import { PatternBuilder } from '../components/SettingsDrawer/PatternBuilder';
 import { PreferencesSection } from '../components/SettingsDrawer/PreferencesSection';
 import { SettingsDrawer } from '../components/SettingsDrawer/SettingsDrawer';
 import { SharedPatternBanner } from '../components/SharedPatternBanner';
-import { linkText, primaryButton } from '../components/ui';
+import { focusRingOffset4, primaryButton } from '../components/ui';
 import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
@@ -407,9 +407,14 @@ export default function Home() {
             onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}
           />
           <FirstTimeTip />
+          {/* Not `linkText`: the accent treatment made the least important
+              element on the screen the brightest thing on it, louder than the
+              pattern names and louder than Begin. The underline stays, so
+              colour is not the only cue and WCAG 1.4.1 is still satisfied
+              without shouting. */}
           <Link
             to="/research"
-            className={`inline-flex min-h-11 items-center rounded text-meta ${linkText}`}
+            className={`inline-flex min-h-11 items-center rounded text-meta text-ink-muted underline decoration-[rgb(var(--ink-faint)/0.5)] underline-offset-4 transition-colors hover:text-ink hover:decoration-[rgb(var(--ink-muted))] ${focusRingOffset4}`}
           >
             The science of slow breathing
           </Link>
