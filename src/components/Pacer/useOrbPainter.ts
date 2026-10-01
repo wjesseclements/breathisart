@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
 import type { Phase } from '../../engine/patterns';
-import { breathLevel, followLevel, phaseLevelRanges } from './pacerMath';
+import { breathLevel, easeBreath, followLevel, phaseLevelRanges } from './pacerMath';
 import {
   DEPTH_TAU_S,
   FAR_TAU_S,
@@ -212,8 +212,23 @@ export function useOrbPainter(
 
       const ring = ringRef.current;
       if (ring) {
-        const exhaling = phases[phaseIndex].kind === 'exhale';
-        ring.style.strokeDashoffset = String(exhaling ? 100 * t : 100 * (1 - t));
+        const kind = phases[phaseIndex].kind;
+        const exhaling = kind === 'exhale';
+        /*
+         * The ring sweeps on the SAME curve as the body, not on raw time.
+         *
+         * It was linear. Sampled through a 5.5s inhale at 250ms, the ring moved
+         * 4.55 units every single step from start to finish while the orb's
+         * scale stepped 0.0028 ... 0.0304 ... 0.0080 — the body easing in and
+         * out of the phase while the line beside it held one constant pace.
+         * Two things describing one breath and disagreeing about its shape.
+         *
+         * Holds stay linear. There the ring is the only thing moving, and
+         * easing a progress line with no body motion beside it reads as the
+         * hold stalling rather than as breath.
+         */
+        const swept = kind === 'hold' ? t : easeBreath(t);
+        ring.style.strokeDashoffset = String(exhaling ? 100 * swept : 100 * (1 - swept));
         const secondsIn = phases[phaseIndex].seconds * t;
         const secondsLeft = phases[phaseIndex].seconds * (1 - t);
         const fade = Math.min(1, secondsIn / RING_FADE_LEAD_S, secondsLeft / RING_FADE_LEAD_S);

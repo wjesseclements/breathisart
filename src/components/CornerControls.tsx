@@ -18,8 +18,9 @@ import { focusRing } from './ui';
  * that is genuinely self-contained.
  */
 
-/** 44px, the minimum comfortable touch target, and the shape the `···` set. */
-const cornerButton = `grid h-11 w-11 place-items-center rounded-full text-ink-faint transition-opacity duration-500 ${focusRing}`;
+/** 44px, the minimum comfortable touch target, and the shape the `···` set.
+ *  Width is set per button: the settings one animates its own away. */
+const cornerButton = `grid h-11 place-items-center rounded-full text-ink-faint ${focusRing}`;
 
 /* TODO(slice 20): light/dark pair has no exact token — slate-800 / slate-300
    (the hover pair straddles two token levels: ink-strong and ink) */
@@ -80,7 +81,7 @@ export function CornerControls({
 
   return (
     <>
-      <div className="fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 flex items-center gap-1">
+      <div className="fixed right-[max(1.25rem,env(safe-area-inset-right))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 flex items-center">
         {/* On the idle screen rather than two levels deep in Settings, where
             nobody found it (PLAN_V2 slice 23). The default stays off — a
             stress tool gets opened in open-plan offices — so the fix to
@@ -94,14 +95,15 @@ export function CornerControls({
             keeps hiding, because a drawer over a running breath is a genuine
             interruption and a one-tap toggle is not.
 
-            Its neighbour keeps its 44px box while faded, so this one does not
-            slide sideways when a session starts. */}
+            Its neighbour collapses its width rather than just fading, so this
+            one slides into the corner the dots vacate instead of sitting in a
+            gap where a control used to be. */}
         <button
           type="button"
           onClick={toggleTones}
           aria-label="Phase tones"
           aria-pressed={audioCues}
-          className={`${cornerButton} ${cornerHover} opacity-100`}
+          className={`${cornerButton} ${cornerHover} w-11`}
         >
           <SpeakerIcon on={audioCues} />
         </button>
@@ -112,9 +114,11 @@ export function CornerControls({
           aria-label="Open settings"
           aria-hidden={!idle}
           tabIndex={idle ? undefined : -1}
-          className={`${cornerButton} ${cornerHover} ${idle ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+          className={`${cornerButton} ${cornerHover} overflow-hidden transition-[width,opacity,margin] duration-500 ${
+            idle ? 'ml-1 w-11 opacity-100' : 'pointer-events-none ml-0 w-0 opacity-0'
+          }`}
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 fill-current">
             <circle cx="5" cy="12" r="1.8" />
             <circle cx="12" cy="12" r="1.8" />
             <circle cx="19" cy="12" r="1.8" />
