@@ -26,6 +26,34 @@ const cornerButton = `grid h-11 place-items-center rounded-full text-ink-faint $
    (the hover pair straddles two token levels: ink-strong and ink) */
 const cornerHover = 'hover:text-slate-800 dark:hover:text-slate-300';
 
+/**
+ * The same 1.6 stroke and 20px box as the speaker's arcs, so the two corners
+ * read as one set. It replaced the word "End": a word on the left and a glyph
+ * on the right made the corners look like different kinds of thing, and a word
+ * at that size pulls the eye during a session, which is the one screen where
+ * nothing should compete with the orb.
+ *
+ * A close mark rather than a stop square or a back arrow. Leaving a full-screen
+ * thing by its corner × is the convention people already have, and it is not
+ * destructive here — End runs the graceful close and hands back the summary.
+ */
+function CloseIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+    >
+      <path d="M6.5 6.5l11 11" />
+      <path d="M17.5 6.5l-11 11" />
+    </svg>
+  );
+}
+
 function SpeakerIcon({ on }: { on: boolean }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5">
@@ -139,22 +167,23 @@ export function CornerControls({
         ignore, which was the point; visible enough to find, which the opacity
         number would have cost.
 
-        `aria-hidden` because End already exists in the HUD, stays in the
-        accessibility tree even while the HUD is visually faded, and is
-        reachable by keyboard throughout. A second "End, button" would only
-        double-announce. This is a redundant pointer affordance, so it is
-        pointer-only by design.
+        `aria-hidden` because End already exists in the HUD as a labelled
+        button, stays in the accessibility tree even while the HUD is visually
+        faded, and is reachable by keyboard throughout. A second "End, button"
+        would only double-announce, and an unlabelled × would be worse. This is
+        a redundant pointer affordance, so it is pointer-only by design — which
+        is also why it can afford to be a glyph rather than a word.
       */}
       <button
         type="button"
         onClick={onEnd}
         aria-hidden="true"
         tabIndex={-1}
-        className={`fixed left-[max(1.25rem,env(safe-area-inset-left))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 grid h-11 place-items-center rounded-full px-3 text-meta tracking-wide text-ink-faint transition-opacity duration-500 hover:text-ink ${
+        className={`fixed left-[max(1.25rem,env(safe-area-inset-left))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 grid h-11 w-11 place-items-center rounded-full text-ink-faint transition-opacity duration-500 hover:text-ink ${
           inSession ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
-        End
+        <CloseIcon />
       </button>
     </>
   );
