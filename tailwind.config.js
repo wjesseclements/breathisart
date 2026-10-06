@@ -83,6 +83,10 @@ export default {
       },
       screens: {
         short: { raw: '(max-height: 500px)' },
+        // A phone on its side, or a very short desktop window: too short for
+        // the portrait stack and wide enough for two columns. Declared after
+        // `short` so its utilities are emitted later and win where both match.
+        land: { raw: '(max-height: 500px) and (min-aspect-ratio: 4/3)' },
       },
       keyframes: {
         'word-in': { from: { opacity: '0' }, to: { opacity: '1' } },

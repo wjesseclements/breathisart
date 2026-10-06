@@ -22,16 +22,22 @@ const RAMP: CSSProperties = {
     'linear-gradient(176deg, rgb(var(--scene-top)) 0%, rgb(var(--scene-mid)) 44%, rgb(var(--scene-low)) 78%, rgb(var(--scene-floor)) 100%)',
 };
 
-/** Anchored ABOVE the orb, so the orb is backlit rather than front-lit. */
+/**
+ * Anchored ABOVE the orb, so the orb is backlit rather than front-lit.
+ *
+ * `--orb-x` rather than 50%: in landscape Home moves the orb into a column of
+ * its own, and a backlight left at the screen centre lit the text instead.
+ * Unset everywhere else, including the research page, so it falls back to 50%.
+ */
 const SKY: CSSProperties = {
   background:
-    'radial-gradient(ellipse 128% 64% at 50% 14%, rgb(var(--accent-glow) / 0.20) 0%, rgb(var(--accent-glow) / 0.07) 42%, transparent 74%)',
+    'radial-gradient(ellipse 128% 64% at var(--orb-x, 50%) 14%, rgb(var(--accent-glow) / 0.20) 0%, rgb(var(--accent-glow) / 0.07) 42%, transparent 74%)',
 };
 
-/** Centred on the orb. Opacity is driven by the pacer, not by CSS. */
+/** Centred on the orb (see `--orb-x` above). Opacity is driven by the pacer, not by CSS. */
 const CAST: CSSProperties = {
   background:
-    'radial-gradient(ellipse 86% 52% at 50% 50%, rgb(var(--accent-glow) / 0.13) 0%, transparent 70%)',
+    'radial-gradient(ellipse 86% 52% at var(--orb-x, 50%) 50%, rgb(var(--accent-glow) / 0.13) 0%, transparent 70%)',
 };
 
 /**

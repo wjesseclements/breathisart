@@ -176,14 +176,17 @@ export function Pacer({ pattern, session, roomLightRef, showTitle = true }: Pace
           : '';
 
   return (
-    <div className="flex flex-col items-center gap-10">
+    // `land:contents`: in landscape the orb and the words become cells of the
+    // page grid in Home rather than a stack, so the orb can have a column of
+    // its own. See the grid on <main>.
+    <div className="flex flex-col items-center gap-10 land:contents">
       <button
         type="button"
         onClick={session.toggle}
         disabled={closing}
         aria-label={orbLabel}
         data-status={status}
-        className={`relative h-[min(17rem,32svh)] w-[min(17rem,32svh)] rounded-full ${focusRingOffset8}`}
+        className={`relative h-[min(17rem,32svh)] w-[min(17rem,32svh)] rounded-full land:aspect-square land:h-auto land:w-[min(17rem,calc(100svh_-_6rem),calc(100%_-_3rem))] land:place-self-center land:[grid-area:1/2/-1/3] ${focusRingOffset8}`}
       >
         {/* Idle ambient float wraps everything; CSS-animated, idle only, and
             deliberately not phase-locked — it is decoration, never the clock. */}
@@ -216,7 +219,14 @@ export function Pacer({ pattern, session, roomLightRef, showTitle = true }: Pace
         instruction), and the centred layout slid the orb up to match. A jump
         at the exact moment you are being asked to settle.
       */}
-      <div className="grid w-full grid-cols-1 grid-rows-1 place-items-center">
+      <div
+        className={`grid w-full grid-cols-1 grid-rows-1 place-items-center land:[grid-area:2/1] ${
+          // In landscape this cell has no orb to hold in place, so while the
+          // session summary is up (both states in it invisible) it gives its
+          // height back rather than holding ~80px of nothing above the summary.
+          idle && !showTitle ? 'land:hidden' : ''
+        }`}
+      >
         <div
           aria-hidden={!idle || !showTitle}
           className={`[grid-area:1/1] w-full transition-opacity duration-300 ${

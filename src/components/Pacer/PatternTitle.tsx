@@ -31,10 +31,19 @@ export function PatternTitle({ pattern }: { pattern: BreathPattern }) {
       <h2 className="font-display text-title font-normal text-ink">{pattern.name}</h2>
       <p className="text-label uppercase tabular-nums text-ink-faint">{phases}</p>
       {/* Separate lines, not a middot join: the tagline wraps on narrow
-          viewports and orphaned a trailing separator. */}
-      {tagline && <p className="max-w-[26rem] text-balance text-meta text-ink-muted">{tagline}</p>}
+          viewports and orphaned a trailing separator.
+
+          In landscape the duration advice goes, and below 340px the tagline
+          follows it. Measured on a 667x325 phone (an SE in Safari with its bar
+          showing) the column was 311px tall in a 325px screen; these are the
+          two lines the name and the pattern itself can do without. */}
+      {tagline && (
+        <p className="max-w-[26rem] text-balance text-meta text-ink-muted land:[@media(max-height:340px)]:hidden">
+          {tagline}
+        </p>
+      )}
       {pattern.cycleSuggestion && (
-        <p className="mt-1 text-meta text-ink-faint">{pattern.cycleSuggestion}</p>
+        <p className="mt-1 text-meta text-ink-faint land:hidden">{pattern.cycleSuggestion}</p>
       )}
     </div>
   );

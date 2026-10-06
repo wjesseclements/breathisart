@@ -65,7 +65,7 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
   // Keep the selection in view when the arrows move it past the fold.
 
   return (
-    <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-1 px-6">
+    <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-1 px-6 land:px-0">
       {/* `display: contents` so the group's children wrap in the parent's flex
           flow alongside Custom, while the group itself keeps its role. Custom
           has to stay OUTSIDE it: it opens the builder rather than selecting a

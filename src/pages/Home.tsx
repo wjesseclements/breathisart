@@ -293,9 +293,34 @@ export default function Home() {
      *
      * `grid-cols-[minmax(0,1fr)]` keeps an auto track from sizing to
      * max-content and growing past the viewport.
+     *
+     * LANDSCAPE (`land:`, a phone on its side or a very short window). The
+     * stack above cannot work there: the orb was sized off height alone, so on
+     * an 844x390 phone it was a 125px dot in an empty field, the page scrolled
+     * by 117-181px, and with the hero pinned to the top the progress ring ran
+     * 13px off the screen at every landscape size. So the page becomes two
+     * columns. The hero and the Pacer go `display: contents`, which makes the
+     * orb, the words, the action slot and the furniture cells of this grid:
+     *
+     *   [ ........ spacer ........ ][      ]
+     *   [ words (title / phase)    ][      ]
+     *   [ action (Begin / HUD)     ][ orb  ]
+     *   [ furniture (picker, link) ][      ]
+     *   [ ........ spacer ........ ][      ]
+     *
+     * The orb is on the RIGHT because the top-right corner holds the speaker
+     * and the dots: on the left the text column ran straight into them, and on
+     * the right the corner sits over the orb's own margin. Its width comes from
+     * its column and its height from `100svh - 6rem`, which leaves the ring
+     * 24px of clearance top and bottom by construction rather than by luck.
+     *
+     * `overflow-hidden` because the orb's halo layers reach past the screen
+     * edge, and with only `overflow-x-hidden` this element became a 30px
+     * scroll container of its own. `--orb-x` is the orb column's centre, so
+     * the room's backlight follows the lamp across.
      */
     <>
-      <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6">
+      <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6 land:overflow-hidden land:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] land:grid-rows-[minmax(1rem,1fr)_auto_auto_auto_minmax(0.5rem,1fr)] land:pl-[max(1.5rem,env(safe-area-inset-left))] land:pr-[max(1.5rem,env(safe-area-inset-right))] land:[--orb-x:calc(100%_-_1.5rem_-_(100%_-_3rem)_*_2_/_9)]">
         <h1 className="sr-only">Stillpoint — a breath pacer</h1>
         <Background roomLightRef={roomLightRef} />
         <SessionProgress
@@ -319,7 +344,7 @@ export default function Home() {
         split the 81px overflow and pushed the orb up behind Safari's URL bar.
         32svh plus tighter gaps below `sm` brings it to ~453px.
       */}
-        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 py-4 [justify-content:safe_center] sm:gap-9 sm:py-6 short:gap-3 short:py-2">
+        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 py-4 [justify-content:safe_center] sm:gap-9 sm:py-6 short:gap-3 short:py-2 land:contents">
           <Pacer
             pattern={pattern}
             session={session}
@@ -332,7 +357,7 @@ export default function Home() {
             without it the slot shrinks from the 58px Begin pill to the 37px
             HUD row, and the centred hero above it slides up ~56px the moment
             a session starts. Tied to the primary button, the tallest state. */}
-          <div className="grid min-h-16 grid-cols-1 grid-rows-1 place-items-center">
+          <div className="grid min-h-16 grid-cols-1 grid-rows-1 place-items-center land:mt-3 land:[grid-area:3/1]">
             <div className="[grid-area:1/1]">
               {summary !== null && idle ? (
                 <SessionSummary
@@ -390,7 +415,7 @@ export default function Home() {
            row, and on a 390x641 small viewport the page already overflowed by
            51 before that — the pattern picker sat just below the fold. The
            gaps give it back; the targets keep their size. */
-          className={`flex w-full min-w-0 flex-col items-center gap-3 overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom))] transition-[opacity,max-height] duration-500 sm:gap-5 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] ${
+          className={`flex w-full min-w-0 flex-col items-center gap-3 overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom))] transition-[opacity,max-height] duration-500 sm:gap-5 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] land:mt-3 land:gap-1.5 land:pb-0 land:[grid-area:4/1] ${
             idle ? 'max-h-[32rem] opacity-100' : 'pointer-events-none max-h-0 opacity-0'
           }`}
         >
