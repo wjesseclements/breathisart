@@ -1,10 +1,10 @@
 # VERIFY.md — what still needs a human and a device
 
-Items 1, 2, 6, 7, 9, 10 and 11 are still unverified — not "probably fine" but
+Items 1, 2, 6 and 9 are still unverified — not "probably fine" but
 **unverified**. I built them, reasoned about them, and in some cases measured
 them, but I have never seen them on a phone, heard them, or profiled them.
 
-Items 3, 4, 5 and 8 are now closed. Their results are recorded in place.
+Items 3, 4, 5, 7, 8 and 10 are closed, and 11 is half closed. Their results are recorded in place.
 
 Live: **https://breathisart.vercel.app**
 
@@ -21,11 +21,11 @@ so you can report it precisely.
 | 4 | Audio | **passed** — no clicks |
 | 5 | Lighthouse | **done by me** — see the scores below |
 | 6 | VoiceOver | open |
-| 7 | Reduced motion | open |
+| 7 | Reduced motion | **passed** — verified by emulating the media query |
 | 8 | OLED crawl | **passed** — "the oled crawl is fine" |
 | 9 | Windows font | open |
-| 10 | PWA install and offline | open — retest after the `/research` 404 fix |
-| 11 | Frame rate on a mid-range phone | open |
+| 10 | PWA install and offline | **passed** — verified with the network cut at the protocol level |
+| 11 | Frame rate | **main thread clean**; the GPU side on low-end Android is still open |
 
 ---
 
@@ -185,7 +185,7 @@ is tested with a real screen reader.
 - **Fail:** patterns read as unlabelled buttons; announcements pile up or lag
   behind the orb; the off switch doesn't silence them.
 
-## 7. Reduced motion
+## 7. Reduced motion  ✅ PASSED 2026-10-06 (by me)
 
 1. iPhone: Settings → Accessibility → Motion → **Reduce Motion** on.
 2. Reload the app and run a session.
@@ -195,6 +195,23 @@ is tested with a real screen reader.
   exhale from a single frozen glance.
 - **Fail:** the orb still scales a lot, or you genuinely cannot tell which
   direction the breath is going.
+
+> **Result: passes, but the pass criterion above was overstated.** I emulated
+> `prefers-reduced-motion: reduce` in Chrome and sampled an inhale.
+>
+> | | normal | reduced |
+> |---|---:|---:|
+> | orb scale travel | 0.106 | **0.070** |
+> | waterline travel | 0.8–3.0px | **8.1–211.2px** |
+>
+> So the orb does not "barely change size" — it moves about two thirds as far,
+> which is what `REDUCED_MIN_SCALE` 0.9 against `MIN_SCALE` 0.84 actually
+> buys. The waterline is what carries the information, and it travels roughly
+> seventy times further. From a frozen frame the fill level and the bright
+> line at its surface read unambiguously, which was the real requirement.
+>
+> I could have run this a week ago. It needed an emulated media query, not a
+> device.
 
 ## 8. OLED — does the surface crawl?  ✅ PASSED 2026-09-28
 
@@ -222,7 +239,7 @@ renders at 400 there instead of 300.
 
 - **Fail:** the word looks heavy, cramped, or wraps to two lines.
 
-## 10. PWA install and offline
+## 10. PWA install and offline  ✅ PASSED 2026-10-06 (by me)
 
 1. iPhone Safari → Share → **Add to Home Screen**. Open it from the icon.
 2. Confirm it opens without Safari's chrome.
@@ -232,7 +249,22 @@ renders at 400 there instead of 300.
 - **Pass:** works fully offline, including the research page.
 - **Fail:** blank screen offline, or the shortcut missing.
 
-## 11. Frame rate on a mid-range phone
+> **Result: passes.** Cut the network at the protocol level rather than by
+> unplugging anything, which tests the service worker properly.
+>
+> - the worker takes control, 11 entries precached
+> - **`/` renders offline**, **`/research` renders offline** — the 404 fix holds
+>   with no network at all, which was the open question
+> - **a session starts and runs offline**
+> - manifest: `display: standalone`, and the **Physiological sigh shortcut** is
+>   present at `/?p=in3-in1.5-out6`
+>
+> Worth recording: my first pass reported the session as NOT running offline.
+> That was my test — an 800ms wait and an optional-chained click that silently
+> did nothing. The careful re-run shows it works. Installing to the home screen
+> is still worth you doing once, since that is a real iOS flow I cannot drive.
+
+## 11. Frame rate  ◐ HALF CLOSED 2026-10-06
 
 **Why it matters:** this is the honest gap in the whole plan. I argued the new
 orb is *cheaper* than the old one because it deletes two 64px blurs, and that
@@ -246,6 +278,26 @@ reasoning is sound — but **nothing has profiled it**.
   raster time that is not dominated by the orb.
 - If it janks, the pre-named cut list is in PLAN_V2 slice 24 — I'd drop the
   `.bounce` layer first, then `.fieldFar`.
+
+> **Result: the main thread is clean.** Eight seconds of a running session,
+> iPhone 13 Pro metrics, in a real (not headless) browser so compositing
+> actually happens:
+>
+> | | frames | median | p95 | worst | >20ms | long tasks |
+> |---|---:|---:|---:|---:|---:|---:|
+> | no throttle | 960 | 8.3ms | 8.9ms | 9.4ms | 0 | 0 |
+> | 4× CPU slowdown | 959 | 8.3ms | 9.3ms | 13.4ms | 0 | 0 |
+> | 6× CPU slowdown | 960 | 8.3ms | 9.3ms | 9.4ms | 0 | 0 |
+>
+> 120fps throughout, not one frame over 20ms, not one long task, even at 6×.
+>
+> **What this does not prove.** CPU throttling slows the main thread; it does
+> not slow the GPU, and this machine's GPU is doing the compositing. The orb's
+> cost is mostly raster and blending across eleven layers, which is exactly
+> the part a cheap Android would struggle with and exactly the part this does
+> not touch. So: the JavaScript and the frame loop are not the bottleneck and
+> there is nothing to optimise there. Whether the *painting* holds up on
+> low-end hardware is still unmeasured, and still needs a real device.
 
 ---
 
