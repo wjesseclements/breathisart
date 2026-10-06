@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { BreathPattern, Phase } from '../../engine/patterns';
-import { describePhases, validatePhases } from '../../engine/patterns';
+import { describePhases, newPatternId, validatePhases } from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
 import { focusRing, pillButton } from '../ui';
 import { MiniPreview } from './MiniPreview';
@@ -43,7 +43,7 @@ export function PatternBuilder({ initial, onBack, onDone }: PatternBuilderProps)
 
   const handleSave = () => {
     const pattern: BreathPattern = {
-      id: initial?.id ?? `custom-${crypto.randomUUID()}`,
+      id: initial?.id ?? newPatternId(),
       name: name.trim(),
       tagline: describePhases(phases),
       phases,
@@ -102,7 +102,11 @@ export function PatternBuilder({ initial, onBack, onDone }: PatternBuilderProps)
       </button>
 
       {errors.length > 0 && (
-        <ul className="flex flex-col gap-1 text-sm text-rose-300" role="alert">
+        /* A light/dark pair, like the counterpoint amber on the research page.
+           `text-rose-300` alone measured 1.89:1 on the light drawer at 14px —
+           the one piece of text on the screen whose entire job is to be read
+           was the least readable thing on it. 300 stays for dark (9.4:1). */
+        <ul className="flex flex-col gap-1 text-sm text-rose-700 dark:text-rose-300" role="alert">
           {errors.map((error) => (
             <li key={error}>{error}</li>
           ))}

@@ -44,6 +44,25 @@ export function describePhases(phases: readonly Phase[]): string {
   return phases.map((p) => `${KIND_SHORT[p.kind]} ${p.seconds}`).join(' · ');
 }
 
+/**
+ * Id for a saved custom pattern.
+ *
+ * `crypto.randomUUID` is secure-context only. Production is https so it is
+ * there, but the LAN dev URL used for testing on a phone is plain http, and
+ * on that origin it is `undefined` — Save threw `crypto.randomUUID is not a
+ * function`, saved nothing, and gave no feedback at all. The button looked
+ * dead. Collision resistance is not load-bearing here (these ids never leave
+ * one browser's localStorage), so time plus randomness is enough to fall back
+ * to, and the real UUID is still used wherever it exists.
+ */
+export function newPatternId(): string {
+  const unique =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  return `custom-${unique}`;
+}
+
 export const MIN_PHASE_SECONDS = 0.5;
 export const MAX_PHASE_SECONDS = 60;
 

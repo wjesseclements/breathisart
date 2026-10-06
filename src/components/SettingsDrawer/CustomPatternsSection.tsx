@@ -13,13 +13,28 @@ interface CustomPatternsSectionProps {
 
 export function CustomPatternsSection({ onNew, onEdit }: CustomPatternsSectionProps) {
   const customPatterns = useSettings((s) => s.customPatterns);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copied, setCopied] = useState<{ id: string; ok: boolean } | null>(null);
 
-  const share = (pattern: BreathPattern) => {
+  /**
+   * The label used to say "Copied!" whether or not anything was copied: the
+   * write was fired as `void navigator.clipboard?.writeText(url)`, so a
+   * rejection was discarded and a missing `navigator.clipboard` was optional-
+   * chained away. On the LAN dev URL, which is plain http and therefore not a
+   * secure context, `navigator.clipboard` is `undefined` — so that path
+   * reported success every time while copying nothing.
+   */
+  const share = async (pattern: BreathPattern) => {
     const url = `${window.location.origin}${buildSharePath(pattern)}`;
-    void navigator.clipboard?.writeText(url);
-    setCopiedId(pattern.id);
-    window.setTimeout(() => setCopiedId((id) => (id === pattern.id ? null : id)), 1500);
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(url);
+      ok = true;
+    } catch {
+      // Undefined on a non-secure origin, and rejected by the browser when a
+      // copy is not allowed. Either way the label has to say so.
+    }
+    setCopied({ id: pattern.id, ok });
+    window.setTimeout(() => setCopied((c) => (c?.id === pattern.id ? null : c)), 1800);
   };
 
   return (
@@ -38,11 +53,11 @@ export function CustomPatternsSection({ onNew, onEdit }: CustomPatternsSectionPr
               <div className="flex shrink-0 gap-2">
                 <button
                   type="button"
-                  onClick={() => share(pattern)}
+                  onClick={() => void share(pattern)}
                   aria-label={`Copy share link for ${pattern.name}`}
                   className={rowButton}
                 >
-                  {copiedId === pattern.id ? 'Copied!' : 'Share'}
+                  {copied?.id !== pattern.id ? 'Share' : copied.ok ? 'Copied!' : 'Copy failed'}
                 </button>
                 <button type="button" onClick={() => onEdit(pattern)} className={rowButton}>
                   Edit

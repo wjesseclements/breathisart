@@ -23,7 +23,12 @@ import { SharedPatternBanner } from '../components/SharedPatternBanner';
 import { focusRingOffset4, primaryButton } from '../components/ui';
 import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
-import { BUILT_IN_PATTERNS, describePhases, resolvePattern } from '../engine/patterns';
+import {
+  BUILT_IN_PATTERNS,
+  describePhases,
+  newPatternId,
+  resolvePattern,
+} from '../engine/patterns';
 import { decodePhases } from '../engine/shareUrl';
 import { usePageTitle } from '../components/usePageTitle';
 import { useSettings } from '../store/useSettings';
@@ -61,7 +66,7 @@ export default function Home() {
   const clearShared = useCallback(() => setSearchParams({}, { replace: true }), [setSearchParams]);
   const saveShared = useCallback(() => {
     if (!sharedPattern) return;
-    const saved = { ...sharedPattern, id: `custom-${crypto.randomUUID()}` };
+    const saved = { ...sharedPattern, id: newPatternId() };
     saveCustomPattern(saved);
     selectPattern(saved.id);
     clearShared();
