@@ -144,7 +144,7 @@ export default function Home() {
 
   useWakeLock(status === 'running');
   usePhaseCues(session);
-  usePageTitle('Lamptide — a quiet light to breathe by');
+  usePageTitle('Lamptide — a quiet light to breathe by', '/');
 
   // Starting the first session is the onboarding's natural end.
   const dismissOnboarding = useSettings((s) => s.dismissOnboarding);
