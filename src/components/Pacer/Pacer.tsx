@@ -179,7 +179,7 @@ export function Pacer({ pattern, session, roomLightRef, showTitle = true }: Pace
     // `land:contents`: in landscape the orb and the words become cells of the
     // page grid in Home rather than a stack, so the orb can have a column of
     // its own. See the grid on <main>.
-    <div className="flex flex-col items-center gap-10 land:contents">
+    <div className="flex flex-col items-center gap-8 sm:gap-10 land:contents">
       <button
         type="button"
         onClick={session.toggle}

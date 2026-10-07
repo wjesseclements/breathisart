@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import type { Phase } from './patterns';
 import {
   BUILT_IN_PATTERNS,
+  MAX_NAME_LENGTH,
   MAX_PHASE_SECONDS,
   MIN_PHASE_SECONDS,
+  clampPatternName,
   describePhases,
   findPatternById,
   resolvePattern,
@@ -82,5 +84,40 @@ describe('validatePhases', () => {
   it('accepts decimals and reports one error per bad phase', () => {
     expect(validatePhases([inhale(5.5), inhale(1.25)])).toEqual([]);
     expect(validatePhases([inhale(0), inhale(4), inhale(99)])).toHaveLength(2);
+  });
+});
+
+describe('clampPatternName', () => {
+  it('leaves a name inside the cap alone, apart from trimming', () => {
+    expect(clampPatternName('  Evening calm  ')).toBe('Evening calm');
+  });
+
+  it('cuts a long name to the cap, from the front', () => {
+    const long = 'A very long pattern name that someone might actually type';
+    const out = clampPatternName(long);
+    expect(out).toHaveLength(MAX_NAME_LENGTH);
+    expect(long.startsWith(out)).toBe(true);
+  });
+
+  it('never splits an emoji into a lone surrogate', () => {
+    // 23 letters then a two-code-unit moon: the moon does not fit, and half of
+    // it must not be kept either.
+    const out = clampPatternName('a'.repeat(MAX_NAME_LENGTH - 1) + '\u{1F319}');
+    expect(out).toBe('a'.repeat(MAX_NAME_LENGTH - 1));
+    expect(out).not.toMatch(/[\uD800-\uDFFF]/);
+  });
+
+  it('keeps an emoji that fits whole', () => {
+    const name = 'a'.repeat(MAX_NAME_LENGTH - 2) + '\u{1F319}';
+    expect(clampPatternName(name)).toBe(name);
+  });
+
+  it('does not end on the space it happened to cut at', () => {
+    const out = clampPatternName('a'.repeat(MAX_NAME_LENGTH - 1) + ' and more');
+    expect(out).toBe('a'.repeat(MAX_NAME_LENGTH - 1));
+  });
+
+  it('returns empty for a blank name, so callers can fall back', () => {
+    expect(clampPatternName('   ')).toBe('');
   });
 });

@@ -7,7 +7,6 @@ export type MotionPreference = 'system' | 'reduced';
 
 interface SettingsState {
   selectedPatternId: string;
-  tip478Dismissed: boolean;
   showCountdown: boolean;
   customPatterns: BreathPattern[];
   /** Phase tones, off by default (PRD §5). */
@@ -34,7 +33,6 @@ interface SettingsState {
    */
   spokenCues: boolean;
   selectPattern: (id: string) => void;
-  dismissTip478: () => void;
   dismissOnboarding: () => void;
   setShowCountdown: (show: boolean) => void;
   saveCustomPattern: (pattern: BreathPattern) => void;
@@ -53,7 +51,6 @@ export const useSettings = create<SettingsState>()(
   persist(
     (set) => ({
       selectedPatternId: 'box',
-      tip478Dismissed: false,
       showCountdown: true,
       customPatterns: [],
       audioCues: false,
@@ -66,7 +63,6 @@ export const useSettings = create<SettingsState>()(
       onboardingDismissed: false,
       spokenCues: true,
       selectPattern: (id) => set({ selectedPatternId: id }),
-      dismissTip478: () => set({ tip478Dismissed: true }),
       dismissOnboarding: () => set({ onboardingDismissed: true }),
       setShowCountdown: (show) => set({ showCountdown: show }),
       saveCustomPattern: (pattern) =>

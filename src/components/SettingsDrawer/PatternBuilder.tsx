@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import type { BreathPattern, Phase } from '../../engine/patterns';
-import { describePhases, newPatternId, validatePhases } from '../../engine/patterns';
+import {
+  MAX_NAME_LENGTH,
+  describePhases,
+  newPatternId,
+  validatePhases,
+} from '../../engine/patterns';
 import { useSettings } from '../../store/useSettings';
 import { focusRing, pillButton } from '../ui';
 import { MiniPreview } from './MiniPreview';
@@ -29,6 +34,9 @@ export function PatternBuilder({ initial, onBack, onDone }: PatternBuilderProps)
   // Validation is the same tested code path the engine enforces (slice 2).
   const errors = validatePhases(phases);
   if (name.trim() === '') errors.unshift('Give your pattern a name.');
+  // `maxLength` stops typing at the cap; this catches a name saved before it.
+  else if (name.trim().length > MAX_NAME_LENGTH)
+    errors.unshift(`Keep the name to ${MAX_NAME_LENGTH} characters or fewer.`);
 
   const updatePhase = (index: number, patch: Partial<Phase>) =>
     setPhases(phases.map((p, i) => (i === index ? { ...p, ...patch } : p)));
@@ -70,10 +78,18 @@ export function PatternBuilder({ initial, onBack, onDone }: PatternBuilderProps)
       </button>
 
       <label className="flex flex-col gap-1 text-sm text-ink">
-        Name
+        {/* So a field that stops at the cap reads as a limit, not a broken
+            keyboard. `aria-hidden` keeps "12/24" out of the field's label. */}
+        <span className="flex items-baseline justify-between">
+          Name
+          <span aria-hidden="true" className="text-xs tabular-nums text-ink-faint">
+            {name.length}/{MAX_NAME_LENGTH}
+          </span>
+        </span>
         <input
           type="text"
           value={name}
+          maxLength={MAX_NAME_LENGTH}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Evening wind-down"
           // TODO(slice 20): light/dark pair has no exact token — border-slate-400 / border-night-mist (--line is slate-300)

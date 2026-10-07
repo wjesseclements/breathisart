@@ -91,7 +91,7 @@ interface BreathPattern {
 | Name | Phases | Notes |
 |---|---|---|
 | **Box Breathing** | in 4 → hold 4 → out 4 → hold 4 | Classic Navy SEAL pattern |
-| **4-7-8 (Relaxing Breath)** | in 4 → hold 7 → out 8 | Dr. Weil's protocol; show a first-time tip that mild lightheadedness is common, start with 2–4 cycles |
+| **4-7-8 (Relaxing Breath)** | in 4 → hold 7 → out 8 | Dr. Weil's protocol; suggest starting with 2–4 cycles. Its lightheadedness caution is the general one on the home screen (§5), not a 4-7-8 popup |
 | **Coherent Breathing** | in 5.5 → out 5.5 | ~5.5 breaths/min, HRV-oriented |
 | **Extended Exhale (Calm)** | in 4 → out 6 | Gentle starter; exhale-emphasis |
 | **Physiological Sigh** | in 3 → in 1.5 (label "Top-off sip") → out 6 | Double inhale through nose, long exhale through mouth |
@@ -136,9 +136,10 @@ A centered orb/ring that **expands on inhale, holds steady (with a subtle shimme
 2. Pattern chips (horizontally scrollable on mobile) directly under the orb: Box, 4-7-8, Coherent, Calm, Sigh, Custom.
 3. During session: chips fade away, a minimal HUD appears (elapsed time, cycle count, pause, end). Tap anywhere to reveal controls if hidden.
 4. End session → gentle summary ("6 min · 32 cycles") with "Again" and "Done".
+5. A standing safety line on the idle screen, under the research link, for every pattern: **"Go gently, and stop if you feel lightheaded."** It replaced a one-time tip shown only for 4-7-8. Holds and long exhales can cause lightheadedness in any pattern, not just one, and a notice shown once and dismissed protected nobody the second time. Quiet type, one line on a phone, never a popup. The full caution stays on the research page (§6.4).
 
 ### Settings drawer (hamburger or "···" icon, top corner, low-contrast)
-- **Custom patterns**: builder UI — add/remove/reorder phases, set kind + seconds (steppers + direct input), live mini-preview of the orb running the pattern, name it, save. Saved patterns appear in the picker with an edit/delete affordance.
+- **Custom patterns**: builder UI — add/remove/reorder phases, set kind + seconds (steppers + direct input), live mini-preview of the orb running the pattern, name it (up to 24 characters), save. Saved patterns appear in the picker with an edit/delete affordance. The cap exists because the name becomes a picker chip and the title above Begin: a realistic 24-character name fits both on a 360px phone without wrapping.
 - **Session length**: open-ended (default), or timed (3/5/10 min or custom) with a soft chime at completion.
 - **Audio cues**: off (default) / soft tones. Synthesize with WebAudio (rising tone on inhale start, falling on exhale start, soft tick on hold) — no audio files needed. Volume slider.
 - **Haptics** (mobile, where supported): gentle vibration pulse at phase changes via `navigator.vibrate`.
@@ -203,7 +204,7 @@ a reader to credit Stillpoint with an effect size it has not earned.
 **In v1:**
 - PWA / offline (the whole point of a calming tool is it works on a plane).
 - Keyboard accessible: space = start/pause, esc = end, arrow keys cycle patterns. Full ARIA labeling; announce phase changes via a polite `aria-live` region for screen-reader users.
-- Shareable pattern URLs: encode a custom pattern in the query string (`/?p=in4-h7-out8`) so users can share patterns without a backend.
+- Shareable pattern URLs: encode a custom pattern in the query string (`/?p=in4-h7-out8`) so users can share patterns without a backend. A shared name (`&n=`) is cut to the same 24-character cap on arrival.
 - First-visit micro-onboarding: one dismissible line — "Follow the orb. In as it grows, out as it settles."
 - Open Graph/meta tags + favicon set so shared links look polished.
 

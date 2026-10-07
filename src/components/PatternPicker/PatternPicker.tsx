@@ -28,7 +28,7 @@ import { focusRingOffset2 } from '../ui';
  * overflows cannot be centred, because `scrollLeft` will not go negative and
  * the leading items become permanently unreachable. Nothing overflows now.
  */
-const itemBase = `relative grid min-h-11 shrink-0 snap-start place-items-center rounded-md px-3 text-ui transition-colors ${focusRingOffset2}`;
+const itemBase = `relative grid min-h-11 snap-start place-items-center rounded-md px-3 text-ui transition-colors ${focusRingOffset2}`;
 const itemSelected = 'text-ink-strong';
 const itemIdle = 'text-ink-muted hover:text-ink';
 
@@ -75,7 +75,15 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
         {allPatterns.map((pattern) => {
           const selected = pattern.id === selectedId;
           return (
-            <div key={pattern.id} className="flex shrink-0 items-center">
+            /* A custom chip may shrink and truncate; a built-in never needs
+               to. The 24-character cap keeps real names whole on a 360px
+               phone, and this catches the rest: a name saved before the cap,
+               or wide letters on a 320px screen. A long name used to run off
+               both edges and push its own pencil out of reach. */
+            <div
+              key={pattern.id}
+              className={`flex items-center ${pattern.builtIn ? 'shrink-0' : 'min-w-0 max-w-full'}`}
+            >
               <button
                 type="button"
                 role="radio"
@@ -84,25 +92,34 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
                 data-selected={selected}
                 tabIndex={selected ? 0 : -1}
                 onClick={() => selectPattern(pattern.id)}
-                className={`${itemBase} ${selected ? itemSelected : itemIdle}`}
+                className={`${itemBase} ${pattern.builtIn ? 'shrink-0' : 'min-w-0'} ${
+                  selected ? itemSelected : itemIdle
+                }`}
               >
-                {pattern.chipLabel ?? pattern.name}
+                {/* `max-w-full` is what makes `truncate` bite: the button centres its
+                    items, and a centred grid item sizes to its full text and
+                    overflows both ways rather than being clipped. */}
+                <span className="max-w-full truncate">{pattern.chipLabel ?? pattern.name}</span>
                 <span
                   aria-hidden="true"
                   className={`absolute inset-x-2 bottom-1 h-px transition-opacity ${
                     selected ? 'bg-[rgb(var(--accent-core))] opacity-80' : 'opacity-0'
                   }`}
                 />
-                <span id={`tagline-${pattern.id}`} className="sr-only">
-                  {pattern.tagline}
-                </span>
               </button>
+              {/* Outside the button. Inside it, this text was part of the
+                  radio's NAME as well as its description, so a screen reader
+                  read every tagline twice: "Box Equal sides, steady composure
+                  under pressure, radio, Equal sides, steady composure..." */}
+              <span id={`tagline-${pattern.id}`} className="sr-only">
+                {pattern.tagline}
+              </span>
               {!pattern.builtIn && (
                 <button
                   type="button"
                   onClick={() => onOpenBuilder(pattern)}
                   aria-label={`Edit ${pattern.name}`}
-                  className={`${itemBase} ${itemIdle} px-2`}
+                  className={`${itemBase} ${itemIdle} shrink-0 px-2`}
                 >
                   {/* Inline SVG, not U+270E: that glyph renders as a colour
                       emoji pencil on several Android builds and sits
@@ -117,12 +134,14 @@ export function PatternPicker({ enabled = true, onOpenBuilder }: PatternPickerPr
         })}
       </div>
 
-      {/* One tier quieter than the patterns: it belongs with them spatially
-          but is not one of them. */}
+      {/* Same weight as the pattern names. It was meant to sit a tier
+          quieter, but those classes collided with `itemBase` and `itemIdle`
+          and lost, so it always rendered at full weight — and it read fine
+          that way, so the dead classes went rather than the look changing. */}
       <button
         type="button"
         onClick={() => onOpenBuilder(null)}
-        className={`${itemBase} ${itemIdle} text-meta text-ink-faint hover:text-ink-muted`}
+        className={`${itemBase} ${itemIdle} shrink-0`}
       >
         Custom
       </button>

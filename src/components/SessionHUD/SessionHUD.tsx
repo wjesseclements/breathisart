@@ -41,8 +41,8 @@ interface SessionHUDProps {
  * 2. **`opacity`, never `visibility`.** `invisible` removes descendants from
  *    the tab order and the accessibility tree, so Pause and End used to
  *    disappear entirely for keyboard and screen-reader users. `End` is also
- *    always reachable now — the app warns that 4-7-8 causes lightheadedness,
- *    and the stop button should not be invisible when that happens.
+ *    always reachable now — the app warns that slow breathing can cause
+ *    lightheadedness, and the stop button should not be invisible then.
  */
 export function SessionHUD({
   session,

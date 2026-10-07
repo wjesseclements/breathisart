@@ -7,7 +7,6 @@ import { Pacer } from '../components/Pacer/Pacer';
 import { useBreathSession } from '../components/Pacer/useBreathSession';
 import { usePhaseCues } from '../components/Pacer/usePhaseCues';
 import { useWakeLock } from '../components/Pacer/useWakeLock';
-import { FirstTimeTip } from '../components/PatternPicker/FirstTimeTip';
 import { PatternPicker } from '../components/PatternPicker/PatternPicker';
 import { SessionHUD } from '../components/SessionHUD/SessionHUD';
 import { SessionProgress } from '../components/SessionHUD/SessionProgress';
@@ -25,6 +24,7 @@ import { playCue } from '../engine/audio';
 import type { BreathPattern } from '../engine/patterns';
 import {
   BUILT_IN_PATTERNS,
+  clampPatternName,
   describePhases,
   newPatternId,
   resolvePattern,
@@ -55,7 +55,8 @@ export default function Home() {
     if (!phases) return null;
     return {
       id: '__shared__',
-      name: sharedName?.trim() || 'Shared pattern',
+      // Clamped: a link can carry any name, and nothing else bounds it.
+      name: clampPatternName(sharedName ?? '') || 'Shared pattern',
       tagline: describePhases(phases),
       phases,
       builtIn: false,
@@ -320,7 +321,7 @@ export default function Home() {
      * the room's backlight follows the lamp across.
      */
     <>
-      <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6 land:overflow-hidden land:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] land:grid-rows-[minmax(1rem,1fr)_auto_auto_auto_minmax(0.5rem,1fr)] land:pl-[max(1.5rem,env(safe-area-inset-left))] land:pr-[max(1.5rem,env(safe-area-inset-right))] land:[--orb-x:calc(100%_-_1.5rem_-_(100%_-_3rem)_*_2_/_9)]">
+      <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6 land:overflow-hidden land:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] land:grid-rows-[minmax(0.75rem,1fr)_auto_auto_auto_minmax(0.5rem,1fr)] land:pl-[max(1.5rem,env(safe-area-inset-left))] land:pr-[max(1.5rem,env(safe-area-inset-right))] land:[--orb-x:calc(100%_-_1.5rem_-_(100%_-_3rem)_*_2_/_9)]">
         <h1 className="sr-only">Stillpoint — a breath pacer</h1>
         <Background roomLightRef={roomLightRef} />
         <SessionProgress
@@ -344,7 +345,7 @@ export default function Home() {
         split the 81px overflow and pushed the orb up behind Safari's URL bar.
         32svh plus tighter gaps below `sm` brings it to ~453px.
       */}
-        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 py-4 [justify-content:safe_center] sm:gap-9 sm:py-6 short:gap-3 short:py-2 land:contents">
+        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-4 py-4 [justify-content:safe_center] sm:gap-9 sm:py-6 short:gap-3 short:py-2 land:contents">
           <Pacer
             pattern={pattern}
             session={session}
@@ -357,7 +358,7 @@ export default function Home() {
             without it the slot shrinks from the 58px Begin pill to the 37px
             HUD row, and the centred hero above it slides up ~56px the moment
             a session starts. Tied to the primary button, the tallest state. */}
-          <div className="grid min-h-16 grid-cols-1 grid-rows-1 place-items-center land:mt-3 land:[grid-area:3/1]">
+          <div className="grid min-h-16 grid-cols-1 grid-rows-1 place-items-center land:mt-2 land:[grid-area:3/1]">
             <div className="[grid-area:1/1]">
               {summary !== null && idle ? (
                 <SessionSummary
@@ -415,7 +416,7 @@ export default function Home() {
            row, and on a 390x641 small viewport the page already overflowed by
            51 before that — the pattern picker sat just below the fold. The
            gaps give it back; the targets keep their size. */
-          className={`flex w-full min-w-0 flex-col items-center gap-3 overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom))] transition-[opacity,max-height] duration-500 sm:gap-5 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] land:mt-3 land:gap-1.5 land:pb-0 land:[grid-area:4/1] ${
+          className={`flex w-full min-w-0 flex-col items-center gap-3 overflow-hidden pb-[calc(0.75rem+env(safe-area-inset-bottom))] transition-[opacity,max-height] duration-500 sm:gap-5 sm:pb-[calc(1rem+env(safe-area-inset-bottom))] land:mt-2 land:gap-1.5 land:pb-0 land:[grid-area:4/1] ${
             idle ? 'max-h-[32rem] opacity-100' : 'pointer-events-none max-h-0 opacity-0'
           }`}
         >
@@ -436,18 +437,36 @@ export default function Home() {
             enabled={idle && !drawerOpen}
             onOpenBuilder={(p) => setDrawer({ kind: 'builder', pattern: p })}
           />
-          <FirstTimeTip />
-          {/* Not `linkText`: the accent treatment made the least important
-              element on the screen the brightest thing on it, louder than the
-              pattern names and louder than Begin. The underline stays, so
-              colour is not the only cue and WCAG 1.4.1 is still satisfied
-              without shouting. */}
-          <Link
-            to="/research"
-            className={`inline-flex min-h-11 items-center rounded text-meta text-ink-muted underline decoration-[rgb(var(--ink-faint)/0.5)] underline-offset-4 transition-colors hover:text-ink hover:decoration-[rgb(var(--ink-muted))] ${focusRingOffset4}`}
-          >
-            The science of slow breathing
-          </Link>
+          {/* The link and the caution are one group with no gap between them:
+              the link's 44px box already leaves 12px of air under its text,
+              and a flex gap on top of that cost height a phone does not have. */}
+          <div className="flex flex-col items-center">
+            {/* Not `linkText`: the accent treatment made the least important
+                element on the screen the brightest thing on it, louder than the
+                pattern names and louder than Begin. The underline stays, so
+                colour is not the only cue and WCAG 1.4.1 is still satisfied
+                without shouting. */}
+            <Link
+              to="/research"
+              className={`inline-flex min-h-11 items-center rounded text-meta text-ink-muted underline decoration-[rgb(var(--ink-faint)/0.5)] underline-offset-4 transition-colors hover:text-ink hover:decoration-[rgb(var(--ink-muted))] ${focusRingOffset4}`}
+            >
+              The science of slow breathing
+            </Link>
+            {/* The standing caution (PRD §5). It replaced a tip that appeared
+                once, for 4-7-8 only: holds and long exhales can do this in any
+                pattern, and a notice dismissed once protected nobody the second
+                time. Quiet, one line, never a popup — but `ink-muted`, not
+                `ink-faint`: at the foot of the light theme, where the floor of
+                the room is darkest, faint measured 4.18:1 against a 4.5 floor,
+                and a safety line is the last thing that should fail it. Its ~16px came out of
+                the gaps (below `sm`: hero 24->16, orb to words 40->32, bottom
+                padding 16->12; above it, bottom padding 32->16): portrait had
+                2px to spare on a 390x641 iPhone, so a line could not simply be
+                added. */}
+            <p className="text-balance text-center text-meta leading-tight text-ink-muted">
+              Go gently, and stop if you feel lightheaded.
+            </p>
+          </div>
         </div>
       </main>
 

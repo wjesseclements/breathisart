@@ -63,6 +63,32 @@ export function newPatternId(): string {
   return `custom-${unique}`;
 }
 
+/**
+ * Longest custom pattern name, in UTF-16 code units — what an input's
+ * `maxLength` counts, so the builder and this agree.
+ *
+ * The name becomes a chip in the picker and the 28px title above Begin.
+ * Measured in the app's own fonts, a realistic 24-character name ("Long exhale
+ * for sleeping") is a 191px chip and a 296px title, and both fit a 360px phone
+ * without wrapping. The longest built-in, "Coherent Breathing", is 18.
+ */
+export const MAX_NAME_LENGTH = 24;
+
+/**
+ * Trims a name and cuts it to `MAX_NAME_LENGTH` without splitting a character:
+ * an emoji is two code units, and cutting between them leaves a lone surrogate
+ * that renders as a replacement box. Used on names that arrive in share links,
+ * which nothing else constrains.
+ */
+export function clampPatternName(name: string): string {
+  let out = '';
+  for (const ch of name.trim()) {
+    if (out.length + ch.length > MAX_NAME_LENGTH) break;
+    out += ch;
+  }
+  return out.trim();
+}
+
 export const MIN_PHASE_SECONDS = 0.5;
 export const MAX_PHASE_SECONDS = 60;
 
