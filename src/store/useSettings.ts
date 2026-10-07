@@ -86,6 +86,9 @@ export const useSettings = create<SettingsState>()(
       setMotionPreference: (preference) => set({ motionPreference: preference }),
       setSpokenCues: (on) => set({ spokenCues: on }),
     }),
+    // Still the old name, on purpose. The app was Stillpoint until October 2026,
+    // and this key is where every visitor's settings and custom patterns live:
+    // renaming it would quietly erase them all. It is never shown to anyone.
     { name: 'stillpoint:settings' },
   ),
 );

@@ -1,4 +1,10 @@
-# Product Requirements Document — "Stillpoint" (working name)
+# Product Requirements Document — "Lamptide"
+
+**Name:** Lamptide — renamed from the working name "Stillpoint" in October 2026, which at least four
+other breathing and meditation apps already use and which had no matching domain left.
+**Tagline:** "A quiet light to breathe by." It goes wherever the name is shown in full: the page
+title, the install prompt, link previews and the share image. The home-screen label is just "Lamptide".
+**Search description:** "Slow breathing, paced by light", followed by the pattern list.
 
 A breath-pacing web app. Visitors land on a full-screen animated pacer, pick a breathing pattern, and breathe along. A small menu opens settings (custom patterns, audio, theme) and links to a research page summarizing the evidence for breathwork.
 
@@ -195,7 +201,7 @@ meta-analysis of HRV *biofeedback* for stress and anxiety with a large effect
 (between-groups Hedges' g = 0.83, 24 studies). It is tempting precisely because
 the number is bigger than anything else on this page — and it is evidence for a
 sensor-driven intervention this app does not implement. Adding it would invite
-a reader to credit Stillpoint with an effect size it has not earned.
+a reader to credit Lamptide with an effect size it has not earned.
 
 ---
 

@@ -9,10 +9,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'og.png'],
       manifest: {
-        name: 'Stillpoint — a breath pacer',
-        short_name: 'Stillpoint',
+        name: 'Lamptide — a quiet light to breathe by',
+        short_name: 'Lamptide',
         description:
-          'A calm, animated breath pacer: box breathing, 4-7-8, coherent breathing, the physiological sigh, and custom patterns. Works offline.',
+          'Slow breathing, paced by light: box breathing, 4-7-8, coherent breathing, the physiological sigh, and custom patterns. Works offline.',
         theme_color: '#0b1020',
         background_color: '#0b1020',
         display: 'standalone',

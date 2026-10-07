@@ -31,7 +31,7 @@ import {
  * round. Presentational pieces live in `researchParts.tsx`.
  */
 export default function Research() {
-  usePageTitle('The science of slow breathing — Stillpoint');
+  usePageTitle('The science of slow breathing — Lamptide');
   return (
     <>
       <a

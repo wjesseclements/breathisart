@@ -3,7 +3,7 @@
 Project context for Claude Code. Read PRD.md for the full product spec — this file covers how to work in this repo.
 
 ## What this is
-A static breath-pacing web app ("Stillpoint"): an animated orb paces inhale/hold/exhale, users pick built-in patterns (box, 4-7-8, coherent, physiological sigh) or build custom ones, and a `/research` page summarizes the evidence. No backend, no accounts, no analytics.
+A static breath-pacing web app ("Lamptide", formerly "Stillpoint"): an animated orb paces inhale/hold/exhale, users pick built-in patterns (box, 4-7-8, coherent, physiological sigh) or build custom ones, and a `/research` page summarizes the evidence. No backend, no accounts, no analytics.
 
 ## Stack
 - Vite + React 18 + TypeScript (strict mode on)

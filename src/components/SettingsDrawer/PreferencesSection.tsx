@@ -222,8 +222,8 @@ export function PreferencesSection() {
           The science of slow breathing
         </Link>
         <p className="text-meta text-ink-faint">
-          Stillpoint is an educational pacing tool, not medical advice, and is not a treatment for
-          any condition. See the safety notes on the research page.
+          Lamptide is an educational pacing tool, not medical advice, and is not a treatment for any
+          condition. See the safety notes on the research page.
         </p>
       </section>
     </div>

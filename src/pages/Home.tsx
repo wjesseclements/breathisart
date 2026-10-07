@@ -144,7 +144,7 @@ export default function Home() {
 
   useWakeLock(status === 'running');
   usePhaseCues(session);
-  usePageTitle('Stillpoint — a breath pacer');
+  usePageTitle('Lamptide — a quiet light to breathe by');
 
   // Starting the first session is the onboarding's natural end.
   const dismissOnboarding = useSettings((s) => s.dismissOnboarding);
@@ -322,7 +322,7 @@ export default function Home() {
      */
     <>
       <main className="relative grid min-h-[100svh] grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto] overflow-x-hidden px-6 land:overflow-hidden land:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] land:grid-rows-[minmax(0.75rem,1fr)_auto_auto_auto_minmax(0.5rem,1fr)] land:pl-[max(1.5rem,env(safe-area-inset-left))] land:pr-[max(1.5rem,env(safe-area-inset-right))] land:[--orb-x:calc(100%_-_1.5rem_-_(100%_-_3rem)_*_2_/_9)]">
-        <h1 className="sr-only">Stillpoint — a breath pacer</h1>
+        <h1 className="sr-only">Lamptide — a quiet light to breathe by</h1>
         <Background roomLightRef={roomLightRef} />
         <SessionProgress
           session={session}

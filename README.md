@@ -1,4 +1,6 @@
-# Stillpoint
+# Lamptide
+
+*A quiet light to breathe by.* (Formerly "Stillpoint".)
 
 A breath-pacing web app: an animated orb paces inhale/hold/exhale through built-in or custom breathing patterns, with a research page summarizing the evidence. Static bundle — no backend, no accounts, no analytics.
 

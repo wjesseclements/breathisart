@@ -1,6 +1,6 @@
 # Working With Claude Code on This Project
 
-A practical playbook for building Stillpoint with Claude Code. Official docs: https://code.claude.com/docs/en/best-practices
+A practical playbook for building Lamptide with Claude Code. Official docs: https://code.claude.com/docs/en/best-practices
 
 ## Setup (once)
 1. Create the repo, drop `CLAUDE.md` and `PRD.md` in the root, commit them.
