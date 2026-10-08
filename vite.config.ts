@@ -7,7 +7,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'og.png'],
+      // Not the share image: only link-preview scrapers ever fetch it, so
+      // precaching it would cost every first visit a download for nothing.
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Lamptide — a quiet light to breathe by',
         short_name: 'Lamptide',
