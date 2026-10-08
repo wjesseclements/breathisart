@@ -1,4 +1,4 @@
-# VERIFY.md — what still needs a human and a device
+# VERIFY.md — what Lamptide still needs from a human and a device
 
 Items 1, 2, 6 and 9 are still unverified — not "probably fine" but
 **unverified**. I built them, reasoned about them, and in some cases measured
@@ -6,7 +6,13 @@ them, but I have never seen them on a phone, heard them, or profiled them.
 
 Items 3, 4, 5, 7, 8 and 10 are closed, and 11 is half closed. Their results are recorded in place.
 
-Live: **https://breathisart.vercel.app**
+Live: **https://www.lamptide.com**
+
+The app was called Stillpoint until 2026-10-07. lamptide.com, lamptide.app and
+lampti.de (and their `www` forms) all forward to www.lamptide.com. The old
+breathisart.vercel.app still works on purpose: browsers keep each address's saved
+data separately, so patterns saved there do not appear on the new address, and
+redirecting the old one would strand them. That is expected, not a bug for this list.
 
 Each item says what to do, what a pass looks like, and what failure looks like
 so you can report it precisely.
@@ -16,7 +22,7 @@ so you can report it precisely.
 | # | Item | Status |
 |---|------|--------|
 | 1 | Safari iPhone — the orb's edge | open |
-| 2 | iPhone layout | fix shipped `6ff1f89`, needs a re-look |
+| 2 | iPhone layout | needs a re-look — now includes landscape (two columns, 2026-10-06) and the rename |
 | 3 | Touch — is anything dead? | **passed** — "touch seems to work fine" |
 | 4 | Audio | **passed** — no clicks |
 | 5 | Lighthouse | **done by me** — see the scores below |
@@ -35,7 +41,7 @@ so you can report it precisely.
 element in the design with no fallback, and Safari is the browser I have never
 seen this in.
 
-1. Open https://breathisart.vercel.app in Safari on your iPhone.
+1. Open https://www.lamptide.com in Safari on your iPhone.
 2. Look at the orb's outline, especially the lower-right.
 
 - **Pass:** the edge fades softly on the lower-right and stays crisp on the
@@ -47,18 +53,31 @@ seen this in.
 
 ## 2. iPhone layout — notch, toolbar, rotation
 
-**Why it matters:** headless Chrome here clamps to ~500 CSS px, so **every
-claim I've made about phone layout is inference**, not observation.
+**Why it matters:** I measure every phone size, portrait and landscape, in an
+emulated browser now — but emulation is not Safari. The notch, the toolbar
+collapsing and real touch are the parts only a phone shows.
 
 1. In Safari, portrait: is anything clipped by the notch or the home indicator?
 2. Scroll up and down so Safari's toolbar collapses and expands. Does the orb
    stay put, or does it jump?
-3. Rotate to landscape. Is the orb still fully visible with the word beneath it?
-4. Start a session. Does the layout shift when Begin is replaced by the HUD?
+3. Tap **Begin**. The orb should glide down to the middle over about half a
+   second, not snap there.
+4. Rotate to landscape. The page becomes two columns: the orb on the right,
+   as tall as the screen allows, its ring fully visible; the words and buttons
+   on the left; nothing scrolls. Start a session sideways too.
+5. Under the research link: "Go gently, and stop if you feel lightheaded."
+   should be visible without scrolling.
+6. Tap **Custom**. Each phase is a small card with ↑ ↓ ✕ on a second row, the
+   ✕ fully on screen; the name field shows "0/24".
+7. Share → **Add to Home Screen**: it should offer the name **Lamptide** with
+   the orb icon.
 
-- **Pass:** nothing clipped, no jump when the toolbar moves, landscape fits.
+- **Pass:** nothing clipped, no jump when the toolbar moves, landscape fits
+  with the ring whole, every control in Custom reachable without scrolling
+  sideways, and the home-screen label reads Lamptide.
 - **Fail:** content under the notch, the orb jumping when the toolbar
-  collapses, or the orb cut off in landscape.
+  collapses, the ring cut off in landscape, anything in Custom past the edge
+  of the screen, or the long title offered as the home-screen name.
 
 ## 3. Touch — is anything dead?  ✅ PASSED 2026-09-28
 
@@ -129,7 +148,8 @@ blocking time 0ms, cumulative layout shift 0.
 Two things it found:
 
 **a. `/research` 404s on a cold load.** Fixed. Vercel had no SPA rewrite, so
-`https://breathisart.vercel.app/research` returned Vercel's own 404 page. It
+`https://breathisart.vercel.app/research` (the address at the time) returned
+Vercel's own 404 page. It
 worked for us because the service worker serves `index.html` for any navigation
 once installed — so a *return* visitor was fine and a *first* visitor, or
 anyone following a shared link, got a dead page. Now `vercel.json` rewrites
@@ -175,15 +195,24 @@ countdown, which isn't on screen until a session runs.
 the session announces each phase with its duration. Both are reasoned, neither
 is tested with a real screen reader.
 
-1. iPhone: Settings → Accessibility → VoiceOver → on (or triple-click the side
-   button if you've set that shortcut).
-2. Swipe through the home screen. Does each pattern read its name *and* its
-   description?
+VoiceOver has to be **switched on first**. The app does not speak by itself:
+it keeps a hidden line updated for a screen reader to read aloud ("Breathe in,
+4 seconds"), so with VoiceOver off — or in the Enjoy preview — it is silent by
+design. The tones are separate and play either way.
+
+1. iPhone: Settings → Accessibility → VoiceOver → on, or say "Hey Siri, turn on
+   VoiceOver". While it's on, swipe right to move and double-tap to press.
+   Open https://www.lamptide.com in Safari.
+2. Swipe through the home screen. Each pattern should read its name, then its
+   description **once** ("Box… Equal sides — steady composure under pressure").
+   Until 2026-10-07 the description was read twice; that is fixed.
 3. Start a session. Does it announce "Breathe in, 4 seconds" and so on?
 4. Settings → Display → turn **Spoken phase cues** off. Announcements should stop.
 
-- **Fail:** patterns read as unlabelled buttons; announcements pile up or lag
-  behind the orb; the off switch doesn't silence them.
+- **Fail:** patterns read as unlabelled buttons, or a description read twice;
+  announcements pile up or lag behind the orb; the off switch doesn't silence
+  them.
+- When you're done: "Hey Siri, turn off VoiceOver" is the easiest way out.
 
 ## 7. Reduced motion  ✅ PASSED 2026-10-06 (by me)
 
@@ -305,8 +334,12 @@ reasoning is sound — but **nothing has profiled it**.
 
 So you know where the line is:
 
-- 83 unit tests, including engine drift over 20 simulated minutes, the lead-in
-  remainder carry, and the closing sequence
+- 89 unit tests, including engine drift over 20 simulated minutes, the lead-in
+  remainder carry, the closing sequence, and the custom-name cap
+- The new addresses (2026-10-07): lamptide.com, lamptide.app, lampti.de and
+  their `www` forms each forward to www.lamptide.com in one permanent redirect,
+  keeping the path, every one with a valid certificate; each page names its own
+  www.lamptide.com address as canonical
 - Clicked every interactive control with a synthetic mouse at 318px and 900px
 - Contrast ratios computed for every colour token in both themes, and for the
   accent across all five patterns
